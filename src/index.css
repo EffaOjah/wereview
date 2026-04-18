@@ -1,0 +1,77 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #f5a623;
+  --color-primary-hover: #e68916;
+  --color-primary-dark: #ac7026;
+  --color-accent: #c55011;
+  --color-dark: #252525;
+  --color-muted: #6f6f6f;
+  --color-light: #f5f5f5;
+
+  --font-outfit: "Outfit", sans-serif;
+  --weight-thin: 200;
+  --weight-light: 300;
+  --weight-normal: 400;
+  --weight-medium: 600;
+  --weight-bold: 700;
+  --weight-black: 900;
+}
+
+@layer base {
+  html, body {
+    @apply font-outfit overflow-x-hidden;
+    -webkit-font-smoothing: antialiased;
+    font-smoothing: antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply m-0 text-dark font-bold;
+  }
+
+  p {
+    @apply text-base text-muted font-normal leading-relaxed mb-4;
+  }
+
+  a {
+    @apply transition-all duration-300;
+  }
+}
+
+@layer components {
+  .primary-btn {
+    @apply inline-block text-xs md:text-sm px-7 py-2.5 text-white uppercase font-bold bg-primary tracking-widest transition-all duration-300 hover:bg-primary-dark cursor-pointer;
+  }
+
+  .site-btn {
+    @apply inline-block text-sm px-7.5 py-3 text-white uppercase font-extrabold bg-primary border-none cursor-pointer;
+  }
+
+  .spad {
+    @apply py-24;
+  }
+
+  .section-title {
+    @apply mb-10 text-center;
+  }
+
+  .section-title h2 {
+    @apply text-dark font-bold relative inline-block;
+  }
+
+  .section-title h2::after {
+    @apply absolute left-0 -bottom-4 right-0 h-1 w-20 bg-accent mx-auto content-[""];
+  }
+
+  /* Preloader animation */
+  #preloder {
+    @apply fixed w-full h-full top-0 left-0 z-[999999] bg-black transition-opacity duration-500 pointer-events-none opacity-0;
+  }
+  #preloder.active {
+    @apply opacity-100 pointer-events-auto;
+  }
+
+  .loader {
+    @apply w-10 h-10 absolute top-1/2 left-1/2 -mt-3 -ml-3 rounded-full border-4 border-[#f44336] border-l-transparent animate-spin;
+  }
+}
