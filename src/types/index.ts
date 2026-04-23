@@ -39,6 +39,7 @@ export interface Review {
     isVerifiedPurchase?: boolean;
     helpfulCount?: number;
     image?: string;
+    isFlagged?: boolean;
 }
 
 export interface BlogPost {
@@ -56,4 +57,25 @@ export interface Category {
     image: string;
     badges: string[];
     discount?: number;
+}
+
+export interface User {
+    id: string;
+    name: string;
+    email: string;
+    role: 'user' | 'admin';
+    status: 'active' | 'suspended';
+    joinDate: string;
+    avatar?: string;
+    reviewCount: number;
+}
+
+export interface AdminNotification {
+    id: string;
+    title: string;
+    message: string;
+    type: 'info' | 'success' | 'warning' | 'error';
+    date: string;
+    isRead: boolean;
+    link?: string;
 }

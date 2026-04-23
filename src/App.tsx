@@ -23,13 +23,23 @@ import PublicProfilePage from './pages/PublicProfilePage';
 import ContactPage from './pages/ContactPage';
 import NotFoundPage from './pages/NotFoundPage';
 
+import AdminLoginPage from './pages/admin/AdminLoginPage';
+import AdminDashboard from './pages/admin/AdminDashboard';
+import AdminProductsPage from './pages/admin/AdminProductsPage';
+import AdminReviewsPage from './pages/admin/AdminReviewsPage';
+import AdminUsersPage from './pages/admin/AdminUsersPage';
+import AdminCategoriesPage from './pages/admin/AdminCategoriesPage';
+import AdminSettingsPage from './pages/admin/AdminSettingsPage';
+import AdminNotificationsPage from './pages/admin/AdminNotificationsPage';
+
 const AppContent: React.FC = () => {
   const location = useLocation();
   const isProfilePage = location.pathname === '/profile';
+  const isAdminPage = location.pathname.startsWith('/admin');
 
   return (
     <div className="flex flex-col min-h-screen relative">
-      <Navbar />
+      {!isAdminPage && <Navbar />}
       <main className="flex-grow">
         <Routes>
           <Route path="/" element={<HomePage />} />
@@ -45,10 +55,21 @@ const AppContent: React.FC = () => {
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/user/:userId" element={<PublicProfilePage />} />
           <Route path="/contact" element={<ContactPage />} />
+          
+          {/* Admin Routes */}
+          <Route path="/admin/login" element={<AdminLoginPage />} />
+          <Route path="/admin/dashboard" element={<AdminDashboard />} />
+          <Route path="/admin/products" element={<AdminProductsPage />} />
+          <Route path="/admin/reviews" element={<AdminReviewsPage />} />
+          <Route path="/admin/users" element={<AdminUsersPage />} />
+          <Route path="/admin/categories" element={<AdminCategoriesPage />} />
+          <Route path="/admin/settings" element={<AdminSettingsPage />} />
+          <Route path="/admin/notifications" element={<AdminNotificationsPage />} />
+          
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </main>
-      {!isProfilePage && <Footer />}
+      {!isProfilePage && !isAdminPage && <Footer />}
       <BackToTopButton />
       <AuthModal />
     </div>
