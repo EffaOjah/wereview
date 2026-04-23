@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, Plus, Trash2, Image as ImageIcon, Check, Loader2 } from 'lucide-react';
-import type { Product, NigerianPrices } from '../../types';
+import type { Product } from '../../types';
 
 interface AdminProductFormProps {
   isOpen: boolean;
@@ -25,8 +25,6 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ isOpen, onClose, on
 
   const [newSpec, setNewSpec] = useState({ key: '', value: '' });
   const [newBadge, setNewBadge] = useState('');
-  const [newPro, setNewPro] = useState('');
-  const [newCon, setNewCon] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {

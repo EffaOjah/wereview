@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Save, Globe, Layout, Shield, Search, Image as ImageIcon, Bell, Check, Loader2, Info } from 'lucide-react';
+import { Save, Globe, Layout, Shield, Search, Check, Loader2, Info } from 'lucide-react';
 import AdminLayout from '../../components/admin/AdminLayout';
 
 interface SiteSettings {

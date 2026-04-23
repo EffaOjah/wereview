@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Search, Filter, Edit2, Trash2, ExternalLink, Star } from 'lucide-react';
+import { Plus, Search, Edit2, Trash2 } from 'lucide-react';
 import AdminLayout from '../../components/admin/AdminLayout';
 import AdminProductForm from '../../components/admin/AdminProductForm';
 import { products as initialProducts } from '../../data/products';

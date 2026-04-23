@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Plus, Trash2, Image as ImageIcon, Check, Loader2 } from 'lucide-react';
+import { X, Plus, Image as ImageIcon, Check, Loader2 } from 'lucide-react';
 import type { Category } from '../../types';
 
 interface AdminCategoryFormProps {

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Filter, MoreVertical, Shield, ShieldAlert, UserCheck, UserX, Mail, Calendar, MessageSquare, ExternalLink } from 'lucide-react';
+import { Search, UserCheck, UserX, Calendar, MessageSquare, ExternalLink, Shield } from 'lucide-react';
 import AdminLayout from '../../components/admin/AdminLayout';
 import type { User } from '../../types';
 

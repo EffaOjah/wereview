@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Bell, Check, Trash2, Info, AlertTriangle, AlertCircle, CheckCircle2, MoreVertical, Search, CheckCircle } from 'lucide-react';
+import { Bell, Check, Trash2, Info, AlertTriangle, AlertCircle, CheckCircle2, Search } from 'lucide-react';
 import AdminLayout from '../../components/admin/AdminLayout';
 import type { AdminNotification } from '../../types';
 

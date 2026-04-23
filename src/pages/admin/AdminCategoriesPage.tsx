@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Edit2, Trash2, Tag, LayoutGrid, Image as ImageIcon } from 'lucide-react';
+import { Plus, Edit2, Trash2, LayoutGrid } from 'lucide-react';
 import AdminLayout from '../../components/admin/AdminLayout';
 import AdminCategoryForm from '../../components/admin/AdminCategoryForm';
 import { categories as initialCategories } from '../../data/products';

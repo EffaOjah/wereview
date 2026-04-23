@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Filter, Trash2, Star, CheckCircle, Flag, MessageCircle, MoreVertical, ShieldAlert } from 'lucide-react';
+import { Search, Trash2, Star, CheckCircle, Flag, MessageCircle } from 'lucide-react';
 import AdminLayout from '../../components/admin/AdminLayout';
 import { reviews as initialReviews, products } from '../../data/products';
 import type { Review } from '../../types';
