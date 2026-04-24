@@ -79,3 +79,17 @@ export interface AdminNotification {
     isRead: boolean;
     link?: string;
 }
+
+export interface Seller {
+    id: string;
+    name: string;
+    logo: string;
+    location: string;
+    city: string;
+    rating: number;
+    reviewCount: number;
+    isVerified: boolean;
+    specialty: string;
+    memberSince: string;
+    products?: string[]; // IDs of top products they sell
+}

@@ -22,6 +22,7 @@ import ProfilePage from './pages/ProfilePage';
 import PublicProfilePage from './pages/PublicProfilePage';
 import ContactPage from './pages/ContactPage';
 import NotFoundPage from './pages/NotFoundPage';
+import AIAssistantWidget from './components/ui/AIAssistantWidget';
 
 import AdminLoginPage from './pages/admin/AdminLoginPage';
 import AdminDashboard from './pages/admin/AdminDashboard';
@@ -71,6 +72,7 @@ const AppContent: React.FC = () => {
       </main>
       {!isProfilePage && !isAdminPage && <Footer />}
       <BackToTopButton />
+      {!isAdminPage && <AIAssistantWidget />}
       <AuthModal />
     </div>
   );
