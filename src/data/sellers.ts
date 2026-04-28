@@ -12,7 +12,7 @@ export const sellers: Seller[] = [
     isVerified: true,
     specialty: 'Mobile Phones & Accessories',
     memberSince: '2015',
-    products: ['1', '2', '5']
+    Gadgets: ['1', '2', '5']
   },
   {
     id: 's2',
@@ -25,7 +25,7 @@ export const sellers: Seller[] = [
     isVerified: true,
     specialty: 'Gadgets & Home Appliances',
     memberSince: '2017',
-    products: ['3', '7']
+    Gadgets: ['3', '7']
   },
   {
     id: 's3',
@@ -38,7 +38,7 @@ export const sellers: Seller[] = [
     isVerified: true,
     specialty: 'Laptops & Office Tech',
     memberSince: '2018',
-    products: ['4', '8']
+    Gadgets: ['4', '8']
   },
   {
     id: 's4',
@@ -51,7 +51,7 @@ export const sellers: Seller[] = [
     isVerified: true,
     specialty: 'Premium Smartphones',
     memberSince: '2019',
-    products: ['10', '13']
+    Gadgets: ['10', '13']
   },
   {
     id: 's5',
@@ -64,7 +64,7 @@ export const sellers: Seller[] = [
     isVerified: true,
     specialty: 'Electronics & Gaming',
     memberSince: '2014',
-    products: ['6', '14']
+    Gadgets: ['6', '14']
   },
   {
     id: 's6',
@@ -77,7 +77,7 @@ export const sellers: Seller[] = [
     isVerified: true,
     specialty: 'General Consumer Tech',
     memberSince: '2020',
-    products: ['9', '11']
+    Gadgets: ['9', '11']
   },
   {
     id: 's7',

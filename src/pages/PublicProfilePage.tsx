@@ -12,7 +12,7 @@ import {
   ChevronRight,
   ArrowLeft
 } from 'lucide-react';
-import { reviews, products } from '../data/products';
+import { reviews, gadgets } from '../data/gadgets';
 import StarRating from '../components/ui/StarRating';
 
 // Brand Icons mapping (High-fidelity SVGs)
@@ -202,16 +202,16 @@ const PublicProfilePage: React.FC = () => {
             {userReviews.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {userReviews.map((review) => {
-                  const product = products.find(p => p.id === review.productId);
+                  const gadget = gadgets.find(p => p.id === review.GadgetId);
                   return (
                     <div key={review.id} className="bg-white p-8 rounded-[32px] border border-zinc-100 shadow-sm flex flex-col gap-6 group hover:translate-y-[-4px] transition-all duration-300">
                        <div className="flex items-start justify-between">
                           <div className="flex items-center gap-4">
                              <div className="w-14 h-14 bg-zinc-50 p-2 rounded-2xl flex items-center justify-center border border-zinc-100">
-                                <img src={product?.image} alt={product?.name} className="max-w-full max-h-full object-contain" />
+                                <img src={gadget?.image} alt={gadget?.name} className="max-w-full max-h-full object-contain" />
                              </div>
                              <div>
-                                <h4 className="font-black text-dark leading-tight line-clamp-1">{product?.name}</h4>
+                                <h4 className="font-black text-dark leading-tight line-clamp-1">{gadget?.name}</h4>
                                 <div className="flex items-center gap-2 mt-1">
                                    <StarRating rating={review.rating} size={12} />
                                    <span className="text-[11px] font-bold text-muted">{review.date}</span>
@@ -223,7 +223,7 @@ const PublicProfilePage: React.FC = () => {
                        {review.title && <h5 className="text-lg font-black text-dark leading-tight">{review.title}</h5>}
                        
                        <div className="relative">
-                          <p className="text-sm text-muted font-medium leading-relaxed italic border-l-2 border-zinc-100 pl-4 py-1">
+                          <p className="text-sm text-muted font-medium leading-relaxed  border-l-2 border-zinc-100 pl-4 py-1">
                             "{review.comment}"
                           </p>
                        </div>
@@ -232,7 +232,7 @@ const PublicProfilePage: React.FC = () => {
                           <span className="flex items-center gap-1.5 text-[10px] font-black text-muted uppercase tracking-widest">
                              <TrendingUp size={14} className="text-primary" /> {review.helpfulCount || 0} Helpful Votes
                           </span>
-                          <Link to={`/reviews/${product?.id}`} className="text-[10px] font-black text-primary uppercase tracking-widest flex items-center gap-1.5 hover:translate-x-1 transition-transform">
+                          <Link to={`/reviews/${gadget?.id}`} className="text-[10px] font-black text-primary uppercase tracking-widest flex items-center gap-1.5 hover:translate-x-1 transition-transform">
                              Read Full <ChevronRight size={14} />
                           </Link>
                        </div>
@@ -257,3 +257,4 @@ const PublicProfilePage: React.FC = () => {
 };
 
 export default PublicProfilePage;
+

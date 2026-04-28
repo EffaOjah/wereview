@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Plus, Edit2, Trash2, LayoutGrid } from 'lucide-react';
 import AdminLayout from '../../components/admin/AdminLayout';
 import AdminCategoryForm from '../../components/admin/AdminCategoryForm';
-import { categories as initialCategories } from '../../data/products';
+import { categories as initialCategories } from '../../data/gadgets';
 import type { Category } from '../../types';
 
 const AdminCategoriesPage: React.FC = () => {
@@ -11,12 +11,12 @@ const AdminCategoriesPage: React.FC = () => {
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
 
   useEffect(() => {
-    const savedCategories = localStorage.getItem('wereview_categories');
+    const savedCategories = localStorage.getItem('gadgethub_categories');
     if (savedCategories) {
       setCategories(JSON.parse(savedCategories));
     } else {
       setCategories(initialCategories);
-      localStorage.setItem('wereview_categories', JSON.stringify(initialCategories));
+      localStorage.setItem('gadgethub_categories', JSON.stringify(initialCategories));
     }
   }, []);
 
@@ -28,16 +28,16 @@ const AdminCategoriesPage: React.FC = () => {
       updated = [...categories, category];
     }
     setCategories(updated);
-    localStorage.setItem('wereview_categories', JSON.stringify(updated));
+    localStorage.setItem('gadgethub_categories', JSON.stringify(updated));
     setIsFormOpen(false);
     setEditingCategory(null);
   };
 
   const handleDelete = (id: string) => {
-    if (window.confirm('Are you sure you want to delete this category? All products in this category will become uncategorized.')) {
+    if (window.confirm('Are you sure you want to delete this category? All Gadgets in this category will become uncategorized.')) {
       const updated = categories.filter(c => c.id !== id);
       setCategories(updated);
-      localStorage.setItem('wereview_categories', JSON.stringify(updated));
+      localStorage.setItem('gadgethub_categories', JSON.stringify(updated));
     }
   };
 
@@ -47,7 +47,7 @@ const AdminCategoriesPage: React.FC = () => {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-10">
           <div>
             <h1 className="text-2xl md:text-3xl font-black text-zinc-900 mb-1">Category & Tag Management</h1>
-            <p className="text-zinc-500 text-sm font-medium">Organize your products with custom categories and highlight tags.</p>
+            <p className="text-zinc-500 text-sm font-medium">Organize your Gadgets with custom categories and highlight tags.</p>
           </div>
           <button 
             onClick={() => { setEditingCategory(null); setIsFormOpen(true); }}
@@ -89,7 +89,7 @@ const AdminCategoriesPage: React.FC = () => {
                         {badge}
                       </span>
                     ))}
-                    {category.badges.length === 0 && <span className="text-[10px] text-zinc-300 font-bold uppercase italic">No active tags</span>}
+                    {category.badges.length === 0 && <span className="text-[10px] text-zinc-300 font-bold uppercase ">No active tags</span>}
                  </div>
                  <div className="flex items-center justify-between pt-4 border-t border-zinc-50">
                     <div className="flex items-center gap-2">
@@ -97,7 +97,7 @@ const AdminCategoriesPage: React.FC = () => {
                        <span className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">ID: {category.id}</span>
                     </div>
                     <button className="text-[10px] font-black text-primary uppercase tracking-widest hover:underline">
-                      View Products
+                      View Gadgets
                     </button>
                  </div>
               </div>
@@ -128,3 +128,4 @@ const AdminCategoriesPage: React.FC = () => {
 };
 
 export default AdminCategoriesPage;
+

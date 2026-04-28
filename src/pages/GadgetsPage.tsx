@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import TrendingProductCard from '../components/ui/TrendingProductCard';
-import { products } from '../data/products';
+import TrendingGadgetCard from '../components/ui/TrendingGadgetCard';
+import { gadgets } from '../data/gadgets';
 import { ChevronRight, LayoutGrid, List, Search, SlidersHorizontal, X, SearchX } from 'lucide-react';
 
 const departments = ['Smartphones', 'Laptops & PCs', 'Audio & Headphones', 'Tablets', 'Smartwatches', 'Gaming Consoles', 'Cameras'];
@@ -23,9 +23,9 @@ const ratingOptions = [
   { label: '✅ All Ratings', min: 0 },
 ];
 
-const allProducts = [...products, ...products].map((p, i) => ({ ...p, _key: `${p.id}-${i}` }));
+const allGadgets = [...gadgets, ...gadgets].map((p, i) => ({ ...p, _key: `${p.id}-${i}` }));
 
-const ProductsPage: React.FC = () => {
+const GadgetsPage: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -79,7 +79,7 @@ const ProductsPage: React.FC = () => {
 
   const handleHeroSearch = () => {
     setParam('q', heroInput.trim() || null);
-    document.getElementById('product-grid')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    document.getElementById('Gadget-grid')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
   const clearAllFilters = () => {
@@ -90,8 +90,8 @@ const ProductsPage: React.FC = () => {
   const hasActiveFilters = searchQuery || selectedDept || minRating > 0 || maxPrice < 2000000;
 
   // Combined filter + sort pipeline
-  const filteredProducts = useMemo(() => {
-    let result = allProducts;
+  const filteredGadgets = useMemo(() => {
+    let result = allGadgets;
 
     // 1. Search filter — name, description, category, shortSummary
     if (searchQuery.trim()) {
@@ -135,8 +135,8 @@ const ProductsPage: React.FC = () => {
     });
   }, [searchQuery, selectedDept, minRating, maxPrice, sortBy]);
 
-  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
-  const paginatedProducts = filteredProducts.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+  const totalPages = Math.ceil(filteredGadgets.length / itemsPerPage);
+  const paginatedGadgets = filteredGadgets.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   const SkeletonCard = () => (
     <div className={`flex bg-white rounded-xl shadow-sm border border-zinc-100 overflow-hidden animate-pulse ${viewMode === 'list' ? 'flex-col sm:flex-row' : 'flex-col h-[400px]'}`}>
@@ -228,13 +228,13 @@ const ProductsPage: React.FC = () => {
   );
 
   return (
-    <div className="products-page bg-white">
+    <div className="Gadgets-page bg-white">
       {/* Page Hero - ALWAYS VISIBLE */}
-      <section className="relative py-16 overflow-hidden">
-        <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: "url('/img/products-hero-bg.png')" }} />
-        <div className="absolute inset-0 bg-black/65" />
+      <section className="relative py-24 overflow-hidden">
+        <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=1600')" }} />
+        <div className="absolute inset-0 bg-black/60" />
         <div className="container mx-auto px-4 relative z-10 flex flex-col items-center text-center gap-6">
-          <p className="text-[#e85d2c] font-bold text-xs uppercase tracking-[4px]">Review Zone</p>
+          <p className="text-primary font-bold text-xs uppercase tracking-[4px]">GadgetHub</p>
           <h1 className="text-4xl md:text-5xl font-black text-white leading-tight">Browse All Gadgets</h1>
           <p className="text-zinc-300 font-medium max-w-xl">Real ratings from real Nigerians. Find your next phone, laptop, or earbud — filtered your way.</p>
 
@@ -252,7 +252,7 @@ const ProductsPage: React.FC = () => {
               />
               <button
                 onClick={handleHeroSearch}
-                className="bg-[#e85d2c] hover:bg-[#c94a1f] text-white h-full px-7 font-bold text-sm transition-colors flex items-center gap-2 shrink-0"
+                className="bg-primary hover:bg-primary-hover text-white h-full px-7 font-bold text-sm transition-colors flex items-center gap-2 shrink-0"
               >
                 <Search size={18} /> Search
               </button>
@@ -299,7 +299,7 @@ const ProductsPage: React.FC = () => {
           </section>
         </div>
       ) : (
-        <section className="py-16" id="product-grid">
+        <section className="py-16" id="Gadget-grid">
         <div className="container mx-auto px-4">
           <div className="flex flex-col lg:flex-row gap-10">
 
@@ -375,7 +375,7 @@ const ProductsPage: React.FC = () => {
                 </div>
                 <div className="flex items-center gap-4">
                   <span className="text-sm font-black text-dark">
-                    <span className="text-primary">{filteredProducts.length}</span> gadgets found
+                    <span className="text-primary">{filteredGadgets.length}</span> gadgets found
                   </span>
                   <div className="flex items-center gap-1">
                     <button className={`p-2 rounded-lg ${viewMode === 'grid' ? 'bg-primary text-white' : 'bg-zinc-100 text-dark'}`} onClick={() => setViewMode('grid')}>
@@ -393,7 +393,7 @@ const ProductsPage: React.FC = () => {
                 <div className={`grid gap-6 ${viewMode === 'grid' ? 'grid-cols-1 sm:grid-cols-2 xl:grid-cols-3' : 'grid-cols-1'}`}>
                   {Array.from({ length: itemsPerPage }).map((_, i) => <SkeletonCard key={i} />)}
                 </div>
-              ) : filteredProducts.length === 0 ? (
+              ) : filteredGadgets.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-24 gap-4 text-center">
                   <SearchX size={56} className="text-zinc-200" />
                   <h3 className="text-xl font-black text-dark">No gadgets found</h3>
@@ -409,8 +409,8 @@ const ProductsPage: React.FC = () => {
                 </div>
               ) : (
                 <div className={`grid gap-6 ${viewMode === 'grid' ? 'grid-cols-1 sm:grid-cols-2 xl:grid-cols-3' : 'grid-cols-1'}`}>
-                  {paginatedProducts.map((product) => (
-                    <TrendingProductCard key={product._key} product={product} viewMode={viewMode} />
+                  {paginatedGadgets.map((gadget: any) => (
+                    <TrendingGadgetCard key={gadget._key} gadget={gadget} viewMode={viewMode} />
                   ))}
                 </div>
               )}
@@ -425,7 +425,7 @@ const ProductsPage: React.FC = () => {
                         key={page} 
                         onClick={() => {
                           setParam('page', String(page));
-                          document.getElementById('product-grid')?.scrollIntoView({ behavior: 'smooth' });
+                          document.getElementById('Gadget-grid')?.scrollIntoView({ behavior: 'smooth' });
                         }}
                         className={`w-10 h-10 rounded-lg flex items-center justify-center font-bold text-sm transition-colors ${page === currentPage ? 'bg-primary text-white' : 'border border-zinc-200 hover:bg-primary hover:text-white'}`}
                       >
@@ -437,7 +437,7 @@ const ProductsPage: React.FC = () => {
                     <button 
                       onClick={() => {
                         setParam('page', String(currentPage + 1));
-                        document.getElementById('product-grid')?.scrollIntoView({ behavior: 'smooth' });
+                        document.getElementById('Gadget-grid')?.scrollIntoView({ behavior: 'smooth' });
                       }}
                       className="w-10 h-10 rounded-lg flex items-center justify-center border border-zinc-200 font-bold hover:bg-primary hover:text-white transition-colors"
                     >
@@ -455,4 +455,4 @@ const ProductsPage: React.FC = () => {
   );
 };
 
-export default ProductsPage;
+export default GadgetsPage;

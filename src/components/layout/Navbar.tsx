@@ -13,14 +13,14 @@ const Navbar: React.FC = () => {
       <div className="container mx-auto px-4 h-20 flex justify-between items-center">
 
         {/* Left: Logo */}
-        <Link to="/" className="text-[26px] font-black text-[#e85d2c] tracking-tight hover:opacity-90 transition-opacity">
-          Reviews Zone
+        <Link to="/" className="text-[26px] font-black text-primary tracking-tight hover:opacity-90 transition-opacity">
+          GadgetHub
         </Link>
 
         {/* Center: Desktop Nav */}
         <nav className="hidden lg:flex items-center gap-8">
-          <Link to="/" className={`text-[13px] font-black uppercase tracking-[2px] transition-colors ${location.pathname === '/' ? 'text-[#e85d2c]' : 'text-zinc-900 hover:text-[#e85d2c]'}`}>HOME</Link>
-          <Link to="/reviews" className={`text-[13px] font-black uppercase tracking-[2px] transition-colors ${location.pathname === '/reviews' ? 'text-[#e85d2c]' : 'text-zinc-900 hover:text-[#e85d2c]'}`}>REVIEWS</Link>
+          <Link to="/" className={`text-[13px] font-black uppercase tracking-[2px] transition-colors ${location.pathname === '/' ? 'text-primary' : 'text-zinc-900 hover:text-primary'}`}>HOME</Link>
+          <Link to="/reviews" className={`text-[13px] font-black uppercase tracking-[2px] transition-colors ${location.pathname === '/reviews' ? 'text-primary' : 'text-zinc-900 hover:text-primary'}`}>REVIEWS</Link>
 
           {/* <div className="relative group cursor-pointer">
             <span className="text-[13px] font-black uppercase tracking-[2px] text-zinc-900 hover:text-[#e85d2c] flex items-center gap-1 transition-colors">
@@ -32,10 +32,11 @@ const Navbar: React.FC = () => {
             </ul>
           </div> */}
 
-          <Link to="/compare" className={`text-[13px] font-black uppercase tracking-[2px] transition-colors ${location.pathname === '/compare' ? 'text-[#e85d2c]' : 'text-zinc-900 hover:text-[#e85d2c]'}`}>COMPARE</Link>
+          <Link to="/compare" className={`text-[13px] font-black uppercase tracking-[2px] transition-colors ${location.pathname === '/compare' ? 'text-primary' : 'text-zinc-900 hover:text-primary'}`}>COMPARE</Link>
 
-          <Link to="/blog" className={`text-[13px] font-black uppercase tracking-[2px] transition-colors ${location.pathname === '/blog' ? 'text-[#e85d2c]' : 'text-zinc-900 hover:text-[#e85d2c]'}`}>BLOG</Link>
-          <Link to="/products" className={`text-[13px] font-black uppercase tracking-[2px] transition-colors ${location.pathname === '/products' ? 'text-[#e85d2c]' : 'text-zinc-900 hover:text-[#e85d2c]'}`}>PRODUCTS</Link>
+          <Link to="/blog" className={`text-[13px] font-black uppercase tracking-[2px] transition-colors ${location.pathname === '/blog' ? 'text-primary' : 'text-zinc-900 hover:text-primary'}`}>BLOG</Link>
+          <Link to="/sellers" className={`text-[13px] font-black uppercase tracking-[2px] transition-colors ${location.pathname === '/sellers' ? 'text-primary' : 'text-zinc-900 hover:text-primary'}`}>SELLERS</Link>
+          <Link to="/gadgets" className={`text-[13px] font-black uppercase tracking-[2px] transition-colors ${location.pathname === '/gadgets' ? 'text-primary' : 'text-zinc-900 hover:text-primary'}`}>GADGETS</Link>
         </nav>
 
         {/* Right: Language & Auth (Desktop) */}
@@ -79,7 +80,7 @@ const Navbar: React.FC = () => {
           ) : (
             <button
               onClick={() => openModal('login')}
-              className="flex items-center gap-2 text-sm font-medium text-zinc-800 hover:text-[#e85d2c] transition-colors cursor-pointer outline-none"
+              className="flex items-center gap-2 text-sm font-medium text-zinc-800 hover:text-primary transition-colors cursor-pointer outline-none"
             >
               <User size={16} className="fill-zinc-800" strokeWidth={2} /> Login
             </button>
@@ -98,7 +99,7 @@ const Navbar: React.FC = () => {
       {/* Mobile Menu Overlay */}
       <div className={`lg:hidden fixed inset-0 bg-white z-[999] transform ${isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'} transition-transform duration-300 ease-in-out`}>
         <div className="p-4 border-b flex justify-between items-center bg-[#f9f8f8]">
-          <Link to="/" className="text-2xl font-black text-[#e85d2c]" onClick={() => setIsMobileMenuOpen(false)}>Reviews Zone</Link>
+          <Link to="/" className="text-2xl font-black text-primary" onClick={() => setIsMobileMenuOpen(false)}>GadgetHub</Link>
           <button onClick={() => setIsMobileMenuOpen(false)} className="p-2 bg-white rounded-full shadow-sm"><X size={24} /></button>
         </div>
         <div className="flex flex-col p-6 gap-6">
@@ -106,7 +107,8 @@ const Navbar: React.FC = () => {
           <Link to="/reviews" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-black uppercase tracking-widest text-zinc-900">REVIEWS</Link>
           <Link to="/compare" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-black uppercase tracking-widest text-zinc-900">COMPARE</Link>
           <Link to="/blog" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-black uppercase tracking-widest text-zinc-900">BLOG</Link>
-          <Link to="/products" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-black uppercase tracking-widest text-zinc-900">PRODUCTS</Link>
+          <Link to="/sellers" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-black uppercase tracking-widest text-zinc-900">SELLERS</Link>
+          <Link to="/gadgets" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-black uppercase tracking-widest text-zinc-900">GADGETS</Link>
 
           <div className="w-full h-px bg-zinc-100 my-2" />
 
@@ -132,9 +134,9 @@ const Navbar: React.FC = () => {
           ) : (
             <button
               onClick={() => { setIsMobileMenuOpen(false); openModal('login'); }}
-              className="text-lg font-black uppercase tracking-widest text-[#e85d2c] flex items-center gap-2 outline-none text-left"
+              className="text-lg font-black uppercase tracking-widest text-primary flex items-center gap-2 outline-none text-left"
             >
-              <User size={20} className="fill-[#e85d2c]" /> Login
+              <User size={20} className="fill-primary" /> Login
             </button>
           )}
 
@@ -145,8 +147,8 @@ const Navbar: React.FC = () => {
             href="tel:+2348000000000"
             className="flex items-center gap-4 bg-zinc-50 rounded-2xl p-4 border border-zinc-100"
           >
-            <div className="w-10 h-10 rounded-full bg-[#e85d2c]/10 flex items-center justify-center flex-shrink-0">
-              <Phone size={18} className="text-[#e85d2c]" />
+            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+              <Phone size={18} className="text-primary" />
             </div>
             <div className="flex flex-col">
               <span className="text-xs font-bold text-muted uppercase tracking-widest">24/7 Support</span>

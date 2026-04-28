@@ -1,5 +1,5 @@
 import React from 'react';
-import { blogPosts } from '../../data/products';
+import { blogPosts } from '../../data/gadgets';
 import BlogCard from '../ui/BlogCard';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';

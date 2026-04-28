@@ -2,7 +2,7 @@ import React, { useMemo, useState, useEffect } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import Breadcrumb from '../components/ui/Breadcrumb';
 import BlogCard from '../components/ui/BlogCard';
-import { blogPosts } from '../data/products';
+import { blogPosts } from '../data/gadgets';
 import { Search, ChevronRight, ChevronLeft, SlidersHorizontal, X } from 'lucide-react';
 
 const BlogPage: React.FC = () => {

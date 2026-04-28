@@ -3,7 +3,7 @@ import { useSearchParams, Link } from 'react-router-dom';
 import Breadcrumb from '../components/ui/Breadcrumb';
 import ReviewCard from '../components/ui/ReviewCard';
 import NairaPrice from '../components/ui/NairaPrice';
-import { reviews, products } from '../data/products';
+import { reviews, gadgets } from '../data/gadgets';
 import { ChevronRight, ChevronLeft, SlidersHorizontal, X } from 'lucide-react';
 
 const ReviewsPage: React.FC = () => {
@@ -22,14 +22,14 @@ const ReviewsPage: React.FC = () => {
     return () => clearTimeout(timer);
   }, [categoryFilter]);
   
-  // Filter reviews by product category if selected
+  // Filter reviews by Gadget category if selected
   const allReviews = useMemo(() => {
     let filtered = reviews;
     const category = searchParams.get('category');
     
     if (category) {
       filtered = reviews.filter(r => {
-        const prod = products.find(p => p.id === r.productId);
+        const prod = gadgets.find(p => p.id === r.GadgetId);
         return prod && prod.category?.toLowerCase() === category.toLowerCase();
       });
     }
@@ -55,7 +55,7 @@ const ReviewsPage: React.FC = () => {
       <div className="bg-white p-6 rounded-2xl shadow-sm border border-zinc-100">
         <h4 className="text-xl font-black text-dark mb-6 border-l-4 border-primary pl-4 border-l-primary">Filter Feed</h4>
         <ul className="flex flex-col gap-2 font-bold text-sm">
-          <Link to="/products" className="flex items-center justify-between px-3 py-2 text-dark bg-zinc-50 hover:bg-zinc-100 rounded-lg transition-colors mb-2 border border-zinc-200">
+          <Link to="/gadgets" className="flex items-center justify-between px-3 py-2 text-dark bg-zinc-50 hover:bg-zinc-100 rounded-lg transition-colors mb-2 border border-zinc-200">
             Browse All Gadgets <ChevronRight size={14} />
           </Link>
 
@@ -88,16 +88,16 @@ const ReviewsPage: React.FC = () => {
         </ul>
       </div>
 
-      {/* Latest Products Sidebar */}
+      {/* Latest Gadgets Sidebar */}
       <div className="bg-white p-6 rounded-2xl shadow-sm border border-zinc-100">
         <h4 className="text-xl font-black text-dark mb-6 border-l-4 border-primary pl-4">Trending Gadgets</h4>
         <div className="flex flex-col gap-6">
-          {products.slice(0, 4).map((product) => (
-            <Link onClick={() => setIsSidebarOpen(false)} to={`/reviews/${product.id}`} key={product.id} className="flex gap-4 items-center group">
-               <img src={product.image} alt={product.name} className="w-16 h-16 object-contain p-2 border border-zinc-100 rounded-lg group-hover:border-primary transition-colors mix-blend-multiply" />
+          {gadgets.slice(0, 4).map((gadget) => (
+            <Link onClick={() => setIsSidebarOpen(false)} to={`/reviews/${gadget.id}`} key={gadget.id} className="flex gap-4 items-center group">
+               <img src={gadget.image} alt={gadget.name} className="w-16 h-16 object-contain p-2 border border-zinc-100 rounded-lg group-hover:border-primary transition-colors mix-blend-multiply" />
                <div className="flex flex-col">
-                  <h6 className="text-sm font-bold text-dark group-hover:text-primary transition-colors line-clamp-2">{product.name}</h6>
-                  <NairaPrice amount={product.price * 1500} className="text-primary font-bold text-sm mt-1" />
+                  <h6 className="text-sm font-bold text-dark group-hover:text-primary transition-colors line-clamp-2">{gadget.name}</h6>
+                  <NairaPrice amount={gadget.price * 1500} className="text-primary font-bold text-sm mt-1" />
                </div>
             </Link>
           ))}
@@ -170,7 +170,7 @@ const ReviewsPage: React.FC = () => {
                     <p className="text-muted text-sm font-medium max-w-sm">
                       We don't have any community reviews for <span className="text-primary font-bold">{categoryFilter}</span> yet.
                     </p>
-                    <Link to="/products" className="mt-4 px-6 py-2.5 bg-dark text-white rounded-lg font-bold text-sm hover:bg-primary transition-colors">
+                    <Link to="/gadgets" className="mt-4 px-6 py-2.5 bg-dark text-white rounded-lg font-bold text-sm hover:bg-primary transition-colors">
                       Browse Gadgets
                     </Link>
                  </div>
@@ -229,3 +229,4 @@ const ReviewsPage: React.FC = () => {
 };
 
 export default ReviewsPage;
+

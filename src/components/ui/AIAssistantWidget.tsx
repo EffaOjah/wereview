@@ -13,7 +13,7 @@ const AIAssistantWidget: React.FC = () => {
     const [messages, setMessages] = useState<Message[]>([
         {
             id: '1',
-            text: "Hello! I'm your WeReview AI assistant. Looking for gadget advice or a quick comparison?",
+            text: "Hello! I'm your GadgetHub AI assistant. Looking for gadget advice or the best deals?",
             sender: 'ai',
             timestamp: new Date()
         }
@@ -62,7 +62,7 @@ const AIAssistantWidget: React.FC = () => {
         if (query.includes('iphone')) return "The iPhone 15 Pro Max is currently our top-rated phone. Its titanium build and A17 chip make it a beast for performance!";
         if (query.includes('ps5') || query.includes('gaming')) return "The PS5 Slim is a huge favorite in Nigeria right now. We have several verified sellers in Ikeja and Abuja stocking them.";
         if (query.includes('compare')) return "I can help with that! Are we looking at Phones or Laptops today?";
-        return "That's a great question. I'm still learning about all the gadgets on WeReview, but you can check our Trending section for the latest community picks!";
+        return "That's a great question. I'm still learning about all the gadgets on GadgetHub, but you can check our Trending section for the latest community picks!";
     };
 
     const suggestions = [
@@ -102,7 +102,7 @@ const AIAssistantWidget: React.FC = () => {
                                 <Bot size={24} className="text-primary" />
                             </div>
                             <div>
-                                <h3 className="font-black text-zinc-300 text-sm uppercase tracking-widest">WeReview AI</h3>
+                                <h3 className="font-black text-zinc-300 text-sm uppercase tracking-widest">Tech Deals AI</h3>
                                 <div className="flex items-center gap-1.5 mt-0.5">
                                     <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
                                     <span className="text-[10px] font-bold text-zinc-400">Online & Ready</span>

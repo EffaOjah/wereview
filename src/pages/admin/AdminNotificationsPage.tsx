@@ -8,7 +8,7 @@ const initialNotifications: AdminNotification[] = [
   { id: 'n2', title: 'User Flagged Content', message: 'A review has been flagged for inappropriate content by Chinedu Eze.', type: 'warning', date: '45 mins ago', isRead: false, link: '/admin/reviews?status=Flagged' },
   { id: 'n3', title: 'System Update Successful', message: 'The platform has been updated to v2.4.0 successfully.', type: 'success', date: '3 hours ago', isRead: true },
   { id: 'n4', title: 'High Server Load', message: 'Database query latency is higher than normal. Monitoring...', type: 'error', date: '5 hours ago', isRead: true },
-  { id: 'n5', title: 'New User Registered', message: 'Tobi A. just joined the WeReview community.', type: 'info', date: '1 day ago', isRead: true },
+  { id: 'n5', title: 'New User Registered', message: 'Tobi A. just joined the GadgetHub community.', type: 'info', date: '1 day ago', isRead: true },
 ];
 
 const AdminNotificationsPage: React.FC = () => {
@@ -16,12 +16,12 @@ const AdminNotificationsPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
-    const saved = localStorage.getItem('wereview_notifications');
+    const saved = localStorage.getItem('gadgethub_notifications');
     if (saved) {
       setNotifications(JSON.parse(saved));
     } else {
       setNotifications(initialNotifications);
-      localStorage.setItem('wereview_notifications', JSON.stringify(initialNotifications));
+      localStorage.setItem('gadgethub_notifications', JSON.stringify(initialNotifications));
     }
   }, []);
 
@@ -30,25 +30,25 @@ const AdminNotificationsPage: React.FC = () => {
       n.id === id ? { ...n, isRead: !n.isRead } : n
     );
     setNotifications(updated);
-    localStorage.setItem('wereview_notifications', JSON.stringify(updated));
+    localStorage.setItem('gadgethub_notifications', JSON.stringify(updated));
   };
 
   const handleDelete = (id: string) => {
     const updated = notifications.filter(n => n.id !== id);
     setNotifications(updated);
-    localStorage.setItem('wereview_notifications', JSON.stringify(updated));
+    localStorage.setItem('gadgethub_notifications', JSON.stringify(updated));
   };
 
   const handleMarkAllRead = () => {
     const updated = notifications.map(n => ({ ...n, isRead: true }));
     setNotifications(updated);
-    localStorage.setItem('wereview_notifications', JSON.stringify(updated));
+    localStorage.setItem('gadgethub_notifications', JSON.stringify(updated));
   };
 
   const handleClearAll = () => {
     if (window.confirm('Clear all notifications? This action cannot be undone.')) {
       setNotifications([]);
-      localStorage.setItem('wereview_notifications', JSON.stringify([]));
+      localStorage.setItem('gadgethub_notifications', JSON.stringify([]));
     }
   };
 
@@ -169,3 +169,4 @@ const AdminNotificationsPage: React.FC = () => {
 };
 
 export default AdminNotificationsPage;
+

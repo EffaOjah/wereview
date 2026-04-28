@@ -1,13 +1,13 @@
 import React from 'react';
 import Breadcrumb from '../components/ui/Breadcrumb';
-import { products } from '../data/products';
+import { gadgets } from '../data/gadgets';
 import { X, Minus, Plus } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const CartPage: React.FC = () => {
   return (
     <div className="cart-page bg-white">
-      <Breadcrumb title="Shopping Cart" items={[{ name: 'Shop', path: '/products' }, { name: 'Cart', path: '/cart' }]} />
+      <Breadcrumb title="Shopping Cart" items={[{ name: 'Shop', path: '/gadgets' }, { name: 'Cart', path: '/cart' }]} />
 
       <section className="shoping-cart spad">
         <div className="container mx-auto px-4">
@@ -18,7 +18,7 @@ const CartPage: React.FC = () => {
                   <table className="w-full text-left border-collapse">
                      <thead>
                         <tr className="border-b-2 border-zinc-100">
-                           <th className="pb-6 text-2xl font-black text-dark uppercase tracking-tighter">Products</th>
+                           <th className="pb-6 text-2xl font-black text-dark uppercase tracking-tighter">Gadgets</th>
                            <th className="pb-6 text-2xl font-black text-dark uppercase tracking-tighter">Price</th>
                            <th className="pb-6 text-2xl font-black text-dark uppercase tracking-tighter">Quantity</th>
                            <th className="pb-6 text-2xl font-black text-dark uppercase tracking-tighter">Total</th>
@@ -26,7 +26,7 @@ const CartPage: React.FC = () => {
                         </tr>
                      </thead>
                      <tbody>
-                        {products.slice(0, 2).map((item) => (
+                        {gadgets.slice(0, 2).map((item) => (
                            <tr key={item.id} className="border-b border-zinc-100 group">
                               <td className="py-8">
                                  <div className="flex items-center gap-6">
@@ -55,7 +55,7 @@ const CartPage: React.FC = () => {
                </div>
 
                <div className="flex flex-col sm:flex-row justify-between items-center gap-6 mt-12">
-                  <Link to="/products" className="bg-light px-8 py-3 font-extrabold uppercase tracking-widest text-dark hover:bg-primary hover:text-white transition-all text-sm">Continue Shopping</Link>
+                  <Link to="/gadgets" className="bg-light px-8 py-3 font-extrabold uppercase tracking-widest text-dark hover:bg-primary hover:text-white transition-all text-sm">Continue Shopping</Link>
                   <button className="bg-light px-8 py-3 font-extrabold uppercase tracking-widest text-dark hover:bg-primary hover:text-white transition-all text-sm">Update Cart</button>
                </div>
             </div>

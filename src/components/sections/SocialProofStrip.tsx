@@ -1,11 +1,11 @@
 import React from 'react';
-import { Star, Users, ShieldCheck, TrendingUp } from 'lucide-react';
+import { Users, ShieldCheck, TrendingUp, MessageSquare } from 'lucide-react';
 
 const stats = [
-  { icon: Star, value: '4,200+', label: 'Reviews This Month', color: 'text-yellow-500', bg: 'bg-yellow-50' },
-  { icon: Users, value: '12,800+', label: 'Nigerian Reviewers', color: 'text-blue-500', bg: 'bg-blue-50' },
-  { icon: ShieldCheck, value: '98%', label: 'Verified Purchases', color: 'text-emerald-500', bg: 'bg-emerald-50' },
-  { icon: TrendingUp, value: '350+', label: 'Gadgets Reviewed', color: 'text-[#e85d2c]', bg: 'bg-orange-50' },
+  { icon: TrendingUp, value: '350+', label: 'Deals Found', color: 'text-primary', bg: 'bg-primary/5' },
+  { icon: Users, value: '5k+', label: 'Active Shoppers', color: 'text-primary', bg: 'bg-primary/5' },
+  { icon: MessageSquare, value: '2k+', label: 'Verified Reviews', color: 'text-primary', bg: 'bg-primary/5' },
+  { icon: ShieldCheck, value: '100%', label: 'Authentic Deals', color: 'text-primary', bg: 'bg-primary/5' },
 ];
 
 const SocialProofStrip: React.FC = () => {

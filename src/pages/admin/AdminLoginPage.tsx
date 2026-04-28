@@ -24,10 +24,10 @@ const AdminLoginPage: React.FC = () => {
 
     // Simulate API call
     setTimeout(() => {
-      if (email === 'admin@wereview.com' && password === 'admin123') {
+      if (email === 'admin@gadgethub.ng' && password === 'admin123') {
         setStep('2fa');
       } else {
-        setError('Invalid credentials. Use admin@wereview.com / admin123');
+        setError('Invalid credentials. Use admin@gadgethub.ng / admin123');
       }
       setIsLoading(false);
     }, 1500);
@@ -52,7 +52,7 @@ const AdminLoginPage: React.FC = () => {
     
     // Simulate OTP verification
     setTimeout(() => {
-      login({ name: 'System Admin', email: 'admin@wereview.com' });
+      login({ name: 'System Admin', email: 'admin@gadgethub.ng' });
       navigate('/admin/dashboard');
       setIsLoading(false);
     }, 1500);
@@ -78,7 +78,7 @@ const AdminLoginPage: React.FC = () => {
                 <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
                   <ShieldCheck className="text-white" size={24} />
                 </div>
-                <h2 className="text-2xl font-black text-white tracking-tight">WeReview <span className="text-primary text-sm align-top">Admin</span></h2>
+                <h2 className="text-2xl font-black text-white tracking-tight">GadgetHub <span className="text-primary text-sm align-top">Admin</span></h2>
               </div>
               
               <h1 className="text-4xl lg:text-5xl font-black text-white leading-tight mb-6">
@@ -130,7 +130,7 @@ const AdminLoginPage: React.FC = () => {
                         type="email" 
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        placeholder="admin@wereview.com" 
+                        placeholder="admin@gadgethub.ng" 
                         required
                         className="w-full pl-12 pr-4 py-3.5 md:py-4 bg-white border border-zinc-200 rounded-2xl outline-none focus:border-primary/50 focus:ring-4 focus:ring-primary/5 transition-all text-zinc-900 font-medium"
                       />

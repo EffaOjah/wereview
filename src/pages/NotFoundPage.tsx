@@ -20,7 +20,7 @@ const NotFoundPage: React.FC = () => {
 
                 {/* Text Content */}
                 <h1 className="text-5xl md:text-7xl font-black text-dark tracking-tighter mb-4 leading-none">
-                    Lost in the <br className="hidden md:block" /> <span className="text-primary italic">Tech Jungle?</span>
+                    Lost in the <br className="hidden md:block" /> <span className="text-primary ">Tech Jungle?</span>
                 </h1>
                 
                 <p className="text-muted font-medium text-lg md:text-xl max-w-lg mx-auto mb-12 leading-relaxed">
@@ -44,7 +44,7 @@ const NotFoundPage: React.FC = () => {
                         {['iPhone 15 Pro', 'PS5 Slim', 'MacBook M3', 'Infinix Note 40'].map((tag) => (
                             <Link 
                                 key={tag}
-                                to="/products"
+                                to="/gadgets"
                                 className="bg-zinc-100 hover:bg-primary/10 hover:text-primary px-4 py-2 rounded-full text-xs font-black text-muted transition-all"
                             >
                                 {tag}

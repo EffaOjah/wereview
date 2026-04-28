@@ -1,16 +1,16 @@
 import React, { useState, useMemo } from 'react';
-import { products } from '../../data/products';
-import TrendingProductCard from '../ui/TrendingProductCard';
+import { gadgets } from '../../data/gadgets';
+import TrendingGadgetCard from '../ui/TrendingGadgetCard';
 import { Search, SlidersHorizontal, Flame } from 'lucide-react';
 
-const TrendingProductsSection: React.FC = () => {
+const TrendingGadgetsSection: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeCategory, setActiveCategory] = useState('*');
   const [sortBy, setSortBy] = useState('hottest'); // 'hottest', 'rating', 'most-reviewed'
   const [visibleCount, setVisibleCount] = useState(4);
 
   const categories = [
-    { name: 'All Products', value: '*' },
+    { name: 'All Gadgets', value: '*' },
     { name: 'Gadgets', value: 'gadgets' },
     { name: 'Laptops', value: 'laptops' },
     { name: 'Headphones', value: 'headphones' },
@@ -18,8 +18,8 @@ const TrendingProductsSection: React.FC = () => {
     { name: 'Cameras', value: 'cameras' },
   ];
 
-  const filteredAndSortedProducts = useMemo(() => {
-    let result = products;
+  const filteredAndSortedGadgets = useMemo(() => {
+    let result = gadgets;
 
     // 1. Search Filter
     if (searchTerm) {
@@ -53,8 +53,8 @@ const TrendingProductsSection: React.FC = () => {
     return result;
   }, [searchTerm, activeCategory, sortBy]);
 
-  const displayedProducts = filteredAndSortedProducts.slice(0, visibleCount);
-  const hasMore = visibleCount < filteredAndSortedProducts.length;
+  const displayedGadgets = filteredAndSortedGadgets.slice(0, visibleCount);
+  const hasMore = visibleCount < filteredAndSortedGadgets.length;
 
   const loadMore = () => {
     setVisibleCount(prev => prev + 4);
@@ -84,7 +84,7 @@ const TrendingProductsSection: React.FC = () => {
             </div>
             <input
               type="text"
-              placeholder="Search products, brands..."
+              placeholder="Search Gadgets, brands..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-12 pr-4 py-3.5 bg-white border border-zinc-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all font-medium text-dark"
@@ -128,11 +128,11 @@ const TrendingProductsSection: React.FC = () => {
         </div>
 
         {/* Grid Container */}
-        {filteredAndSortedProducts.length > 0 ? (
+        {filteredAndSortedGadgets.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {displayedProducts.map(product => (
-              <div key={product.id} className="animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-both">
-                <TrendingProductCard product={product} />
+            {displayedGadgets.map((gadget: any) => (
+              <div key={gadget.id} className="animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-both">
+                <TrendingGadgetCard gadget={gadget} />
               </div>
             ))}
           </div>
@@ -141,7 +141,7 @@ const TrendingProductsSection: React.FC = () => {
             <div className="w-16 h-16 bg-zinc-100 rounded-full flex items-center justify-center mb-4 text-muted">
               <Search size={24} />
             </div>
-            <h3 className="text-xl font-bold text-dark mb-2">No products found</h3>
+            <h3 className="text-xl font-bold text-dark mb-2">No Gadgets found</h3>
             <p className="text-muted">We couldn't find anything matching your current filters.</p>
             <button 
               onClick={() => { setSearchTerm(''); setActiveCategory('*'); }}
@@ -159,7 +159,7 @@ const TrendingProductsSection: React.FC = () => {
               onClick={loadMore}
               className="group px-8 py-3 bg-white border-2 border-dark text-dark rounded-xl font-bold hover:bg-dark hover:text-white transition-all duration-300 shadow-sm flex items-center gap-2 active:scale-95"
             >
-              Load More Products
+              Load More Gadgets
               <svg className="w-4 h-4 ml-1 group-hover:translate-y-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"/></svg>
             </button>
           </div>
@@ -169,4 +169,4 @@ const TrendingProductsSection: React.FC = () => {
   );
 };
 
-export default TrendingProductsSection;
+export default TrendingGadgetsSection;

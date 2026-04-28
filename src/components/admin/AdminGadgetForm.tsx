@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { X, Plus, Trash2, Image as ImageIcon, Check, Loader2 } from 'lucide-react';
-import type { Product } from '../../types';
+import type { Gadget } from '../../types';
 
-interface AdminProductFormProps {
+interface AdminGadgetFormProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (product: Product) => void;
-  product?: Product | null;
+  onSave: (Gadget: Gadget) => void;
+  Gadget?: Gadget | null;
 }
 
-const AdminProductForm: React.FC<AdminProductFormProps> = ({ isOpen, onClose, onSave, product }) => {
-  const [formData, setFormData] = useState<Partial<Product>>({
+const AdminGadgetForm: React.FC<AdminGadgetFormProps> = ({ isOpen, onClose, onSave, Gadget }) => {
+  const [formData, setFormData] = useState<Partial<Gadget>>({
     name: '',
     category: 'gadgets',
     image: '',
@@ -28,8 +28,8 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ isOpen, onClose, on
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    if (product) {
-      setFormData(product);
+    if (Gadget) {
+      setFormData(Gadget);
     } else {
       setFormData({
         id: Math.random().toString(36).substr(2, 9),
@@ -47,7 +47,7 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ isOpen, onClose, on
         reviewCount: 0
       });
     }
-  }, [product, isOpen]);
+  }, [Gadget, isOpen]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -58,13 +58,13 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ isOpen, onClose, on
     const validPrices = [prices.jumia, prices.konga, prices.slot].filter(p => p && p > 0) as number[];
     const average = validPrices.length > 0 ? Math.round(validPrices.reduce((a, b) => a + b, 0) / validPrices.length) : 0;
     
-    const finalProduct = {
+    const finalGadget = {
       ...formData,
       nigerianPrices: { ...prices, average }
-    } as Product;
+    } as Gadget;
 
     setTimeout(() => {
-      onSave(finalProduct);
+      onSave(finalGadget);
       setIsLoading(false);
       onClose();
     }, 1000);
@@ -94,7 +94,7 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ isOpen, onClose, on
       <div className="relative w-full max-w-2xl bg-white h-full shadow-2xl flex flex-col overflow-hidden animate-slide-left">
         <div className="flex items-center justify-between p-6 border-b border-zinc-100">
           <div>
-            <h2 className="text-xl font-black text-zinc-900">{product ? 'Edit Product' : 'Add New Product'}</h2>
+            <h2 className="text-xl font-black text-zinc-900">{Gadget ? 'Edit Gadget' : 'Add New Gadget'}</h2>
             <p className="text-zinc-500 text-xs font-medium mt-1">Fill in the details to update your catalog.</p>
           </div>
           <button onClick={onClose} className="p-2 text-zinc-400 hover:text-zinc-900 hover:bg-zinc-50 rounded-xl transition-all">
@@ -109,7 +109,7 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ isOpen, onClose, on
             <h3 className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] mb-4">Basic Information</h3>
             <div className="grid grid-cols-2 gap-4">
               <div className="flex flex-col gap-2">
-                <label className="text-xs font-bold text-zinc-900 ml-1">Product Name</label>
+                <label className="text-xs font-bold text-zinc-900 ml-1">Gadget Name</label>
                 <input 
                   type="text" 
                   value={formData.name}
@@ -162,7 +162,7 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ isOpen, onClose, on
                 value={formData.description}
                 onChange={(e) => setFormData({...formData, description: e.target.value})}
                 rows={3}
-                placeholder="Brief overview of the product..."
+                placeholder="Brief overview of the Gadget..."
                 className="w-full px-4 py-3 bg-zinc-50 border border-zinc-100 rounded-2xl outline-none focus:border-primary/50 focus:bg-white transition-all text-sm font-medium"
               />
             </div>
@@ -306,7 +306,7 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ isOpen, onClose, on
              disabled={isLoading}
              className="flex-[2] py-4 bg-zinc-900 text-white font-black text-sm rounded-2xl hover:bg-black transition-all shadow-xl shadow-zinc-900/10 flex items-center justify-center gap-3 disabled:opacity-70"
            >
-             {isLoading ? <Loader2 className="animate-spin" size={18} /> : <><Check size={18} /> {product ? 'Save Changes' : 'Create Product'}</>}
+             {isLoading ? <Loader2 className="animate-spin" size={18} /> : <><Check size={18} /> {Gadget ? 'Save Changes' : 'Create Gadget'}</>}
            </button>
         </div>
       </div>
@@ -324,4 +324,4 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ isOpen, onClose, on
   );
 };
 
-export default AdminProductForm;
+export default AdminGadgetForm;

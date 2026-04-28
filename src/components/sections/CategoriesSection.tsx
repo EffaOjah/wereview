@@ -1,14 +1,14 @@
 import React, { useRef } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import CategoryCard from '../ui/CategoryCard';
-import { categories } from '../../data/products';
+import { categories } from '../../data/gadgets';
 
 const CategoriesSection: React.FC = () => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   const scroll = (direction: 'left' | 'right') => {
     if (scrollContainerRef.current) {
-      const scrollAmount = 300; // Adjust scroll distance per click
+      const scrollAmount = 300;
       const newScrollPosition = scrollContainerRef.current.scrollLeft + (direction === 'left' ? -scrollAmount : scrollAmount);
       
       scrollContainerRef.current.scrollTo({
@@ -19,46 +19,56 @@ const CategoriesSection: React.FC = () => {
   };
 
   return (
-    <section className="categories pt-24 pb-8 bg-white">
-      <div className="container mx-auto px-4 relative group">
+    <section className="categories-section py-12 md:py-16 bg-white overflow-hidden border-b border-zinc-50">
+      <div className="container mx-auto px-4 relative">
         
-        {/* Section Header */}
-        <div className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-4">
-          <div>
-            <h2 className="text-3xl lg:text-4xl font-black text-dark tracking-tight mb-2">Explore Tech Categories</h2>
-            <p className="text-muted font-medium text-lg mb-0">Browse thousands of gadget reviews by department.</p>
-          </div>
-          {/* Desktop Arrow Controls (Optional, keeping them to assist mouse users) */}
-          <div className="hidden md:flex gap-2">
-            <button onClick={() => scroll('left')} className="w-10 h-10 rounded-full border border-zinc-200 flex items-center justify-center text-dark hover:bg-primary hover:text-white transition-colors hover:border-primary shrink-0">
-              <ChevronLeft size={20} />
+        {/* Simple Header */}
+        <div className="flex items-center justify-between mb-10">
+          <h2 className="text-xl md:text-2xl font-black text-dark tracking-tight">Browse by Category</h2>
+          
+          <div className="flex gap-2">
+            <button 
+              onClick={() => scroll('left')} 
+              className="w-9 h-9 rounded-full border border-zinc-100 flex items-center justify-center text-zinc-400 hover:bg-zinc-50 hover:text-dark transition-all"
+            >
+              <ChevronLeft size={18} />
             </button>
-            <button onClick={() => scroll('right')} className="w-10 h-10 rounded-full border border-zinc-200 flex items-center justify-center text-dark hover:bg-primary hover:text-white transition-colors hover:border-primary shrink-0">
-              <ChevronRight size={20} />
+            <button 
+              onClick={() => scroll('right')} 
+              className="w-9 h-9 rounded-full border border-zinc-100 flex items-center justify-center text-zinc-400 hover:bg-zinc-50 hover:text-dark transition-all"
+            >
+              <ChevronRight size={18} />
             </button>
           </div>
         </div>
 
-        {/* Scrollable Container */}
-        {/* hide-scrollbar class hides the default browser scrollbar for a cleaner look while maintaining native swiping */}
+        {/* Horizontal One-Line Container */}
         <div 
           ref={scrollContainerRef}
-          className="flex gap-6 overflow-x-auto snap-x snap-mandatory pb-8 pt-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          className="flex gap-8 md:gap-12 overflow-x-auto scrollbar-hide pb-4 snap-x snap-mandatory"
+          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
           {categories.map((cat) => (
-            <div key={cat.id} className="min-w-[280px] md:min-w-[320px] shrink-0 snap-start">
+            <div key={cat.id} className="snap-start shrink-0">
                <CategoryCard category={cat} />
             </div>
           ))}
-          {/* Re-mapping for mock visual padding so it forms a scrollable track */}
-          {categories.map((cat) => (
-            <div key={`${cat.id}-duplicate`} className="min-w-[280px] md:min-w-[320px] shrink-0 snap-start">
+          {/* Duplicate to ensure enough width for scroll if list is short */}
+          {categories.length < 10 && categories.map((cat) => (
+            <div key={`${cat.id}-dup`} className="snap-start shrink-0">
                <CategoryCard category={cat} />
             </div>
           ))}
         </div>
 
       </div>
+      
+      {/* CSS to hide scrollbar */}
+      <style>{`
+        .scrollbar-hide::-webkit-scrollbar {
+          display: none;
+        }
+      `}</style>
     </section>
   );
 };

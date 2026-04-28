@@ -36,7 +36,7 @@ const SearchBar: React.FC = () => {
     if (query.trim()) params.set('q', query.trim());
     if (selectedCategory && selectedCategory !== 'All Categories') params.set('category', selectedCategory);
     
-    navigate(`/products?${params.toString()}`);
+    navigate(`/gadgets?${params.toString()}`);
   };
 
   return (
@@ -87,7 +87,7 @@ const SearchBar: React.FC = () => {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-            placeholder="What gadget are you looking for?"
+            placeholder="Search for the best deals on phones, laptops, and gadgets..."
             className="w-full h-full px-5 outline-none text-dark bg-transparent text-sm"
           />
         </div>

@@ -22,7 +22,7 @@ const VerifiedSellersSection: React.FC = () => {
                             <Store size={14} /> Local Trusted Vendors
                         </div>
                         <h2 className="text-4xl md:text-5xl font-black text-dark tracking-tight leading-none mb-6">
-                            Verified Sellers <br /> <span className="text-primary italic">by Location.</span>
+                            Verified <br /> <span className="text-primary">Nigerians Sellers.</span>
                         </h2>
                         <p className="text-muted font-medium text-lg">
                             We've vetted the best gadget hubs across Nigeria. Shop with confidence from vendors near you.
@@ -90,7 +90,7 @@ const VerifiedSellersSection: React.FC = () => {
 
                 <div className="mt-12 flex justify-center">
                     <button className="px-10 py-4 bg-white border border-zinc-100 rounded-2xl font-black text-[11px] uppercase tracking-[3px] text-dark hover:bg-dark hover:text-white hover:border-dark transition-all shadow-sm">
-                        Explore All Verified Shops
+                        Explore All Verified Sellers
                     </button>
                 </div>
 
@@ -101,15 +101,15 @@ const VerifiedSellersSection: React.FC = () => {
 
                     <div className="flex flex-col lg:flex-row items-center justify-between gap-10 relative z-10">
                         <div className="max-w-2xl text-center lg:text-left">
-                            <h3 className="text-3xl text-zinc-300 md:text-5xl font-black mb-4 tracking-tight leading-[1.1]">
-                                Own a trusted shop in <span className="text-primary italic">Nigeria?</span>
-                            </h3>
+                                <h2 className="text-3xl md:text-5xl font-black mb-6 leading-tight">
+                                    Become a <br /> <span className="text-primary">Verified Seller.</span>
+                                </h2>
                             <p className="text-zinc-300 font-medium text-lg md:text-xl opacity-90">
                                 Join the elite circle of verified vendors and connect with <span className="text-white font-bold">thousands</span> of tech enthusiasts daily.
                             </p>
                         </div>
                         <div className="shrink-0">
-                            <button 
+                            <button
                                 onClick={() => setIsModalOpen(true)}
                                 className="px-12 py-6 bg-primary text-white rounded-[24px] font-black text-sm uppercase tracking-widest hover:scale-[1.05] hover:shadow-2xl hover:shadow-primary/40 active:scale-95 transition-all duration-300"
                             >
@@ -120,9 +120,9 @@ const VerifiedSellersSection: React.FC = () => {
                 </div>
 
                 {/* Seller Verification Modal */}
-                <SellerVerificationModal 
-                    isOpen={isModalOpen} 
-                    onClose={() => setIsModalOpen(false)} 
+                <SellerVerificationModal
+                    isOpen={isModalOpen}
+                    onClose={() => setIsModalOpen(false)}
                 />
             </div>
         </section>

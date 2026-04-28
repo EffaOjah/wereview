@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import Breadcrumb from '../components/ui/Breadcrumb';
-import { products, reviews } from '../data/products';
+import { gadgets, reviews } from '../data/gadgets';
 import StarRating from '../components/ui/StarRating';
 import NairaPrice from '../components/ui/NairaPrice';
 import VerifiedBadge from '../components/ui/VerifiedBadge';
@@ -27,14 +27,14 @@ const ReviewDetailsPage: React.FC = () => {
     return () => clearTimeout(timer);
   }, [id]);
 
-  const product = products.find(p => p.id === id);
+  const Gadget = gadgets.find(p => p.id === id);
 
-  if (!product) {
+  if (!Gadget) {
     return (
       <div className="flex flex-col items-center justify-center py-24 text-center px-4">
-        <h1 className="text-4xl font-black text-dark mb-4">Product Not Found</h1>
+        <h1 className="text-4xl font-black text-dark mb-4">Gadget Not Found</h1>
         <p className="text-muted font-medium mb-8">We couldn't find the gadget you're looking for.</p>
-        <Link to="/products" className="primary-btn flex items-center gap-2">
+        <Link to="/gadgets" className="primary-btn flex items-center gap-2">
           <ArrowLeft size={16} /> Back to Gadgets
         </Link>
       </div>
@@ -65,34 +65,34 @@ const ReviewDetailsPage: React.FC = () => {
     );
   }
 
-  const productReviews = reviews.filter(r => r.productId === product.id);
+  const GadgetReviews = reviews.filter(r => r.GadgetId === Gadget.id);
 
   // Derive distribution
   const ratingCounts = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
-  productReviews.forEach(r => ratingCounts[r.rating as keyof typeof ratingCounts]++);
+  GadgetReviews.forEach(r => ratingCounts[r.rating as keyof typeof ratingCounts]++);
   
   const ratingDistribution = [5, 4, 3, 2, 1].map(star => ({
     star,
-    percentage: productReviews.length > 0 ? Math.round((ratingCounts[star as keyof typeof ratingCounts] / productReviews.length) * 100) : 0
+    percentage: GadgetReviews.length > 0 ? Math.round((ratingCounts[star as keyof typeof ratingCounts] / GadgetReviews.length) * 100) : 0
   }));
 
-  const sortedReviews = [...productReviews].sort((a, b) => {
+  const sortedReviews = [...GadgetReviews].sort((a, b) => {
     if (reviewSort === 'top') return (b.helpfulCount || 0) - (a.helpfulCount || 0);
     return new Date(b.date).getTime() - new Date(a.date).getTime();
   });
 
   return (
     <div className="review-details-page bg-zinc-50/30 pb-24">
-      <Breadcrumb title={product.name} items={[{ name: 'Gadgets', path: '/reviews' }, { name: product.name, path: '#' }]} />
+      <Breadcrumb title={Gadget.name} items={[{ name: 'Gadgets', path: '/reviews' }, { name: Gadget.name, path: '#' }]} />
 
       <section className="container mx-auto px-4 mt-8">
-        {/* Main Product Hero */}
+        {/* Main Gadget Hero */}
         <div className="bg-white rounded-3xl p-8 lg:p-12 shadow-sm border border-zinc-100 flex flex-col lg:flex-row gap-12 mb-8">
           
           {/* Image Gallery */}
           <div className="lg:w-2/5 flex flex-col gap-6">
             <div className="bg-zinc-50 p-12 rounded-2xl flex items-center justify-center aspect-square">
-               <img src={product.image} alt={product.name} className="max-w-full max-h-full object-contain mix-blend-multiply" />
+               <img src={Gadget.image} alt={Gadget.name} className="max-w-full max-h-full object-contain mix-blend-multiply" />
             </div>
             {/* Thumbnail grid could go here */}
           </div>
@@ -103,16 +103,16 @@ const ReviewDetailsPage: React.FC = () => {
                 ⭐ Community Top Pick
              </div>
              
-             <h1 className="text-4xl lg:text-5xl font-black text-dark tracking-tight leading-tight mb-4">{product.name}</h1>
+             <h1 className="text-4xl lg:text-5xl font-black text-dark tracking-tight leading-tight mb-4">{Gadget.name}</h1>
              
              {/* Main Rating Ribbon */}
              <div className="flex items-center gap-4 flex-wrap pb-6 border-b border-zinc-100">
                 <div className="flex items-center gap-2">
-                   <span className="text-3xl font-black text-dark leading-none">{product.rating}</span>
-                   <StarRating rating={product.rating} size={24} />
+                   <span className="text-3xl font-black text-dark leading-none">{Gadget.rating}</span>
+                   <StarRating rating={Gadget.rating} size={24} />
                 </div>
-                <span className="text-muted font-bold">({product.reviewCount || productReviews.length} User Reviews)</span>
-                {productReviews.length > 50 && (
+                <span className="text-muted font-bold">({Gadget.reviewCount || GadgetReviews.length} User Reviews)</span>
+                {GadgetReviews.length > 50 && (
                    <span className="text-emerald-600 font-bold bg-emerald-50 px-3 py-1 rounded-full text-xs flex items-center gap-1">
                      <TrendingUp size={14} /> Highly Discussed
                    </span>
@@ -120,7 +120,7 @@ const ReviewDetailsPage: React.FC = () => {
              </div>
 
              <p className="text-lg text-muted my-6 leading-relaxed">
-                {product.description}
+                {Gadget.description}
              </p>
 
              {/* Nigerian Pricing Card */}
@@ -128,23 +128,23 @@ const ReviewDetailsPage: React.FC = () => {
                <h3 className="text-sm font-bold text-muted uppercase tracking-widest mb-4 flex items-center gap-2">
                  Current Nigerian Market Prices (Avg)
                </h3>
-               {product.nigerianPrices ? (
+               {Gadget.nigerianPrices ? (
                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <div className="flex flex-col">
                       <span className="text-xs font-bold text-muted mb-1 flex items-center gap-1">Jumia <CheckCircle size={12} className="text-emerald-500" /></span>
-                      <NairaPrice amount={product.nigerianPrices.jumia || 0} className="text-xl text-dark" />
+                      <NairaPrice amount={Gadget.nigerianPrices.jumia || 0} className="text-xl text-dark" />
                     </div>
                     <div className="flex flex-col">
                       <span className="text-xs font-bold text-muted mb-1 flex items-center gap-1">Konga <CheckCircle size={12} className="text-emerald-500" /></span>
-                      <NairaPrice amount={product.nigerianPrices.konga || 0} className="text-xl text-dark" />
+                      <NairaPrice amount={Gadget.nigerianPrices.konga || 0} className="text-xl text-dark" />
                     </div>
                     <div className="flex flex-col">
                       <span className="text-xs font-bold text-muted mb-1 flex items-center gap-1">Slot <CheckCircle size={12} className="text-emerald-500" /></span>
-                      <NairaPrice amount={product.nigerianPrices.slot || 0} className="text-xl text-dark" />
+                      <NairaPrice amount={Gadget.nigerianPrices.slot || 0} className="text-xl text-dark" />
                     </div>
                     <div className="flex flex-col border-l border-zinc-200 pl-4">
                       <span className="text-xs font-bold text-muted mb-1">Average</span>
-                      <NairaPrice amount={product.nigerianPrices.average || 0} className="text-2xl text-primary" />
+                      <NairaPrice amount={Gadget.nigerianPrices.average || 0} className="text-2xl text-primary" />
                     </div>
                  </div>
                ) : (
@@ -155,16 +155,16 @@ const ReviewDetailsPage: React.FC = () => {
         </div>
 
         {/* Aggregated Pros and Cons Box */}
-        {(product.pros || product.cons) && (
+        {(Gadget.pros || Gadget.cons) && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
-            {product.pros && (
+            {Gadget.pros && (
               <div className="bg-emerald-50 rounded-2xl p-6 lg:p-8 border border-emerald-100">
                 <h3 className="flex items-center gap-2 text-emerald-800 font-bold mb-6">
                    <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center"><CheckCircle size={18} /></div>
                    What Users Love (Pros)
                 </h3>
                 <ul className="flex flex-col gap-4">
-                  {product.pros.map((pro, i) => (
+                  {Gadget.pros.map((pro, i) => (
                     <li key={i} className="flex items-start gap-4 text-emerald-900 font-medium">
                       <span className="mt-1 flex-shrink-0 w-2 h-2 rounded-full bg-emerald-500" /> {pro}
                     </li>
@@ -173,14 +173,14 @@ const ReviewDetailsPage: React.FC = () => {
               </div>
             )}
             
-            {product.cons && (
+            {Gadget.cons && (
               <div className="bg-red-50 rounded-2xl p-6 lg:p-8 border border-red-100">
                 <h3 className="flex items-center gap-2 text-red-800 font-bold mb-6">
                    <div className="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center"><AlertTriangle size={18} /></div>
                    What Users Dislike (Cons)
                 </h3>
                 <ul className="flex flex-col gap-4">
-                  {product.cons.map((con, i) => (
+                  {Gadget.cons.map((con, i) => (
                     <li key={i} className="flex items-start gap-4 text-red-900 font-medium">
                       <span className="mt-1 flex-shrink-0 w-2 h-2 rounded-full bg-red-500" /> {con}
                     </li>
@@ -199,7 +199,7 @@ const ReviewDetailsPage: React.FC = () => {
               onClick={() => setActiveTab('reviews')}
               className={`flex-1 py-6 text-lg font-bold text-center border-b-2 transition-colors ${activeTab === 'reviews' ? 'border-primary text-primary' : 'border-transparent text-muted hover:text-dark'}`}
             >
-              User Reviews ({product.reviewCount || productReviews.length})
+              User Reviews ({Gadget.reviewCount || GadgetReviews.length})
             </button>
             <button 
               onClick={() => setActiveTab('specs')}
@@ -213,7 +213,7 @@ const ReviewDetailsPage: React.FC = () => {
             {activeTab === 'specs' && (
               <div className="animate-in fade-in max-w-3xl mx-auto">
                 <ul className="flex flex-col gap-4">
-                  {Object.entries(product.specs).map(([k, v]) => (
+                  {Object.entries(Gadget.specs).map(([k, v]) => (
                     <li key={k} className="flex items-center justify-between py-4 border-b border-zinc-100 last:border-0">
                       <span className="font-bold text-dark">{k}</span>
                       <span className="text-muted font-medium bg-zinc-50 px-4 py-2 rounded-xl">{v}</span>
@@ -229,8 +229,8 @@ const ReviewDetailsPage: React.FC = () => {
                  {/* Summary & Write Review Toolbar */}
                  <div className="flex flex-col xl:flex-row gap-8 justify-between items-center bg-zinc-50 rounded-2xl p-8 mb-12">
                     <ReviewSummaryBar 
-                      averageRating={product.rating} 
-                      totalReviews={product.reviewCount || productReviews.length} 
+                      averageRating={Gadget.rating} 
+                      totalReviews={Gadget.reviewCount || GadgetReviews.length} 
                       ratingDistribution={ratingDistribution} 
                     />
                     
@@ -328,7 +328,7 @@ const ReviewDetailsPage: React.FC = () => {
                      </div>
                    )) : (
                      <div className="text-center py-12">
-                       <p className="text-muted font-medium">No reviews yet for this product. Be the first to share your thoughts!</p>
+                       <p className="text-muted font-medium">No reviews yet for this Gadget. Be the first to share your thoughts!</p>
                      </div>
                    )}
                  </div>
@@ -343,7 +343,7 @@ const ReviewDetailsPage: React.FC = () => {
       <ReviewSubmissionModal 
         isOpen={isReviewModalOpen} 
         onClose={() => setIsReviewModalOpen(false)} 
-        productName={product.name} 
+        GadgetName={Gadget.name} 
       />
     </div>
   );

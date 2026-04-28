@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import Breadcrumb from '../components/ui/Breadcrumb';
-import { blogPosts } from '../data/products';
+import { blogPosts } from '../data/gadgets';
 import { Calendar, MessageSquare, User, Search, SlidersHorizontal, X, ChevronLeft } from 'lucide-react';
 
 const BlogDetailsPage: React.FC = () => {
@@ -142,12 +142,12 @@ const BlogDetailsPage: React.FC = () => {
 
                   <h3 className="text-3xl sm:text-4xl font-black text-dark mb-8 leading-tight">{post.title}</h3>
                   
-                  <div className="flex flex-col gap-6 text-muted leading-relaxed italic">
+                  <div className="flex flex-col gap-6 text-muted leading-relaxed ">
                      <p>Pellentesque in ipsum id orci porta dapibus. Quisque velit nisi, pretium ut lacinia in, elementum id enim. Mauris blandit aliquet elit, eget tincidunt nibh pulvinar a. Vivamus magna justo, lacinia eget consectetur sed, convallis at tellus. Mauris blandit aliquet elit, eget tincidunt nibh pulvinar a.</p>
                      
                      <blockquote className="border-l-4 border-primary pl-8 py-4 bg-light/30 rounded-r-md">
-                        <p className="text-xl font-bold text-dark not-italic">"Technology is best when it brings people together. Our goal is to review the tech that facilitates that connection."</p>
-                        <cite className="block mt-4 text-xs font-black uppercase tracking-widest text-primary">— Reviewed By Reviews Zone</cite>
+                        <p className="text-xl font-bold text-dark not-">"Technology is best when it brings people together. Our goal is to review the tech that facilitates that connection."</p>
+                        <cite className="block mt-4 text-xs font-black uppercase tracking-widest text-primary">— Reviewed By GadgetHub</cite>
                      </blockquote>
 
                      <p>Donec sollicitudin molestie malesuada. Pellentesque in ipsum id orci porta dapibus. Vivamus suscipit tortor eget felis porttitor volutpat. Curabitur arcu erat, accumsan id imperdiet et, porttitor at sem.</p>

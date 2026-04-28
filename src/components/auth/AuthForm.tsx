@@ -33,18 +33,18 @@ const AuthForm: React.FC<AuthFormProps> = ({ initialView = 'login', onSuccess, o
       
       {/* Decorative Branding Sidebar */}
       <div className="hidden md:flex flex-col w-2/5 bg-zinc-900 text-white p-12 relative overflow-hidden shrink-0">
-         <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-[#e85d2c]/20 to-transparent pointer-events-none" />
+         <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-primary/20 to-transparent pointer-events-none" />
          
          <div className="relative z-10 flex flex-col h-full justify-between">
            <div>
-             <h2 className="text-3xl font-black tracking-tight text-white mb-2">Reviews Zone</h2>
-             <span className="text-[#e85d2c] text-sm font-bold uppercase tracking-widest border-b border-[#e85d2c]/50 pb-1 inline-block">Join The Club</span>
+             <h2 className="text-3xl font-black tracking-tight text-white mb-2">GadgetHub</h2>
+             <span className="text-primary text-sm font-bold uppercase tracking-widest border-b border-primary/50 pb-1 inline-block">Join The Club</span>
            </div>
 
            <div className="flex flex-col gap-6 mt-12 mb-auto">
              <div className="flex flex-col">
                <span className="text-4xl font-black text-white/10 mb-[-10px] select-none">01</span>
-               <h4 className="text-lg font-bold text-white relative z-10">Rate Products</h4>
+               <h4 className="text-lg font-bold text-white relative z-10">Rate Gadgets</h4>
                <p className="text-zinc-400 text-xs font-medium mt-1 leading-relaxed">Share your honest experiences with thousands of other tech enthusiasts.</p>
              </div>
              <div className="flex flex-col">
@@ -55,7 +55,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ initialView = 'login', onSuccess, o
            </div>
 
            <div className="relative z-10 mt-12 pt-8 border-t border-white/10">
-             <p className="text-xs text-zinc-500 font-medium">By authenticating, you agree to our <a href="#" className="text-[#e85d2c] hover:underline">Terms of Service</a> & <a href="#" className="text-[#e85d2c] hover:underline">Privacy Policy</a>.</p>
+             <p className="text-xs text-zinc-500 font-medium">By authenticating, you agree to our <a href="#" className="text-primary hover:underline">Terms of Service</a> & <a href="#" className="text-primary hover:underline">Privacy Policy</a>.</p>
            </div>
          </div>
       </div>
@@ -66,7 +66,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ initialView = 'login', onSuccess, o
           {view === 'login' ? 'Welcome Back!' : 'Create Account'}
         </h3>
         <p className="text-muted text-sm font-medium mb-8">
-          {view === 'login' ? 'Sign in to review products and manage your profile.' : 'Sign up to drop reviews and join our tech community.'}
+          {view === 'login' ? 'Sign in to review Gadgets and manage your profile.' : 'Sign up to drop reviews and join our tech community.'}
         </p>
 
         {/* Google Mockup Button */}

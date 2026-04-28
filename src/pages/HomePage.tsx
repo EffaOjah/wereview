@@ -3,7 +3,8 @@ import HeroSlider from '../components/sections/HeroSlider';
 import DealsOfTheDaySection from '../components/sections/DealsOfTheDaySection';
 import SocialProofStrip from '../components/sections/SocialProofStrip';
 import CategoriesSection from '../components/sections/CategoriesSection';
-import TrendingProductsSection from '../components/sections/TrendingProductsSection';
+import TrendingGadgetsSection from '../components/sections/TrendingGadgetsSection';
+import CompareSection from '../components/sections/CompareSection';
 import VerifiedSellersSection from '../components/sections/VerifiedSellersSection';
 import VideoReviewsSection from '../components/sections/VideoReviewsSection';
 import BannerSection from '../components/sections/BannerSection';
@@ -16,7 +17,8 @@ const HomePage: React.FC = () => {
       <SocialProofStrip />
       <DealsOfTheDaySection />
       <CategoriesSection />
-      <TrendingProductsSection />
+      <TrendingGadgetsSection />
+      <CompareSection />
       <VerifiedSellersSection />
       <VideoReviewsSection />
       <BannerSection />

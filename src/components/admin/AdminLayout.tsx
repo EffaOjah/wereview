@@ -19,7 +19,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   const [isNotifOpen, setIsNotifOpen] = useState(false);
 
   useEffect(() => {
-    const saved = localStorage.getItem('wereview_notifications');
+    const saved = localStorage.getItem('gadgethub_notifications');
     if (saved) {
       setNotifications(JSON.parse(saved));
     }
@@ -35,7 +35,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   const markAsRead = (id: string) => {
     const updated = notifications.map(n => n.id === id ? { ...n, isRead: true } : n);
     setNotifications(updated);
-    localStorage.setItem('wereview_notifications', JSON.stringify(updated));
+    localStorage.setItem('gadgethub_notifications', JSON.stringify(updated));
   };
 
   const getIcon = (type: string) => {
@@ -49,7 +49,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
 
   const navItems = [
     { icon: LayoutDashboard, label: 'Dashboard', path: '/admin/dashboard' },
-    { icon: Package, label: 'Products', path: '/admin/products' },
+    { icon: Package, label: 'Gadgets', path: '/admin/gadgets' },
     { icon: MessageSquare, label: 'Reviews', path: '/admin/reviews' },
     { icon: Users, label: 'Users', path: '/admin/users' },
     { icon: Tags, label: 'Categories', path: '/admin/categories' },
@@ -219,3 +219,4 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
 };
 
 export default AdminLayout;
+

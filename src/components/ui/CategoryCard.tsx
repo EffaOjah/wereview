@@ -1,3 +1,4 @@
+import React from 'react';
 import type { Category } from '../../types';
 import { Link } from 'react-router-dom';
 
@@ -7,38 +8,33 @@ interface CategoryCardProps {
 
 const CategoryCard: React.FC<CategoryCardProps> = ({ category }) => {
   return (
-    <div className="categories__item group relative overflow-hidden bg-[hsl(26,100%,97%)] transition-all duration-300 hover:scale-105 cursor-pointer h-[270px]">
-      {/* Badges */}
-      <div className="absolute top-2 right-2 flex flex-col gap-1 z-10">
-        {category.badges.map((badge, idx) => (
-          <span 
-            key={idx} 
-            className={`text-[10px] px-2 py-0.5 rounded-full text-white font-bold whitespace-nowrap
-              ${badge.includes('New') ? 'bg-red-500' : 
-                badge.includes('Hottest') ? 'bg-info bg-cyan-500' : 
-                'bg-primary'}`}
-          >
-            {badge}
-          </span>
-        ))}
-      </div>
-
-      {/* Image */}
-      <div className="h-full w-full flex items-center justify-center p-8">
+    <Link 
+      to={`/gadgets?category=${encodeURIComponent(category.name)}`}
+      className="group flex flex-col items-center gap-4 transition-all duration-300 active:scale-95"
+    >
+      {/* Circle Image Container */}
+      <div className="relative w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden bg-zinc-100 border-2 border-transparent group-hover:border-primary group-hover:shadow-lg group-hover:shadow-primary/20 transition-all duration-500">
         <img 
           src={category.image} 
           alt={category.name} 
-          className="max-h-full max-w-full object-contain transition-transform group-hover:scale-110" 
+          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" 
         />
+        {/* Subtle Overlay on Hover */}
+        <div className="absolute inset-0 bg-primary/10 opacity-0 group-hover:opacity-100 transition-opacity" />
       </div>
 
-      {/* Title */}
-      <div className="absolute left-0 bottom-5 w-full px-5 text-center">
-        <h5 className="bg-white py-3 px-4 text-sm font-bold uppercase tracking-widest text-[#e85d2c] shadow-sm group-hover:bg-[#e85d2c] group-hover:text-white transition-colors cursor-pointer">
-          <Link to={`/products?category=${encodeURIComponent(category.name)}`} className="block w-full h-full">{category.name}</Link>
+      {/* Text Label */}
+      <div className="text-center">
+        <h5 className="text-sm font-black text-dark uppercase tracking-widest group-hover:text-primary transition-colors">
+          {category.name}
         </h5>
+        {category.badges.length > 0 && (
+          <span className="text-[9px] font-bold text-muted uppercase tracking-tighter opacity-0 group-hover:opacity-100 transition-opacity">
+            {category.badges[0]}
+          </span>
+        )}
       </div>
-    </div>
+    </Link>
   );
 };
 

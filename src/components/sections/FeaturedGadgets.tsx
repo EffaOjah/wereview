@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { products } from '../../data/products';
-import ProductCard from '../ui/ProductCard';
+import { gadgets } from '../../data/gadgets';
+import GadgetCard from '../ui/GadgetCard';
 
-const FeaturedProducts: React.FC = () => {
+const FeaturedGadgets: React.FC = () => {
   const [filter, setFilter] = useState('*');
 
   const categories = [
@@ -12,15 +12,15 @@ const FeaturedProducts: React.FC = () => {
     { name: 'Headphones', value: 'headphones' },
   ];
 
-  const filteredProducts = filter === '*' 
-    ? products 
-    : products.filter(p => p.category.toLowerCase() === filter.toLowerCase());
+  const filteredGadgets = filter === '*' 
+    ? gadgets 
+    : gadgets.filter(p => p.category.toLowerCase() === filter.toLowerCase());
 
   return (
     <section className="featured spad bg-white">
       <div className="container mx-auto px-4">
         <div className="section-title">
-          <h2>Featured Product</h2>
+          <h2>Featured Gadget</h2>
         </div>
 
         {/* Filter Controls */}
@@ -40,11 +40,11 @@ const FeaturedProducts: React.FC = () => {
           </ul>
         </div>
 
-        {/* Product Grid */}
+        {/* Gadget Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 transition-all duration-500">
-           {filteredProducts.map((product) => (
-             <div key={product.id} className="animate-in fade-in duration-500">
-                <ProductCard product={product} />
+           {filteredGadgets.map((gadget: any) => (
+             <div key={gadget.id} className="animate-in fade-in duration-500">
+                <GadgetCard gadget={gadget} />
              </div>
            ))}
         </div>
@@ -53,4 +53,4 @@ const FeaturedProducts: React.FC = () => {
   );
 };
 
-export default FeaturedProducts;
+export default FeaturedGadgets;

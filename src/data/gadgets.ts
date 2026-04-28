@@ -1,11 +1,11 @@
-import type { Product, Review, BlogPost, Category } from '../types';
+import type { Gadget, Review, BlogPost, Category } from '../types';
 
-export const products: Product[] = [
+export const gadgets: Gadget[] = [
   {
     id: '1',
     name: 'Samsung Galaxy A54 5G',
     category: 'gadgets',
-    image: '/img/latest-product/lp-1.png',
+    image: '/img/latest-Gadget/lp-1.png',
     rating: 4.6,
     price: 350,
     nigerianPrices: { jumia: 520000, konga: 515000, slot: 530000, average: 521000 },
@@ -23,7 +23,7 @@ export const products: Product[] = [
     id: '2',
     name: 'Tecno Camon 20 Pro',
     category: 'gadgets',
-    image: '/img/latest-product/lp-7.png',
+    image: '/img/latest-Gadget/lp-7.png',
     rating: 4.3,
     price: 200,
     nigerianPrices: { jumia: 285000, konga: 280000, slot: 290000, average: 285000 },
@@ -58,7 +58,7 @@ export const products: Product[] = [
     id: '4',
     name: 'MacBook Air M1 (2020)',
     category: 'laptops',
-    image: '/img/latest-product/laptops-removebg-preview.png',
+    image: '/img/latest-Gadget/laptops-removebg-preview.png',
     rating: 4.9,
     price: 750,
     nigerianPrices: { jumia: 1150000, konga: 1140000, slot: 1200000, average: 1160000 },
@@ -244,7 +244,7 @@ export const products: Product[] = [
 export const reviews: Review[] = [
   {
     id: 'r1',
-    productId: '1',
+    GadgetId: '1',
     author: 'Chinedu Eze',
     authorId: 'chinedu-eze',
     date: 'Apr 12, 2026',
@@ -258,7 +258,7 @@ export const reviews: Review[] = [
   },
   {
     id: 'r2',
-    productId: '3',
+    GadgetId: '3',
     author: 'Amina Bello',
     authorId: 'amina-bello',
     date: 'Mar 28, 2026',
@@ -272,7 +272,7 @@ export const reviews: Review[] = [
   },
   {
     id: 'r3',
-    productId: '1',
+    GadgetId: '1',
     author: 'Tobi A.',
     authorId: 'tobi-a',
     date: 'Apr 10, 2026',
@@ -284,7 +284,7 @@ export const reviews: Review[] = [
   },
   {
     id: 'r4',
-    productId: '5',
+    GadgetId: '5',
     author: 'Effa Ojah',
     authorId: 'effa-ojah',
     date: 'Apr 15, 2026',
@@ -298,7 +298,7 @@ export const reviews: Review[] = [
   },
   {
     id: 'r5',
-    productId: '6',
+    GadgetId: '6',
     author: 'Tunde Badmus',
     authorId: 'tunde-badmus',
     date: 'Apr 02, 2026',
@@ -312,7 +312,7 @@ export const reviews: Review[] = [
   },
   {
     id: 'r6',
-    productId: '9',
+    GadgetId: '9',
     author: 'Nneka Nwosu',
     authorId: 'nneka-nwosu',
     date: 'Apr 16, 2026',
@@ -326,7 +326,7 @@ export const reviews: Review[] = [
   },
   {
     id: 'r7',
-    productId: '7',
+    GadgetId: '7',
     author: 'Effa Ojah',
     authorId: 'effa-ojah',
     date: 'Apr 17, 2026',
@@ -340,7 +340,7 @@ export const reviews: Review[] = [
   },
   {
     id: 'r8',
-    productId: '11',
+    GadgetId: '11',
     author: 'Amina Bello',
     authorId: 'amina-bello',
     date: 'Apr 05, 2026',
@@ -355,7 +355,7 @@ export const reviews: Review[] = [
   // Adding more reviews to mix it up
   {
     id: 'r9',
-    productId: '14',
+    GadgetId: '14',
     author: 'Chinedu Eze',
     authorId: 'chinedu-eze',
     date: 'Apr 10, 2026',
@@ -397,10 +397,11 @@ export const blogPosts: BlogPost[] = [
 ];
 
 export const categories: Category[] = [
-  { id: 'c1', name: 'Phones', image: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?q=80&w=800', badges: ['⭐ Top Rated'] },
-  { id: 'c2', name: 'Headphones', image: 'https://images.unsplash.com/photo-1618366712010-8c0e2474d7c4?q=80&w=800', badges: ['🔥 Hottest', 'New'] },
-  { id: 'c3', name: 'Laptops', image: 'https://images.unsplash.com/photo-1593642702821-c8da6771f0c6?q=80&w=800', badges: ['💻 Work/Gaming'] },
-  { id: 'c4', name: 'Gaming', image: 'https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?q=80&w=800', badges: ['🎮 VR Ready', '🔥 New'] },
-  { id: 'c5', name: 'Cameras', image: 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?q=80&w=800', badges: ['📸 Professional'] },
-  { id: 'c6', name: 'Smartwatches', image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=800', badges: ['⌚ Fitness'] }
+  { id: 'c1', name: 'Smartphones', image: 'https://images.unsplash.com/photo-1616348436168-de43ad0db179?q=80&w=1200', badges: ['⭐ Flagships'] },
+  { id: 'c2', name: 'Audio & Music', image: 'https://images.unsplash.com/photo-1546435770-a3e426bf472b?q=80&w=1200', badges: ['🔥 Studio Quality'] },
+  { id: 'c3', name: 'Computing', image: 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?q=80&w=1200', badges: ['💻 High Power'] },
+  { id: 'c4', name: 'Gaming Zone', image: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=1200', badges: ['🎮 Next Gen'] },
+  { id: 'c5', name: 'Photography', image: 'https://images.unsplash.com/photo-1510127034890-ba27508e9f1c?q=80&w=1200', badges: ['📸 Cinema'] },
+  { id: 'c6', name: 'Smart Life', image: 'https://images.unsplash.com/photo-1508921234172-b68ed335b3e6?q=80&w=1200', badges: ['⌚ Wearables'] }
 ];
+

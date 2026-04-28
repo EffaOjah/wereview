@@ -2,44 +2,45 @@ import React, { useState, useEffect } from 'react';
 import { TrendingUp, Users, MessageSquare, Package, ArrowUpRight, MoreHorizontal, Star, Clock } from 'lucide-react';
 import { useAuthModal } from '../../context/AuthModalContext';
 import AdminLayout from '../../components/admin/AdminLayout';
-import type { Product, Review, User } from '../../types';
+import type { Gadget, Review, User } from '../../types';
+import { gadgets } from '../../data/gadgets';
 
 const AdminDashboard: React.FC = () => {
    const { user } = useAuthModal();
    const [stats, setStats] = useState({
-      products: 0,
+      Gadgets: 0,
       reviews: 0,
       users: 0,
       growth: '+12.5%'
    });
 
    const [recentReviews, setRecentReviews] = useState<Review[]>([]);
-   const [topProducts, setTopProducts] = useState<Product[]>([]);
+   const [topGadgets, setTopGadgets] = useState<Gadget[]>([]);
 
    useEffect(() => {
       // Pull counts from localStorage
-      const savedProducts = localStorage.getItem('wereview_products');
-      const savedReviews = localStorage.getItem('wereview_reviews');
-      const savedUsers = localStorage.getItem('wereview_users');
+      const savedGadgets = localStorage.getItem('gadgethub_gadgets');
+      const savedReviews = localStorage.getItem('gadgethub_reviews');
+      const savedUsers = localStorage.getItem('gadgethub_users');
 
-      const products: Product[] = savedProducts ? JSON.parse(savedProducts) : [];
-      const reviews: Review[] = savedReviews ? JSON.parse(savedReviews) : [];
-      const users: User[] = savedUsers ? JSON.parse(savedUsers) : [];
+      const gadgetsList: Gadget[] = savedGadgets ? JSON.parse(savedGadgets) : [];
+      const reviewsList: Review[] = savedReviews ? JSON.parse(savedReviews) : [];
+      const usersList: User[] = savedUsers ? JSON.parse(savedUsers) : [];
 
       setStats({
-         products: products.length,
-         reviews: reviews.length,
-         users: users.length,
+         Gadgets: gadgetsList.length,
+         reviews: reviewsList.length,
+         users: usersList.length,
          growth: '+12.5%'
       });
 
-      setRecentReviews(reviews.slice(0, 5));
-      setTopProducts(products.slice(0, 4));
+      setRecentReviews(reviewsList.slice(0, 5));
+      setTopGadgets(gadgets.slice(0, 4));
    }, []);
 
    const metrics = [
-      { label: 'Total Products', value: stats.products, icon: Package, color: 'text-blue-500', bg: 'bg-blue-50', trend: '+4 new today' },
-      { label: 'Community Reviews', value: stats.reviews, icon: MessageSquare, color: 'text-primary', bg: 'bg-primary/10', trend: '+18% this week' },
+      { label: 'Total Gadgets', value: stats.Gadgets, icon: Package, color: 'text-blue-500', bg: 'bg-blue-50', trend: '+4 new today' },
+      { label: 'Verified Deals', value: stats.reviews, icon: MessageSquare, color: 'text-primary', bg: 'bg-primary/10', trend: '+18% this week' },
       { label: 'Active Members', value: stats.users, icon: Users, color: 'text-green-500', bg: 'bg-green-50', trend: '+24 new joins' },
       { label: 'Average Engagement', value: '4.8', icon: TrendingUp, color: 'text-purple-500', bg: 'bg-purple-50', trend: 'High activity' },
    ];
@@ -118,7 +119,7 @@ const AdminDashboard: React.FC = () => {
                            <path
                               d="M0 250 Q 150 200, 250 220 T 500 100 T 750 150 T 1000 50"
                               fill="none"
-                              stroke="#FFD700"
+                              stroke="#0066ff"
                               strokeWidth="5"
                               strokeLinecap="round"
                               className="drop-shadow-lg"
@@ -126,7 +127,7 @@ const AdminDashboard: React.FC = () => {
 
                            <defs>
                               <linearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                                 <stop offset="0%" stopColor="#FFD700" />
+                                 <stop offset="0%" stopColor="#0066ff" />
                                  <stop offset="100%" stopColor="transparent" />
                               </linearGradient>
                            </defs>
@@ -146,14 +147,14 @@ const AdminDashboard: React.FC = () => {
                      </div>
                   </div>
 
-                  {/* Top Products Table */}
+                  {/* Top Gadgets Table */}
                   <div className="bg-white border border-zinc-200 rounded-[2.5rem] p-8 shadow-sm">
                      <div className="flex items-center justify-between mb-8">
-                        <h3 className="text-lg font-black text-zinc-900">Trending Products</h3>
-                        <button className="text-[10px] font-black text-primary uppercase tracking-widest hover:underline">View All Products</button>
+                        <h3 className="text-lg font-black text-zinc-900">Trending Gadgets</h3>
+                        <button className="text-[10px] font-black text-primary uppercase tracking-widest hover:underline">View All Gadgets</button>
                      </div>
                      <div className="space-y-6">
-                        {topProducts.map((p, _idx) => (
+                        {topGadgets.map((p: any, _idx: number) => (
                            <div key={p.id} className="flex items-center justify-between group">
                               <div className="flex items-center gap-4">
                                  <span className="text-xs font-black text-zinc-300 w-4">0{_idx + 1}</span>
@@ -193,7 +194,7 @@ const AdminDashboard: React.FC = () => {
                               </div>
                               <div>
                                  <p className="text-xs font-medium text-zinc-500 leading-relaxed">
-                                    <span className="font-black text-zinc-900">{r.author}</span> reviewed <span className="font-bold text-primary italic">"{r.title}"</span>
+                                    <span className="font-black text-zinc-900">{r.author}</span> reviewed <span className="font-bold text-primary ">"{r.title}"</span>
                                  </p>
                                  <p className="text-[10px] font-bold text-zinc-300 uppercase mt-1">{r.date}</p>
                               </div>

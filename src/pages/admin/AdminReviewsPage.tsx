@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Trash2, Star, CheckCircle, Flag, MessageCircle } from 'lucide-react';
 import AdminLayout from '../../components/admin/AdminLayout';
-import { reviews as initialReviews, products } from '../../data/products';
+import { reviews as initialReviews, gadgets } from '../../data/gadgets';
 import type { Review } from '../../types';
 
 const AdminReviewsPage: React.FC = () => {
@@ -11,25 +11,25 @@ const AdminReviewsPage: React.FC = () => {
   const [filterStatus, setFilterStatus] = useState<'All' | 'Flagged'>('All');
 
   useEffect(() => {
-    const savedReviews = localStorage.getItem('wereview_reviews');
+    const savedReviews = localStorage.getItem('gadgethub_reviews');
     if (savedReviews) {
       setReviews(JSON.parse(savedReviews));
     } else {
       setReviews(initialReviews);
-      localStorage.setItem('wereview_reviews', JSON.stringify(initialReviews));
+      localStorage.setItem('gadgethub_reviews', JSON.stringify(initialReviews));
     }
   }, []);
 
-  const getProductName = (productId: string) => {
-    const product = products.find(p => p.id === productId);
-    return product ? product.name : 'Unknown Product';
+  const getGadgetName = (productId: string) => {
+    const gadget = gadgets.find(p => p.id === productId);
+    return gadget ? gadget.name : 'Unknown Gadget';
   };
 
   const handleDelete = (id: string) => {
     if (window.confirm('Are you sure you want to delete this review?')) {
       const updated = reviews.filter(r => r.id !== id);
       setReviews(updated);
-      localStorage.setItem('wereview_reviews', JSON.stringify(updated));
+      localStorage.setItem('gadgethub_reviews', JSON.stringify(updated));
     }
   };
 
@@ -38,12 +38,12 @@ const AdminReviewsPage: React.FC = () => {
       r.id === id ? { ...r, isFlagged: !r.isFlagged } : r
     );
     setReviews(updated);
-    localStorage.setItem('wereview_reviews', JSON.stringify(updated));
+    localStorage.setItem('gadgethub_reviews', JSON.stringify(updated));
   };
 
   const filteredReviews = reviews.filter(r => {
     const matchesSearch = r.author.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                          getProductName(r.productId).toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          getGadgetName(r.GadgetId).toLowerCase().includes(searchTerm.toLowerCase()) ||
                           r.comment.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesRating = selectedRating === 'All' || r.rating === selectedRating;
     const matchesStatus = filterStatus === 'All' || r.isFlagged;
@@ -75,7 +75,7 @@ const AdminReviewsPage: React.FC = () => {
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 group-focus-within:text-primary transition-colors" size={18} />
             <input 
               type="text" 
-              placeholder="Search by author, product, or comment..." 
+              placeholder="Search by author, Gadget, or comment..." 
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-12 pr-4 py-3 bg-zinc-50 border border-zinc-100 rounded-2xl outline-none focus:border-primary/30 focus:bg-white transition-all text-sm font-medium"
@@ -154,7 +154,7 @@ const AdminReviewsPage: React.FC = () => {
                        </div>
                        <span className="text-xs font-bold text-zinc-400 ml-2">on</span>
                        <span className="text-xs font-black text-zinc-900 hover:text-primary transition-colors cursor-pointer">
-                         {getProductName(review.productId)}
+                         {getGadgetName(review.GadgetId)}
                        </span>
                     </div>
                   </div>
@@ -219,3 +219,5 @@ const AdminReviewsPage: React.FC = () => {
 };
 
 export default AdminReviewsPage;
+
+

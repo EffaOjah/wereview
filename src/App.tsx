@@ -15,18 +15,19 @@ import BlogPage from './pages/BlogPage';
 import BlogDetailsPage from './pages/BlogDetailsPage';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
-import ProductsPage from './pages/ProductsPage';
+import GadgetsPage from './pages/GadgetsPage';
 import CartPage from './pages/CartPage';
 import ComparePage from './pages/ComparePage';
 import ProfilePage from './pages/ProfilePage';
 import PublicProfilePage from './pages/PublicProfilePage';
+import SellersPage from './pages/SellersPage';
 import ContactPage from './pages/ContactPage';
 import NotFoundPage from './pages/NotFoundPage';
 import AIAssistantWidget from './components/ui/AIAssistantWidget';
 
 import AdminLoginPage from './pages/admin/AdminLoginPage';
 import AdminDashboard from './pages/admin/AdminDashboard';
-import AdminProductsPage from './pages/admin/AdminProductsPage';
+import AdminGadgetsPage from './pages/admin/AdminGadgetsPage';
 import AdminReviewsPage from './pages/admin/AdminReviewsPage';
 import AdminUsersPage from './pages/admin/AdminUsersPage';
 import AdminCategoriesPage from './pages/admin/AdminCategoriesPage';
@@ -50,17 +51,18 @@ const AppContent: React.FC = () => {
           <Route path="/blog/:id" element={<BlogDetailsPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
-          <Route path="/products" element={<ProductsPage />} />
+          <Route path="/gadgets" element={<GadgetsPage />} />
           <Route path="/cart" element={<CartPage />} />
           <Route path="/compare" element={<ComparePage />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/user/:userId" element={<PublicProfilePage />} />
+          <Route path="/sellers" element={<SellersPage />} />
           <Route path="/contact" element={<ContactPage />} />
           
           {/* Admin Routes */}
           <Route path="/admin/login" element={<AdminLoginPage />} />
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
-          <Route path="/admin/products" element={<AdminProductsPage />} />
+          <Route path="/admin/gadgets" element={<AdminGadgetsPage />} />
           <Route path="/admin/reviews" element={<AdminReviewsPage />} />
           <Route path="/admin/users" element={<AdminUsersPage />} />
           <Route path="/admin/categories" element={<AdminCategoriesPage />} />

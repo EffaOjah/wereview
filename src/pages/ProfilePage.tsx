@@ -19,8 +19,8 @@ import {
   Info
 } from 'lucide-react';
 import { useAuthModal } from '../context/AuthModalContext';
-import { products } from '../data/products';
-import TrendingProductCard from '../components/ui/TrendingProductCard';
+import { gadgets } from '../data/gadgets';
+import TrendingGadgetCard from '../components/ui/TrendingGadgetCard';
 import StarRating from '../components/ui/StarRating';
 import ReviewSubmissionModal from '../components/ui/ReviewSubmissionModal';
 import DeleteConfirmationModal from '../components/ui/DeleteConfirmationModal';
@@ -39,14 +39,14 @@ const ProfilePage: React.FC = () => {
     { label: 'Days Active', value: '284', icon: History, color: 'text-blue-500', bg: 'bg-blue-50' },
   ];
 
-  // Mock Saved Products
-  const savedProducts = products.slice(0, 3).map((p, i) => ({ ...p, _key: `saved-${p.id}-${i}` }));
+  // Mock Saved Gadgets
+  const savedGadgets = gadgets.slice(0, 3).map((p, i) => ({ ...p, _key: `saved-${p.id}-${i}` }));
 
   // Mock Published Reviews
   const [myReviews, setMyReviews] = useState([
     {
       id: 'mr1',
-      productName: 'Samsung Galaxy A54 5G',
+      GadgetName: 'Samsung Galaxy A54 5G',
       rating: 5,
       date: 'Oct 12, 2025',
       comment: 'Still the best mid-range I’ve used in Nigeria. The battery backup is simply unmatched for its price bracket.',
@@ -56,7 +56,7 @@ const ProfilePage: React.FC = () => {
     },
     {
       id: 'mr2',
-      productName: 'Oraimo Freepods 4',
+      GadgetName: 'Oraimo Freepods 4',
       rating: 4,
       date: 'Sept 5, 2025',
       comment: 'Love the ANC! Perfect for blocking out generator noise while working from home.',
@@ -169,7 +169,7 @@ const ProfilePage: React.FC = () => {
           {[
             { id: 'dashboard', label: 'Overview', icon: LayoutDashboard },
             { id: 'reviews', label: 'Reviews', icon: MessageSquare, badge: myReviews.length },
-            { id: 'saved', label: 'Saved', icon: Heart, badge: savedProducts.length },
+            { id: 'saved', label: 'Saved', icon: Heart, badge: savedGadgets.length },
             { id: 'settings', label: 'Settings', icon: Settings },
           ].map((tab) => (
             <button
@@ -227,7 +227,7 @@ const ProfilePage: React.FC = () => {
                   {[
                     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
                     { id: 'reviews', label: 'My Reviews', icon: MessageSquare, badge: myReviews.length },
-                    { id: 'saved', label: 'Saved Gadgets', icon: Heart, badge: savedProducts.length },
+                    { id: 'saved', label: 'Saved Gadgets', icon: Heart, badge: savedGadgets.length },
                     { id: 'settings', label: 'Account Settings', icon: Settings },
                   ].map((tab) => (
                     <button
@@ -307,7 +307,7 @@ const ProfilePage: React.FC = () => {
                        <div className="absolute top-0 right-0 w-40 h-40 bg-primary/30 blur-[70px] rounded-full pointer-events-none" />
                        <h5 className="text-2xl lg:text-3xl font-black mb-3 leading-tight tracking-tight text-white">Nigeria's <br />Tech Voice</h5>
                        <p className="text-zinc-300 text-xs lg:text-sm font-medium mb-6">Your reviews have helped over <span className="text-primary font-bold">4,500</span> buyers this month.</p>
-                       <Link to="/products" className="text-xs font-black uppercase tracking-widest text-primary flex items-center gap-2 hover:translate-x-1 transition-transform">
+                       <Link to="/gadgets" className="text-xs font-black uppercase tracking-widest text-primary flex items-center gap-2 hover:translate-x-1 transition-transform">
                          Browse more <ChevronRight size={14} />
                        </Link>
                     </div>
@@ -346,11 +346,11 @@ const ProfilePage: React.FC = () => {
                         <div className="flex flex-col md:flex-row gap-6">
                            <div className="md:w-1/4">
                               <span className="text-[10px] font-black text-primary uppercase tracking-[2px] block mb-1">{rev.date}</span>
-                              <h4 className="font-black text-dark leading-tight mb-3 group-hover:text-primary transition-colors cursor-pointer">{rev.productName}</h4>
+                              <h4 className="font-black text-dark leading-tight mb-3 group-hover:text-primary transition-colors cursor-pointer">{rev.GadgetName}</h4>
                               <StarRating rating={rev.rating} size={14} />
                            </div>
                            <div className="md:w-3/4 flex flex-col gap-4">
-                              <p className="text-sm font-medium text-muted leading-relaxed italic border-l-2 border-zinc-100 pl-4">"{rev.comment}"</p>
+                              <p className="text-sm font-medium text-muted leading-relaxed  border-l-2 border-zinc-100 pl-4">"{rev.comment}"</p>
                               <div className="flex items-center justify-between pt-4 border-t border-zinc-50 mt-auto">
                                  <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">👍 {rev.helpful} helpful votes</span>
                                  <div className="flex items-center gap-3">
@@ -385,9 +385,9 @@ const ProfilePage: React.FC = () => {
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                    {savedProducts.map((product) => (
-                      <div key={product._key} className="relative">
-                         <TrendingProductCard product={product} />
+                    {savedGadgets.map((gadget) => (
+                      <div key={gadget._key} className="relative">
+                         <TrendingGadgetCard gadget={gadget} />
                          <button className="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/90 backdrop-blur shadow-md text-red-500 flex items-center justify-center hover:bg-red-500 hover:text-white transition-all z-10 scale-90 md:scale-100">
                            <Trash2 size={18} />
                          </button>
@@ -566,7 +566,7 @@ const ProfilePage: React.FC = () => {
             setIsEditModalOpen(false);
             setSelectedReview(null);
           }}
-          productName={selectedReview.productName}
+          GadgetName={selectedReview.GadgetName}
           initialData={{
             rating: selectedReview.rating,
             title: selectedReview.title || '',
@@ -588,7 +588,7 @@ const ProfilePage: React.FC = () => {
           }}
           onConfirm={handleConfirmDelete}
           title="Delete Review?"
-          itemName={selectedReview.productName}
+          itemName={selectedReview.GadgetName}
         />
       )}
     </div>

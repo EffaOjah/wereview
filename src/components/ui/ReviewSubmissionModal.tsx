@@ -4,7 +4,7 @@ import { X, Star, Plus, Minus } from 'lucide-react';
 interface ReviewSubmissionModalProps {
   isOpen: boolean;
   onClose: () => void;
-  productName: string;
+  GadgetName: string;
   initialData?: {
     rating: number;
     title: string;
@@ -15,7 +15,7 @@ interface ReviewSubmissionModalProps {
   onSubmit?: (data: any) => void;
 }
 
-const ReviewSubmissionModal: React.FC<ReviewSubmissionModalProps> = ({ isOpen, onClose, productName, initialData, onSubmit }) => {
+const ReviewSubmissionModal: React.FC<ReviewSubmissionModalProps> = ({ isOpen, onClose, GadgetName, initialData, onSubmit }) => {
   const [rating, setRating] = useState(0);
   const [hoveredRating, setHoveredRating] = useState(0);
   const [title, setTitle] = useState('');
@@ -75,7 +75,7 @@ const ReviewSubmissionModal: React.FC<ReviewSubmissionModalProps> = ({ isOpen, o
             <h3 className="text-xl font-black text-dark tracking-tight">
               {initialData ? 'Edit Your Review' : 'Write a Review'}
             </h3>
-            <p className="text-sm font-bold text-muted mb-0">{productName}</p>
+            <p className="text-sm font-bold text-muted mb-0">{GadgetName}</p>
           </div>
           <button 
             onClick={onClose}
@@ -187,7 +187,7 @@ const ReviewSubmissionModal: React.FC<ReviewSubmissionModalProps> = ({ isOpen, o
 
           {/* Guidelines */}
           <div className="text-xs font-bold text-muted bg-blue-50 text-blue-800 p-4 rounded-lg">
-            By submitting this review, you confirm that this is your genuine experience with the product. Fake or spam reviews will be removed.
+            By submitting this review, you confirm that this is your genuine experience with the Gadget. Fake or spam reviews will be removed.
           </div>
 
         </div>

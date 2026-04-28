@@ -5,7 +5,7 @@ export interface NigerianPrices {
   average?: number;
 }
 
-export interface Product {
+export interface Gadget {
     id: string;
     name: string;
     category: string;
@@ -27,7 +27,7 @@ export interface Product {
 
 export interface Review {
     id: string;
-    productId: string;
+    GadgetId: string;
     author: string;
     authorId: string;
     date: string;
@@ -91,5 +91,5 @@ export interface Seller {
     isVerified: boolean;
     specialty: string;
     memberSince: string;
-    products?: string[]; // IDs of top products they sell
+    Gadgets?: string[]; // IDs of top Gadgets they sell
 }

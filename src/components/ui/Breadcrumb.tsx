@@ -11,7 +11,7 @@ const Breadcrumb: React.FC<BreadcrumbProps> = ({ title, items }) => {
   return (
     <section className="breadcrumb-section relative py-20 overflow-hidden">
       {/* Hero background image */}
-      <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: "url('/img/products-hero-bg.png')" }}></div>
+      <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=1600')" }}></div>
       {/* Dark overlay for text legibility */}
       <div className="absolute inset-0 bg-black/60"></div>
       

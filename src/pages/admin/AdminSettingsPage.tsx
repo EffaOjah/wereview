@@ -11,19 +11,19 @@ interface SiteSettings {
   heroCtaText: string;
   metaTitle: string;
   metaDescription: string;
-  featuredProductIds: string[];
+  featuredGadgetIds: string[];
 }
 
 const defaultSettings: SiteSettings = {
-  siteName: 'WeReview',
-  contactEmail: 'hello@wereview.com',
+  siteName: 'GadgetHub',
+  contactEmail: 'hello@gadgethub.ng',
   maintenanceMode: false,
-  heroTitle: 'Genuine Product Reviews For Smart Shoppers',
-  heroSubtitle: 'Helping you make the right choice with authentic reviews from the Nigerian community.',
-  heroCtaText: 'Explore Reviews',
-  metaTitle: 'WeReview - Honest Product Reviews in Nigeria',
-  metaDescription: 'Find authentic reviews for gadgets, laptops, and more. Compare prices across Jumia, Konga, and Slot.',
-  featuredProductIds: ['1', '4', '5'],
+  heroTitle: 'Genuine Tech Deals For Smart Shoppers',
+  heroSubtitle: 'Helping you make the right choice with authentic deals and reviews from the Nigerian community.',
+  heroCtaText: 'Explore Deals',
+  metaTitle: 'GadgetHub - Find the best gadgets in Nigeria',
+  metaDescription: 'Find authentic reviews and best deals for gadgets, laptops, and more. Compare prices across Jumia, Konga, and Slot.',
+  featuredGadgetIds: ['1', '4', '5'],
 };
 
 const AdminSettingsPage: React.FC = () => {
@@ -33,7 +33,7 @@ const AdminSettingsPage: React.FC = () => {
   const [showSuccess, setShowSuccess] = useState(false);
 
   useEffect(() => {
-    const saved = localStorage.getItem('wereview_settings');
+    const saved = localStorage.getItem('gadgethub_settings');
     if (saved) {
       setSettings(JSON.parse(saved));
     }
@@ -42,7 +42,7 @@ const AdminSettingsPage: React.FC = () => {
   const handleSave = () => {
     setIsSaving(true);
     setTimeout(() => {
-      localStorage.setItem('wereview_settings', JSON.stringify(settings));
+      localStorage.setItem('gadgethub_settings', JSON.stringify(settings));
       setIsSaving(false);
       setShowSuccess(true);
       setTimeout(() => setShowSuccess(false), 3000);
@@ -259,3 +259,4 @@ const AdminSettingsPage: React.FC = () => {
 };
 
 export default AdminSettingsPage;
+

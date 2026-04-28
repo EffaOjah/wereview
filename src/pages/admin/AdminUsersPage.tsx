@@ -18,12 +18,12 @@ const AdminUsersPage: React.FC = () => {
   const [statusFilter, setStatusFilter] = useState<'All' | 'active' | 'suspended'>('All');
 
   useEffect(() => {
-    const savedUsers = localStorage.getItem('wereview_users');
+    const savedUsers = localStorage.getItem('gadgethub_users');
     if (savedUsers) {
       setUsers(JSON.parse(savedUsers));
     } else {
       setUsers(initialUsers);
-      localStorage.setItem('wereview_users', JSON.stringify(initialUsers));
+      localStorage.setItem('gadgethub_users', JSON.stringify(initialUsers));
     }
   }, []);
 
@@ -36,7 +36,7 @@ const AdminUsersPage: React.FC = () => {
       return u;
     });
     setUsers(updated);
-    localStorage.setItem('wereview_users', JSON.stringify(updated));
+    localStorage.setItem('gadgethub_users', JSON.stringify(updated));
   };
 
   const filteredUsers = users.filter(u => {
@@ -209,3 +209,4 @@ const AdminUsersPage: React.FC = () => {
 };
 
 export default AdminUsersPage;
+
