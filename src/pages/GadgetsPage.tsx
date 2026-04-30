@@ -1,20 +1,10 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import TrendingGadgetCard from '../components/ui/TrendingGadgetCard';
-import { gadgets } from '../data/gadgets';
+import { useGadgets } from '../context/GadgetContext';
 import { ChevronRight, LayoutGrid, List, Search, SlidersHorizontal, X, SearchX } from 'lucide-react';
 
-const departments = ['Smartphones', 'Laptops & PCs', 'Audio & Headphones', 'Tablets', 'Smartwatches', 'Gaming Consoles', 'Cameras'];
 
-const deptToCategory: Record<string, string> = {
-  'Smartphones': 'gadgets',
-  'Laptops & PCs': 'laptops',
-  'Audio & Headphones': 'headphones',
-  'Tablets': 'tablets',
-  'Smartwatches': 'smartwatches',
-  'Gaming Consoles': 'gaming',
-  'Cameras': 'cameras',
-};
 
 const ratingOptions = [
   { label: '⭐⭐⭐⭐⭐ 5.0 only', min: 5 },
@@ -23,14 +13,13 @@ const ratingOptions = [
   { label: '✅ All Ratings', min: 0 },
 ];
 
-const allGadgets = [...gadgets, ...gadgets].map((p, i) => ({ ...p, _key: `${p.id}-${i}` }));
-
 const GadgetsPage: React.FC = () => {
+  const { gadgets: globalGadgets, categories: serverCategories, isLoading: isContextLoading } = useGadgets();
   const [searchParams, setSearchParams] = useSearchParams();
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const searchRef = useRef<HTMLInputElement>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isFilterLoading, setIsFilterLoading] = useState(false);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
 
   // Initial page load effect
@@ -38,6 +27,8 @@ const GadgetsPage: React.FC = () => {
     const timer = setTimeout(() => setIsInitialLoading(false), 800);
     return () => clearTimeout(timer);
   }, []);
+
+  const isLoading = isContextLoading || isInitialLoading || isFilterLoading;
 
   // Read all active filters directly from URL params
   const searchQuery = searchParams.get('q') || '';
@@ -70,10 +61,10 @@ const GadgetsPage: React.FC = () => {
     });
   };
 
-  // Fake Loading Effect
+  // Fake Loading Effect when filters change
   useEffect(() => {
-    setIsLoading(true);
-    const timer = setTimeout(() => setIsLoading(false), 600);
+    setIsFilterLoading(true);
+    const timer = setTimeout(() => setIsFilterLoading(false), 600);
     return () => clearTimeout(timer);
   }, [searchQuery, selectedDept, minRating, maxPrice, sortBy, currentPage, viewMode]);
 
@@ -91,7 +82,15 @@ const GadgetsPage: React.FC = () => {
 
   // Combined filter + sort pipeline
   const filteredGadgets = useMemo(() => {
-    let result = allGadgets;
+    if (!globalGadgets) return [];
+    
+    let result = [...globalGadgets];
+
+    // Helper to get category string
+    const getCategoryString = (p: any) => {
+      if (!p.category) return '';
+      return (typeof p.category === 'object' ? p.category.name : p.category).toLowerCase();
+    };
 
     // 1. Search filter — name, description, category, shortSummary
     if (searchQuery.trim()) {
@@ -99,41 +98,44 @@ const GadgetsPage: React.FC = () => {
       result = result.filter(p =>
         p.name.toLowerCase().includes(q) ||
         p.description.toLowerCase().includes(q) ||
-        p.category.toLowerCase().includes(q) ||
+        getCategoryString(p).includes(q) ||
         (p.shortSummary?.toLowerCase().includes(q) ?? false)
       );
     }
 
-    // 2. Department filter — supports both exact display name (sidebar) and partial/key match (homepage links)
+    // 2. Department filter — match against server category name
     if (selectedDept) {
-      const categoryKey = deptToCategory[selectedDept]; // exact sidebar match
+      const q = selectedDept.toLowerCase();
       result = result.filter(p => {
-        if (categoryKey) return p.category === categoryKey;
-        // Fallback: try to match by category key directly or partial name
-        return (
-          p.category.toLowerCase().includes(selectedDept.toLowerCase()) ||
-          p.name.toLowerCase().includes(selectedDept.toLowerCase())
-        );
+        const catStr = getCategoryString(p);
+        return catStr.includes(q) || p.name.toLowerCase().includes(q);
       });
     }
 
     // 3. Rating filter
     if (minRating > 0) {
-      result = result.filter(p => p.rating >= minRating);
+      result = result.filter(p => (p.avgRating || p.rating || 0) >= minRating);
     }
 
     // 4. Price filter
-    result = result.filter(p => (p.nigerianPrices?.average || 0) <= maxPrice);
+    result = result.filter(p => {
+      const avgPrice = (p.prices as any)?.[0]?.price || p.nigerianPrices?.average || p.originalPrice || 0;
+      return avgPrice <= maxPrice;
+    });
 
     // 5. Sort
-    return [...result].sort((a, b) => {
-      if (sortBy === 'rating') return b.rating - a.rating;
-      if (sortBy === 'reviews') return (b.reviewCount || 0) - (a.reviewCount || 0);
-      if (sortBy === 'price-low') return (a.nigerianPrices?.average || 0) - (b.nigerianPrices?.average || 0);
-      if (sortBy === 'price-high') return (b.nigerianPrices?.average || 0) - (a.nigerianPrices?.average || 0);
+    return result.sort((a, b) => {
+      if (sortBy === 'rating') return (b.avgRating || b.rating || 0) - (a.avgRating || a.rating || 0);
+      if (sortBy === 'reviews') return (b.reviewCount || b.reviews?.length || 0) - (a.reviewCount || a.reviews?.length || 0);
+      
+      const priceA = (a.prices as any)?.[0]?.price || a.nigerianPrices?.average || a.originalPrice || 0;
+      const priceB = (b.prices as any)?.[0]?.price || b.nigerianPrices?.average || b.originalPrice || 0;
+      
+      if (sortBy === 'price-low') return priceA - priceB;
+      if (sortBy === 'price-high') return priceB - priceA;
       return 0;
     });
-  }, [searchQuery, selectedDept, minRating, maxPrice, sortBy]);
+  }, [globalGadgets, searchQuery, selectedDept, minRating, maxPrice, sortBy]);
 
   const totalPages = Math.ceil(filteredGadgets.length / itemsPerPage);
   const paginatedGadgets = filteredGadgets.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
@@ -165,13 +167,13 @@ const GadgetsPage: React.FC = () => {
           >
             All Gadgets <ChevronRight size={14} />
           </li>
-          {departments.map((dept) => (
+          {serverCategories.map((cat) => (
             <li
-              key={dept}
-              onClick={() => { setParam('category', dept); setIsSidebarOpen(false); }}
-              className={`cursor-pointer flex items-center justify-between py-2 px-3 rounded-lg transition-colors ${selectedDept === dept ? 'bg-primary/10 text-primary' : 'hover:text-primary'}`}
+              key={cat.id}
+              onClick={() => { setParam('category', cat.name); setIsSidebarOpen(false); }}
+              className={`cursor-pointer flex items-center justify-between py-2 px-3 rounded-lg transition-colors ${selectedDept === cat.name ? 'bg-primary/10 text-primary' : 'hover:text-primary'}`}
             >
-              {dept} <ChevronRight size={14} />
+              {cat.name} <ChevronRight size={14} />
             </li>
           ))}
         </ul>
@@ -268,7 +270,7 @@ const GadgetsPage: React.FC = () => {
         </div>
       </section>
 
-      {isInitialLoading ? (
+      {isContextLoading || isInitialLoading ? (
         <div className="animate-pulse">
           <section className="py-16">
             <div className="container mx-auto px-4">
@@ -410,7 +412,7 @@ const GadgetsPage: React.FC = () => {
               ) : (
                 <div className={`grid gap-6 ${viewMode === 'grid' ? 'grid-cols-1 sm:grid-cols-2 xl:grid-cols-3' : 'grid-cols-1'}`}>
                   {paginatedGadgets.map((gadget: any) => (
-                    <TrendingGadgetCard key={gadget._key} gadget={gadget} viewMode={viewMode} />
+                    <TrendingGadgetCard key={gadget.id} gadget={gadget} viewMode={viewMode} />
                   ))}
                 </div>
               )}

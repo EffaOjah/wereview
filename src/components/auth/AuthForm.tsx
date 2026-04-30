@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { Mail, Lock, User as UserIcon, LogIn, UserPlus } from 'lucide-react';
+import { Mail, Lock, User as UserIcon, LogIn, UserPlus, AlertCircle } from 'lucide-react';
 import { useAuthModal, type AuthView } from '../../context/AuthModalContext';
+import { getApiUrl } from '../../utils/api';
 
 interface AuthFormProps {
   initialView?: AuthView;
   onSuccess?: () => void;
-  // Optional route change handler instead of in-form toggle
   onNavigate?: (view: AuthView) => void;
 }
 
@@ -13,14 +13,50 @@ const AuthForm: React.FC<AuthFormProps> = ({ initialView = 'login', onSuccess, o
   const [view, setView] = useState<AuthView>(initialView);
   const { login } = useAuthModal();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Form State
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  
+  // Status State
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Providing mock user data for simulation
-    login({ name: 'Ayobami John', email: 'john@example.com' });
-    if (onSuccess) onSuccess();
+    setIsLoading(true);
+    setError(null);
+
+    const endpoint = view === 'login' ? '/api/auth/login' : '/api/auth/register';
+    const payload = view === 'login' 
+      ? { email, password }
+      : { name: `${firstName} ${lastName}`.trim(), email, password };
+
+    try {
+      const response = await fetch(getApiUrl(endpoint), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        login(data.data.user, data.data.accessToken);
+        if (onSuccess) onSuccess();
+      } else {
+        setError(data.message || 'Authentication failed. Please try again.');
+      }
+    } catch (err) {
+      setError('A network error occurred. Please try again later.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleToggleView = (newView: AuthView) => {
+    setError(null);
     if (onNavigate) {
       onNavigate(newView);
     } else {
@@ -69,21 +105,12 @@ const AuthForm: React.FC<AuthFormProps> = ({ initialView = 'login', onSuccess, o
           {view === 'login' ? 'Sign in to review Gadgets and manage your profile.' : 'Sign up to drop reviews and join our tech community.'}
         </p>
 
-        {/* Google Mockup Button */}
-        <button 
-          type="button"
-          onClick={handleSubmit}
-          className="flex items-center justify-center gap-3 w-full py-3.5 px-4 bg-zinc-50 border border-zinc-200 hover:border-zinc-300 hover:bg-zinc-100 rounded-xl transition-all shadow-sm group font-bold text-sm text-dark mb-6"
-        >
-          <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" className="w-5 h-5 group-hover:scale-110 transition-transform" />
-          Continue with Google
-        </button>
-
-        <div className="flex items-center gap-4 w-full mb-6">
-          <div className="h-px bg-zinc-100 flex-1" />
-          <span className="text-xs font-bold text-zinc-400 uppercase tracking-widest">OR EMAIL</span>
-          <div className="h-px bg-zinc-100 flex-1" />
-        </div>
+        {error && (
+          <div className="flex items-start gap-3 w-full p-4 mb-6 bg-red-50 border border-red-200 text-red-600 rounded-xl">
+            <AlertCircle size={20} className="shrink-0 mt-0.5" />
+            <p className="text-sm font-medium leading-tight">{error}</p>
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-5 w-full">
           {view === 'signup' && (
@@ -93,7 +120,14 @@ const AuthForm: React.FC<AuthFormProps> = ({ initialView = 'login', onSuccess, o
                  <label className="text-[10px] font-black text-dark uppercase tracking-widest">First Name</label>
                  <div className="relative">
                    <UserIcon className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400" size={16} />
-                   <input type="text" placeholder="John" className="w-full pl-11 pr-4 py-3 bg-zinc-50 border border-zinc-100 rounded-xl outline-none focus:border-primary focus:bg-white transition-all text-sm font-medium" />
+                   <input 
+                     type="text" 
+                     placeholder="John" 
+                     required
+                     value={firstName}
+                     onChange={(e) => setFirstName(e.target.value)}
+                     className="w-full pl-11 pr-4 py-3 bg-zinc-50 border border-zinc-100 rounded-xl outline-none focus:border-primary focus:bg-white transition-all text-sm font-medium" 
+                   />
                  </div>
                </div>
                
@@ -102,7 +136,14 @@ const AuthForm: React.FC<AuthFormProps> = ({ initialView = 'login', onSuccess, o
                  <label className="text-[10px] font-black text-dark uppercase tracking-widest">Last Name</label>
                  <div className="relative">
                    <UserIcon className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400" size={16} />
-                   <input type="text" placeholder="Doe" className="w-full pl-11 pr-4 py-3 bg-zinc-50 border border-zinc-100 rounded-xl outline-none focus:border-primary focus:bg-white transition-all text-sm font-medium" />
+                   <input 
+                     type="text" 
+                     placeholder="Doe" 
+                     required
+                     value={lastName}
+                     onChange={(e) => setLastName(e.target.value)}
+                     className="w-full pl-11 pr-4 py-3 bg-zinc-50 border border-zinc-100 rounded-xl outline-none focus:border-primary focus:bg-white transition-all text-sm font-medium" 
+                   />
                  </div>
                </div>
             </div>
@@ -113,7 +154,14 @@ const AuthForm: React.FC<AuthFormProps> = ({ initialView = 'login', onSuccess, o
              <label className="text-[10px] font-black text-dark uppercase tracking-widest">Email Address</label>
              <div className="relative">
                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400" size={16} />
-               <input type="email" placeholder="hello@example.com" className="w-full pl-11 pr-4 py-3 bg-zinc-50 border border-zinc-100 rounded-xl outline-none focus:border-primary focus:bg-white transition-all text-sm font-medium" />
+               <input 
+                 type="email" 
+                 placeholder="hello@example.com" 
+                 required
+                 value={email}
+                 onChange={(e) => setEmail(e.target.value)}
+                 className="w-full pl-11 pr-4 py-3 bg-zinc-50 border border-zinc-100 rounded-xl outline-none focus:border-primary focus:bg-white transition-all text-sm font-medium" 
+               />
              </div>
           </div>
 
@@ -127,12 +175,25 @@ const AuthForm: React.FC<AuthFormProps> = ({ initialView = 'login', onSuccess, o
              </div>
              <div className="relative">
                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400" size={16} />
-               <input type="password" placeholder="••••••••" className="w-full pl-11 pr-4 py-3 bg-zinc-50 border border-zinc-100 rounded-xl outline-none focus:border-primary focus:bg-white transition-all text-sm font-medium" />
+               <input 
+                 type="password" 
+                 placeholder="••••••••" 
+                 required
+                 value={password}
+                 onChange={(e) => setPassword(e.target.value)}
+                 className="w-full pl-11 pr-4 py-3 bg-zinc-50 border border-zinc-100 rounded-xl outline-none focus:border-primary focus:bg-white transition-all text-sm font-medium" 
+               />
              </div>
           </div>
 
-          <button type="submit" className="flex items-center justify-center gap-2 w-full py-4 bg-dark text-white hover:bg-primary font-bold text-sm rounded-xl transition-colors shadow-lg mt-2">
-            {view === 'login' ? (
+          <button 
+            type="submit" 
+            disabled={isLoading}
+            className="flex items-center justify-center gap-2 w-full py-4 bg-dark text-white hover:bg-primary disabled:bg-zinc-400 disabled:cursor-not-allowed font-bold text-sm rounded-xl transition-colors shadow-lg mt-2"
+          >
+            {isLoading ? (
+              <span className="animate-pulse">Processing...</span>
+            ) : view === 'login' ? (
               <><LogIn size={18} /> Sign In</>
             ) : (
               <><UserPlus size={18} /> Create Account</>

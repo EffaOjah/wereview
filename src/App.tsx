@@ -10,7 +10,7 @@ import BackToTopButton from './components/ui/BackToTopButton';
 // Real Pages
 import HomePage from './pages/HomePage';
 import ReviewsPage from './pages/ReviewsPage';
-import ReviewDetailsPage from './pages/ReviewDetailsPage';
+import GadgetDetailsPage from './pages/GadgetDetailsPage';
 import BlogPage from './pages/BlogPage';
 import BlogDetailsPage from './pages/BlogDetailsPage';
 import LoginPage from './pages/LoginPage';
@@ -24,6 +24,7 @@ import SellersPage from './pages/SellersPage';
 import ContactPage from './pages/ContactPage';
 import NotFoundPage from './pages/NotFoundPage';
 import AIAssistantWidget from './components/ui/AIAssistantWidget';
+import GlobalErrorBanner from './components/ui/GlobalErrorBanner';
 
 import AdminLoginPage from './pages/admin/AdminLoginPage';
 import AdminDashboard from './pages/admin/AdminDashboard';
@@ -34,6 +35,8 @@ import AdminCategoriesPage from './pages/admin/AdminCategoriesPage';
 import AdminSettingsPage from './pages/admin/AdminSettingsPage';
 import AdminNotificationsPage from './pages/admin/AdminNotificationsPage';
 
+import { GadgetProvider } from './context/GadgetContext';
+
 const AppContent: React.FC = () => {
   const location = useLocation();
   const isProfilePage = location.pathname === '/profile';
@@ -42,11 +45,12 @@ const AppContent: React.FC = () => {
   return (
     <div className="flex flex-col min-h-screen relative">
       {!isAdminPage && <Navbar />}
+      {!isAdminPage && <GlobalErrorBanner />}
       <main className="flex-grow">
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/reviews" element={<ReviewsPage />} />
-          <Route path="/reviews/:id" element={<ReviewDetailsPage />} />
+          <Route path="/gadgets/:id" element={<GadgetDetailsPage />} />
           <Route path="/blog" element={<BlogPage />} />
           <Route path="/blog/:id" element={<BlogDetailsPage />} />
           <Route path="/login" element={<LoginPage />} />
@@ -82,12 +86,14 @@ const AppContent: React.FC = () => {
 
 const App: React.FC = () => {
   return (
-    <AuthModalProvider>
-      <Router>
-        <ScrollToTop />
-        <AppContent />
-      </Router>
-    </AuthModalProvider>
+    <GadgetProvider>
+      <AuthModalProvider>
+        <Router>
+          <ScrollToTop />
+          <AppContent />
+        </Router>
+      </AuthModalProvider>
+    </GadgetProvider>
   );
 };
 

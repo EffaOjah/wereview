@@ -38,10 +38,10 @@ const TrendingGadgetCard: React.FC<TrendingGadgetCardProps> = ({ gadget, viewMod
       <div className="flex flex-col flex-grow p-6 gap-3">
         {/* Category & Rating */}
         <div className="flex items-center justify-between">
-          <span className="text-xs font-semibold text-muted uppercase tracking-wider">{gadget.category}</span>
+          <span className="text-xs font-semibold text-muted uppercase tracking-wider">{gadget.category?.name || gadget.category}</span>
           <div className="flex items-center gap-1.5">
-            <StarRating rating={gadget.rating} size={14} />
-            <span className="text-xs font-bold text-dark">({gadget.reviewCount || 0})</span>
+            <StarRating rating={gadget.avgRating || gadget.rating || 0} size={14} />
+            <span className="text-xs font-bold text-dark">({gadget.reviewCount || gadget.reviews?.length || 0})</span>
           </div>
         </div>
 
@@ -59,17 +59,17 @@ const TrendingGadgetCard: React.FC<TrendingGadgetCardProps> = ({ gadget, viewMod
         <div className={`mt-auto pt-4 flex gap-4 ${isList ? 'flex-row items-center justify-between border-t border-zinc-100' : 'flex-col border-t border-zinc-100'}`}>
           <div className="flex flex-col">
             <span className="text-xs text-muted font-bold uppercase tracking-widest mb-1">Market Avg</span>
-            <NairaPrice amount={gadget.nigerianPrices?.average || 0} className="text-xl font-black text-dark leading-none" />
+            <NairaPrice amount={gadget.prices?.average || gadget.nigerianPrices?.average || 0} className="text-xl font-black text-dark leading-none" />
           </div>
           <div className="flex gap-2 w-full lg:w-auto">
             <button className={`bg-zinc-100 text-dark rounded-lg font-bold text-sm hover:bg-zinc-200 transition-colors flex items-center justify-center gap-2 active:scale-95 duration-200 ${isList ? 'px-6 py-3' : 'flex-1 py-3'}`}>
               <GitCompare size={16} /> Compare
             </button>
             <Link 
-              to={`/reviews/${gadget.id}`}
+              to={`/gadgets/${gadget.id}`}
               className={`bg-dark text-white rounded-lg font-bold text-sm hover:bg-primary transition-colors flex items-center justify-center gap-2 group-hover:scale-[1.02] active:scale-95 duration-200 ${isList ? 'px-6 py-3 shrink-0' : 'flex-1 py-3'}`}
             >
-              See Reviews
+              See Gadget
             </Link>
           </div>
         </div>

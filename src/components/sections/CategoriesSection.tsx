@@ -1,10 +1,11 @@
 import React, { useRef } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import CategoryCard from '../ui/CategoryCard';
-import { categories } from '../../data/gadgets';
+import { useGadgets } from '../../context/GadgetContext';
 
 const CategoriesSection: React.FC = () => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const { categories, isLoading } = useGadgets();
 
   const scroll = (direction: 'left' | 'right') => {
     if (scrollContainerRef.current) {
@@ -24,7 +25,10 @@ const CategoriesSection: React.FC = () => {
         
         {/* Simple Header */}
         <div className="flex items-center justify-between mb-10">
-          <h2 className="text-xl md:text-2xl font-black text-dark tracking-tight">Browse by Category</h2>
+          <div>
+            <h2 className="text-xl md:text-2xl font-black text-dark tracking-tight">Browse by Category</h2>
+            <p className="text-zinc-500 mt-2">Explore curated categories and discover products that meet your exact needs.</p>
+          </div>
           
           <div className="flex gap-2">
             <button 
@@ -43,23 +47,32 @@ const CategoriesSection: React.FC = () => {
         </div>
 
         {/* Horizontal One-Line Container */}
-        <div 
-          ref={scrollContainerRef}
-          className="flex gap-8 md:gap-12 overflow-x-auto scrollbar-hide pb-4 snap-x snap-mandatory"
-          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-        >
-          {categories.map((cat) => (
-            <div key={cat.id} className="snap-start shrink-0">
-               <CategoryCard category={cat} />
+        {isLoading ? (
+          <div className="py-8 flex justify-center items-center">
+            <div className="animate-pulse flex flex-col items-center gap-4">
+              <div className="w-10 h-10 rounded-full border-4 border-primary border-t-transparent animate-spin"></div>
+              <p className="text-zinc-500 font-bold tracking-widest text-sm uppercase">Loading Categories...</p>
             </div>
-          ))}
-          {/* Duplicate to ensure enough width for scroll if list is short */}
-          {categories.length < 10 && categories.map((cat) => (
-            <div key={`${cat.id}-dup`} className="snap-start shrink-0">
-               <CategoryCard category={cat} />
-            </div>
-          ))}
-        </div>
+          </div>
+        ) : (
+          <div 
+            ref={scrollContainerRef}
+            className="flex gap-8 md:gap-12 overflow-x-auto scrollbar-hide pb-4 snap-x snap-mandatory"
+            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+          >
+            {categories.map((cat) => (
+              <div key={cat.id} className="snap-start shrink-0">
+                 <CategoryCard category={cat} />
+              </div>
+            ))}
+            {/* Duplicate to ensure enough width for scroll if list is short */}
+            {categories.length > 0 && categories.length < 6 && categories.map((cat) => (
+              <div key={`${cat.id}-dup`} className="snap-start shrink-0">
+                 <CategoryCard category={cat} />
+              </div>
+            ))}
+          </div>
+        )}
 
       </div>
       

@@ -25,26 +25,26 @@ const HeroSlider: React.FC = () => {
                   Nigeria's #1 Gadget Deal Finder
                 </span>
                 <h1 className="text-4xl md:text-5xl lg:text-7xl font-black text-dark leading-[1.1] tracking-tight">
-                  Find The Best <br />
-                  <span className="text-primary">Gadgets In Nigeria.</span>
+                  Find the Right Gadget. <br />
+                  <span className="text-primary">At the Right Price.</span>
                 </h1>
                 <p className="text-zinc-500 font-medium text-lg lg:text-xl max-w-xl leading-relaxed">
-                  Compare prices, read reviews, and discover trusted sellers near you.
+                  Compare verified prices, read honest reviews, and discover trusted sellers across Nigeria. Everything you need to make a confident decision.
                 </p>
 
                 {/* CTA Buttons */}
                 <div className="flex flex-wrap gap-4 mt-4">
                   <Link
-                    to="/compare"
+                    to="/gadgets"
                     className="px-10 py-5 bg-primary hover:bg-primary-hover text-white font-black text-sm rounded-2xl transition-all shadow-2xl shadow-primary/30 hover:-translate-y-1 uppercase tracking-widest flex items-center gap-2"
                   >
-                    Compare Gadgets
+                    Explore Gadgets
                   </Link>
                   <Link
-                    to="/gadgets"
+                    to="/compare"
                     className="px-10 py-5 bg-white border-2 border-zinc-900 text-zinc-900 hover:bg-zinc-900 hover:text-white font-black text-sm rounded-2xl transition-all hover:-translate-y-1 uppercase tracking-widest"
                   >
-                    View Today's Deals
+                    Compare Options
                   </Link>
                 </div>
 

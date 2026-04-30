@@ -8,11 +8,13 @@ export interface NigerianPrices {
 export interface Gadget {
     id: string;
     name: string;
-    category: string;
+    category: any; // string in mock, object in API
+    categoryId?: string;
     image: string;
     rating: number;
     price: number; 
-    nigerianPrices?: NigerianPrices;
+    prices?: NigerianPrices; // API
+    nigerianPrices?: NigerianPrices; // Mock
     originalPrice?: number;
     discount?: number;
     badges: string[];
@@ -20,6 +22,8 @@ export interface Gadget {
     specs: Record<string, string>;
     dealEndTime?: Date;
     reviewCount?: number;
+    avgRating?: number;   // computed from reviews on the backend
+    reviews?: any[]; // API
     shortSummary?: string;
     pros?: string[]; 
     cons?: string[];

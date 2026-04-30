@@ -75,3 +75,8 @@
     @apply w-10 h-10 absolute top-1/2 left-1/2 -mt-3 -ml-3 rounded-full border-4 border-[#f44336] border-l-transparent animate-spin;
   }
 }
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}

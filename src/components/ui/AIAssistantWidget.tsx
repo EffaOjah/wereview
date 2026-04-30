@@ -13,7 +13,7 @@ const AIAssistantWidget: React.FC = () => {
     const [messages, setMessages] = useState<Message[]>([
         {
             id: '1',
-            text: "Hello! I'm your GadgetHub AI assistant. Looking for gadget advice or the best deals?",
+            text: "Tell us your budget and preferences. We’ll suggest the best options for you in seconds.",
             sender: 'ai',
             timestamp: new Date()
         }
@@ -102,7 +102,7 @@ const AIAssistantWidget: React.FC = () => {
                                 <Bot size={24} className="text-primary" />
                             </div>
                             <div>
-                                <h3 className="font-black text-zinc-300 text-sm uppercase tracking-widest">Tech Deals AI</h3>
+                                <h3 className="font-black text-zinc-300 text-xs uppercase tracking-widest">Get Personalized Recommendations</h3>
                                 <div className="flex items-center gap-1.5 mt-0.5">
                                     <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
                                     <span className="text-[10px] font-bold text-zinc-400">Online & Ready</span>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, User, ChevronDown, Phone } from 'lucide-react';
+import { Menu, X, User, ChevronDown, Heart } from 'lucide-react';
 import { useAuthModal } from '../../context/AuthModalContext';
 
 const Navbar: React.FC = () => {
@@ -21,37 +21,27 @@ const Navbar: React.FC = () => {
         <nav className="hidden lg:flex items-center gap-8">
           <Link to="/" className={`text-[13px] font-black uppercase tracking-[2px] transition-colors ${location.pathname === '/' ? 'text-primary' : 'text-zinc-900 hover:text-primary'}`}>HOME</Link>
           <Link to="/reviews" className={`text-[13px] font-black uppercase tracking-[2px] transition-colors ${location.pathname === '/reviews' ? 'text-primary' : 'text-zinc-900 hover:text-primary'}`}>REVIEWS</Link>
-
-          {/* <div className="relative group cursor-pointer">
-            <span className="text-[13px] font-black uppercase tracking-[2px] text-zinc-900 hover:text-[#e85d2c] flex items-center gap-1 transition-colors">
-              PAGES 
-            </span>
-            <ul className="absolute left-0 top-full mt-4 bg-dark text-white w-48 py-4 opacity-0 invisible group-hover:opacity-100 group-hover:-translate-y-2 group-hover:visible transition-all border-t-4 border-[#e85d2c] shadow-xl z-50">
-              <li className="px-4 py-2 hover:bg-zinc-800"><Link to="/reviews/1" className="block text-sm font-bold">Review Details</Link></li>
-              <li className="px-4 py-2 hover:bg-zinc-800"><Link to="/profile" className="block text-sm font-bold">User Profile</Link></li>
-            </ul>
-          </div> */}
-
           <Link to="/compare" className={`text-[13px] font-black uppercase tracking-[2px] transition-colors ${location.pathname === '/compare' ? 'text-primary' : 'text-zinc-900 hover:text-primary'}`}>COMPARE</Link>
-
           <Link to="/blog" className={`text-[13px] font-black uppercase tracking-[2px] transition-colors ${location.pathname === '/blog' ? 'text-primary' : 'text-zinc-900 hover:text-primary'}`}>BLOG</Link>
           <Link to="/sellers" className={`text-[13px] font-black uppercase tracking-[2px] transition-colors ${location.pathname === '/sellers' ? 'text-primary' : 'text-zinc-900 hover:text-primary'}`}>SELLERS</Link>
           <Link to="/gadgets" className={`text-[13px] font-black uppercase tracking-[2px] transition-colors ${location.pathname === '/gadgets' ? 'text-primary' : 'text-zinc-900 hover:text-primary'}`}>GADGETS</Link>
         </nav>
 
-        {/* Right: Language & Auth (Desktop) */}
+        {/* Right: Wishlist & Auth (Desktop) */}
         <div className="hidden lg:flex items-center gap-5">
-          {/* Language Selector */}
-          <div className="group relative cursor-pointer flex items-center gap-1.5 hover:opacity-80 transition-opacity">
-            <img src="/img/language.png" alt="English" className="h-[14px] w-5 object-cover rounded-sm border border-zinc-200" />
-            <span className="text-sm font-medium text-zinc-800">English</span>
-            <ChevronDown size={14} className="text-zinc-500" />
 
-            <ul className="absolute right-0 top-full mt-4 bg-white border border-zinc-200 text-dark w-24 py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all shadow-lg rounded-md z-50">
-              <li className="px-3 py-1.5 hover:bg-zinc-50 text-sm font-medium cursor-pointer">Spanish</li>
-              <li className="px-3 py-1.5 bg-zinc-50 text-sm font-medium cursor-pointer">English</li>
-            </ul>
-          </div>
+          {/* Wishlist Icon */}
+          <Link
+            to="/wishlist"
+            className={`relative flex items-center gap-1.5 group transition-colors ${location.pathname === '/wishlist' ? 'text-primary' : 'text-zinc-600 hover:text-primary'}`}
+          >
+            <Heart
+              size={22}
+              strokeWidth={2}
+              className={`transition-all group-hover:scale-110 ${location.pathname === '/wishlist' ? 'fill-primary text-primary' : ''}`}
+            />
+            <span className="text-sm font-bold hidden xl:inline">Wishlist</span>
+          </Link>
 
           {/* Divider */}
           <span className="text-zinc-300 font-light text-xl">|</span>
@@ -109,6 +99,13 @@ const Navbar: React.FC = () => {
           <Link to="/blog" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-black uppercase tracking-widest text-zinc-900">BLOG</Link>
           <Link to="/sellers" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-black uppercase tracking-widest text-zinc-900">SELLERS</Link>
           <Link to="/gadgets" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-black uppercase tracking-widest text-zinc-900">GADGETS</Link>
+          <Link
+            to="/wishlist"
+            onClick={() => setIsMobileMenuOpen(false)}
+            className={`text-lg font-black uppercase tracking-widest flex items-center gap-2 ${location.pathname === '/wishlist' ? 'text-primary' : 'text-zinc-900'}`}
+          >
+            <Heart size={18} className={location.pathname === '/wishlist' ? 'fill-primary' : ''} /> WISHLIST
+          </Link>
 
           <div className="w-full h-px bg-zinc-100 my-2" />
 
@@ -139,22 +136,6 @@ const Navbar: React.FC = () => {
               <User size={20} className="fill-primary" /> Login
             </button>
           )}
-
-          <div className="w-full h-px bg-zinc-100 my-2" />
-
-          {/* Support Number — tap-to-call on mobile */}
-          <a
-            href="tel:+2348000000000"
-            className="flex items-center gap-4 bg-zinc-50 rounded-2xl p-4 border border-zinc-100"
-          >
-            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-              <Phone size={18} className="text-primary" />
-            </div>
-            <div className="flex flex-col">
-              <span className="text-xs font-bold text-muted uppercase tracking-widest">24/7 Support</span>
-              <span className="text-base font-black text-dark">+234 800 000 0000</span>
-            </div>
-          </a>
         </div>
       </div>
     </header>

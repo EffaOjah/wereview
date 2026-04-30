@@ -22,10 +22,10 @@ const VerifiedSellersSection: React.FC = () => {
                             <Store size={14} /> Local Trusted Vendors
                         </div>
                         <h2 className="text-4xl md:text-5xl font-black text-dark tracking-tight leading-none mb-6">
-                            Verified <br /> <span className="text-primary">Nigerians Sellers.</span>
+                            Shop with <br /> <span className="text-primary">Trusted Sellers.</span>
                         </h2>
                         <p className="text-muted font-medium text-lg">
-                            We've vetted the best gadget hubs across Nigeria. Shop with confidence from vendors near you.
+                            Connect with verified stores near you and buy with confidence.
                         </p>
                     </div>
 
@@ -90,7 +90,7 @@ const VerifiedSellersSection: React.FC = () => {
 
                 <div className="mt-12 flex justify-center">
                     <button className="px-10 py-4 bg-white border border-zinc-100 rounded-2xl font-black text-[11px] uppercase tracking-[3px] text-dark hover:bg-dark hover:text-white hover:border-dark transition-all shadow-sm">
-                        Explore All Verified Sellers
+                        View Sellers
                     </button>
                 </div>
 

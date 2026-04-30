@@ -1,9 +1,11 @@
 import React, { useState, useMemo } from 'react';
-import { gadgets } from '../../data/gadgets';
 import TrendingGadgetCard from '../ui/TrendingGadgetCard';
 import { Search, SlidersHorizontal, Flame } from 'lucide-react';
+import { useGadgets } from '../../context/GadgetContext';
 
 const TrendingGadgetsSection: React.FC = () => {
+  const { gadgets, isLoading } = useGadgets();
+  
   const [searchTerm, setSearchTerm] = useState('');
   const [activeCategory, setActiveCategory] = useState('*');
   const [sortBy, setSortBy] = useState('hottest'); // 'hottest', 'rating', 'most-reviewed'
@@ -33,25 +35,29 @@ const TrendingGadgetsSection: React.FC = () => {
 
     // 2. Category Filter
     if (activeCategory !== '*') {
-      result = result.filter(p => p.category.toLowerCase() === activeCategory);
+      result = result.filter(p => p.category?.name?.toLowerCase() === activeCategory);
     }
 
     // 3. Sorting
     result = [...result].sort((a, b) => {
+      const ratingA = 4.5; // Placeholder until reviews are fetched
+      const ratingB = 4.5;
+      const countA = a.reviews?.length || 0;
+      const countB = b.reviews?.length || 0;
+
       if (sortBy === 'rating') {
-        return b.rating - a.rating;
+        return ratingB - ratingA;
       } else if (sortBy === 'most-reviewed') {
-        return (b.reviewCount || 0) - (a.reviewCount || 0);
+        return countB - countA;
       } else {
-        // 'hottest' - just an arbitrary metric based on a mix of rating and reviews
-        const scoreA = (a.rating * 10) + (a.reviewCount || 0);
-        const scoreB = (b.rating * 10) + (b.reviewCount || 0);
+        const scoreA = (ratingA * 10) + countA;
+        const scoreB = (ratingB * 10) + countB;
         return scoreB - scoreA;
       }
     });
 
     return result;
-  }, [searchTerm, activeCategory, sortBy]);
+  }, [gadgets, searchTerm, activeCategory, sortBy]);
 
   const displayedGadgets = filteredAndSortedGadgets.slice(0, visibleCount);
   const hasMore = visibleCount < filteredAndSortedGadgets.length;
@@ -70,10 +76,10 @@ const TrendingGadgetsSection: React.FC = () => {
               <Flame size={14} /> Trending Now
             </div>
             <h2 className="text-4xl md:text-5xl font-black text-dark leading-tight mb-4 tracking-tight">
-              What everyone is reviewing.
+              Trending in Nigeria
             </h2>
             <p className="text-muted text-lg">
-              Discover the most discussed, highest-rated tech of the week.
+              The most searched and compared gadgets right now.
             </p>
           </div>
 
@@ -128,29 +134,32 @@ const TrendingGadgetsSection: React.FC = () => {
         </div>
 
         {/* Grid Container */}
-        {filteredAndSortedGadgets.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {displayedGadgets.map((gadget: any) => (
-              <div key={gadget.id} className="animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-both">
-                <TrendingGadgetCard gadget={gadget} />
-              </div>
-            ))}
+        {isLoading ? (
+        <div className="py-20 flex justify-center items-center">
+          <div className="animate-pulse flex flex-col items-center gap-4">
+            <div className="w-10 h-10 rounded-full border-4 border-primary border-t-transparent animate-spin"></div>
+            <p className="text-zinc-500 font-bold tracking-widest text-sm uppercase">Loading Gadgets...</p>
           </div>
-        ) : (
-          <div className="py-20 text-center flex flex-col items-center justify-center">
-            <div className="w-16 h-16 bg-zinc-100 rounded-full flex items-center justify-center mb-4 text-muted">
-              <Search size={24} />
-            </div>
-            <h3 className="text-xl font-bold text-dark mb-2">No Gadgets found</h3>
-            <p className="text-muted">We couldn't find anything matching your current filters.</p>
-            <button 
-              onClick={() => { setSearchTerm(''); setActiveCategory('*'); }}
-              className="mt-6 text-primary font-bold hover:underline"
-            >
-              Clear all filters
-            </button>
-          </div>
-        )}
+        </div>
+      ) : displayedGadgets.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+          {displayedGadgets.map((gadget) => (
+            <TrendingGadgetCard key={gadget.id} gadget={gadget} />
+          ))}
+        </div>
+      ) : (
+        <div className="py-20 flex flex-col items-center justify-center bg-zinc-50 rounded-3xl border border-zinc-100 border-dashed text-center">
+          <Search size={48} className="text-zinc-300 mb-4" />
+          <h4 className="text-xl font-black text-dark">No gadgets found</h4>
+          <p className="text-muted mt-2">Try adjusting your filters or search term</p>
+          <button 
+            onClick={() => { setSearchTerm(''); setActiveCategory('*'); }}
+            className="mt-6 px-6 py-2 bg-white border border-zinc-200 text-dark font-bold rounded-lg hover:border-primary transition-colors"
+          >
+            Clear Filters
+          </button>
+        </div>
+      )}
 
         {/* Load More */}
         {hasMore && (

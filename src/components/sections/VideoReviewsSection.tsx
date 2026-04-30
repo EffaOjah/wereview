@@ -14,10 +14,10 @@ const VideoReviewsSection: React.FC = () => {
                             <Video size={14} /> Video Showcase
                         </div>
                         <h2 className="text-4xl md:text-6xl font-black tracking-tighter leading-none mb-6 text-zinc-50">
-                            Watch Real <br /> <span className="text-primary">Gadget Reviews.</span>
+                            Watch Before <br /> <span className="text-primary">You Buy.</span>
                         </h2>
                         <p className="text-zinc-400 font-medium text-lg md:text-xl leading-relaxed max-w-lg">
-                            See our community experts in action. Unboxings, stress tests, and real-world performance breakdowns.
+                            See real-world performance and honest breakdowns.
                         </p>
                     </div>
 

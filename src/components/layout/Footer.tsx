@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Mail, MapPin, Phone, ShieldCheck, Sparkles, Send } from 'lucide-react';
+import { Mail, MapPin, Phone, ShieldCheck, Sparkles } from 'lucide-react';
 
 const Footer: React.FC = () => {
   return (
@@ -15,14 +15,17 @@ const Footer: React.FC = () => {
            <div className="max-w-md">
               <Link to="/" className="text-3xl font-black text-primary tracking-tighter uppercase mb-4 block">GadgetHub</Link>
               <p className="text-zinc-400 font-medium leading-relaxed">
-                Nigeria's #1 destination for authentic gadget reviews, real-time pricing, and expert tech insights.
+                A smarter way to discover, compare, and buy gadgets in Nigeria.
               </p>
            </div>
            
            <div className="w-full lg:w-auto">
-              <h5 className="text-sm font-black uppercase tracking-widest mb-4 flex items-center gap-2">
-                 <Sparkles size={16} className="text-primary" /> Stay in the loop
+              <h5 className="text-sm font-black uppercase tracking-widest mb-2 flex items-center gap-2">
+                 <Sparkles size={16} className="text-primary" /> Stay Ahead of the Market
               </h5>
+              <p className="text-xs text-zinc-400 mb-4">
+                 Get updates on price changes, new releases, and expert insights.
+              </p>
               <form className="flex max-w-sm">
                  <div className="relative flex-grow">
                     <Mail size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500" />
@@ -32,8 +35,8 @@ const Footer: React.FC = () => {
                        className="w-full bg-zinc-900/50 border border-white/10 rounded-l-xl pl-12 pr-4 py-4 outline-none focus:border-primary transition-colors text-sm font-medium"
                     />
                  </div>
-                 <button type="submit" className="bg-primary text-white px-6 py-4 rounded-r-xl hover:bg-white hover:text-dark transition-all flex items-center justify-center shadow-lg shadow-primary/20">
-                    <Send size={18} />
+                 <button type="submit" className="bg-primary text-white px-6 py-4 rounded-r-xl hover:bg-white hover:text-dark transition-all flex items-center justify-center shadow-lg shadow-primary/20 font-bold text-sm">
+                    Subscribe
                  </button>
               </form>
            </div>

@@ -15,8 +15,8 @@ const BlogSection: React.FC = () => {
             <div className="inline-block px-3 py-1 bg-primary/10 text-primary font-bold text-xs uppercase tracking-widest rounded-full mb-4">
               Latest News & Reviews
             </div>
-            <h2 className="text-3xl lg:text-4xl font-black text-dark tracking-tight">The Review Zone Blog</h2>
-            <p className="text-muted text-lg mt-4 mb-0">Stay ahead of the curve with our expert tech analysis, buying guides, and breaking news in the Nigerian tech scene.</p>
+            <h2 className="text-3xl lg:text-4xl font-black text-dark tracking-tight">Expert Buying Guides</h2>
+            <p className="text-muted text-lg mt-4 mb-0">Clear, practical insights to help you choose the right product the first time.</p>
           </div>
           
           <Link 

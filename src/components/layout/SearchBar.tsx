@@ -1,20 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Search, ChevronDown, Check } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-
-const techCategories = [
-  'All Categories',
-  'Smartphones',
-  'Laptops & PCs',
-  'Audio & Headphones',
-  'Tablets',
-  'Smartwatches',
-  'Gaming Consoles',
-  'Cameras',
-];
+import { useGadgets } from '../../context/GadgetContext';
 
 const SearchBar: React.FC = () => {
   const navigate = useNavigate();
+  const { categories } = useGadgets();
   const [selectedCategory, setSelectedCategory] = useState('All Categories');
   const [query, setQuery] = useState('');
   const [isOpen, setIsOpen] = useState(false);
@@ -35,9 +26,11 @@ const SearchBar: React.FC = () => {
     const params = new URLSearchParams();
     if (query.trim()) params.set('q', query.trim());
     if (selectedCategory && selectedCategory !== 'All Categories') params.set('category', selectedCategory);
-    
     navigate(`/gadgets?${params.toString()}`);
   };
+
+  // Prepend "All Categories" to server categories
+  const allOptions = ['All Categories', ...categories.map((c: any) => c.name)];
 
   return (
     <div className="w-full">
@@ -58,7 +51,7 @@ const SearchBar: React.FC = () => {
           {/* Dropdown List */}
           {isOpen && (
             <ul className="absolute left-0 top-[calc(100%+8px)] min-w-[220px] bg-white border border-zinc-200 rounded-xl shadow-xl z-[100] py-2 overflow-hidden">
-              {techCategories.map((cat) => (
+              {allOptions.map((cat) => (
                 <li
                   key={cat}
                   onClick={(e) => {
@@ -87,13 +80,13 @@ const SearchBar: React.FC = () => {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-            placeholder="Search for the best deals on phones, laptops, and gadgets..."
+            placeholder="Search phones, laptops, headphones…"
             className="w-full h-full px-5 outline-none text-dark bg-transparent text-sm"
           />
         </div>
 
         {/* Search Button */}
-        <button 
+        <button
           onClick={handleSearch}
           className="bg-dark hover:bg-primary text-white px-5 sm:px-8 h-full font-bold uppercase tracking-widest transition-colors flex items-center gap-2 rounded-r-lg"
         >

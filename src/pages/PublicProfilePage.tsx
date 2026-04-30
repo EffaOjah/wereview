@@ -232,7 +232,7 @@ const PublicProfilePage: React.FC = () => {
                           <span className="flex items-center gap-1.5 text-[10px] font-black text-muted uppercase tracking-widest">
                              <TrendingUp size={14} className="text-primary" /> {review.helpfulCount || 0} Helpful Votes
                           </span>
-                          <Link to={`/reviews/${gadget?.id}`} className="text-[10px] font-black text-primary uppercase tracking-widest flex items-center gap-1.5 hover:translate-x-1 transition-transform">
+                          <Link to={`/gadgets/${gadget?.id}`} className="text-[10px] font-black text-primary uppercase tracking-widest flex items-center gap-1.5 hover:translate-x-1 transition-transform">
                              Read Full <ChevronRight size={14} />
                           </Link>
                        </div>

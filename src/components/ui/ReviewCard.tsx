@@ -53,7 +53,7 @@ const ReviewCard: React.FC<ReviewCardProps> = ({ review }) => {
             {review.isVerifiedPurchase && <span className="text-emerald-500 text-[10px] font-bold">(Verified Buyer)</span>}
           </div>
           {Gadget && (
-            <Link to={`/reviews/${Gadget.id}`} className="primary-btn text-xs px-6 py-2 flex items-center justify-center gap-1 whitespace-nowrap">
+            <Link to={`/gadgets/${Gadget.id}`} className="primary-btn text-xs px-6 py-2 flex items-center justify-center gap-1 whitespace-nowrap">
                Read Full Review <ChevronRight size={14} />
             </Link>
           )}

@@ -1,4 +1,5 @@
 import React, { createContext, useState, useContext, type ReactNode } from 'react';
+import { getApiUrl } from '../utils/api';
 
 export type AuthView = 'login' | 'signup';
 
@@ -13,7 +14,7 @@ interface AuthModalContextType {
   user: User | null;
   openModal: (view?: AuthView) => void;
   closeModal: () => void;
-  login: (userData: User) => void;
+  login: (userData: User, token?: string) => void;
   logout: () => void;
 }
 
@@ -24,6 +25,28 @@ export const AuthModalProvider: React.FC<{ children: ReactNode }> = ({ children 
   const [view, setView] = useState<AuthView>('login');
   const [user, setUser] = useState<User | null>(null);
 
+  React.useEffect(() => {
+    const checkAuth = async () => {
+      const token = localStorage.getItem('gadgethub_token');
+      if (token) {
+        try {
+          const res = await fetch(getApiUrl('/api/auth/me'), {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          const data = await res.json();
+          if (data.success) {
+            setUser(data.data);
+          } else {
+            localStorage.removeItem('gadgethub_token');
+          }
+        } catch (err) {
+          console.error('Auth check failed', err);
+        }
+      }
+    };
+    checkAuth();
+  }, []);
+
   const openModal = (newView: AuthView = 'login') => {
     setView(newView);
     setIsOpen(true);
@@ -33,13 +56,17 @@ export const AuthModalProvider: React.FC<{ children: ReactNode }> = ({ children 
     setIsOpen(false);
   };
 
-  const login = (userData: User) => {
+  const login = (userData: User, token?: string) => {
     setUser(userData);
+    if (token) {
+      localStorage.setItem('gadgethub_token', token);
+    }
     setIsOpen(false);
   };
 
   const logout = () => {
     setUser(null);
+    localStorage.removeItem('gadgethub_token');
   };
 
   return (

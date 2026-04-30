@@ -9,6 +9,7 @@ import VerifiedSellersSection from '../components/sections/VerifiedSellersSectio
 import VideoReviewsSection from '../components/sections/VideoReviewsSection';
 import BannerSection from '../components/sections/BannerSection';
 import BlogSection from '../components/sections/BlogSection';
+import TestimonialsSection from '../components/sections/TestimonialsSection';
 
 const HomePage: React.FC = () => {
   return (
@@ -21,6 +22,7 @@ const HomePage: React.FC = () => {
       <CompareSection />
       <VerifiedSellersSection />
       <VideoReviewsSection />
+      <TestimonialsSection />
       <BannerSection />
       <BlogSection />
     </div>

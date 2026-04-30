@@ -93,7 +93,7 @@ const ReviewsPage: React.FC = () => {
         <h4 className="text-xl font-black text-dark mb-6 border-l-4 border-primary pl-4">Trending Gadgets</h4>
         <div className="flex flex-col gap-6">
           {gadgets.slice(0, 4).map((gadget) => (
-            <Link onClick={() => setIsSidebarOpen(false)} to={`/reviews/${gadget.id}`} key={gadget.id} className="flex gap-4 items-center group">
+            <Link onClick={() => setIsSidebarOpen(false)} to={`/gadgets/${gadget.id}`} key={gadget.id} className="flex gap-4 items-center group">
                <img src={gadget.image} alt={gadget.name} className="w-16 h-16 object-contain p-2 border border-zinc-100 rounded-lg group-hover:border-primary transition-colors mix-blend-multiply" />
                <div className="flex flex-col">
                   <h6 className="text-sm font-bold text-dark group-hover:text-primary transition-colors line-clamp-2">{gadget.name}</h6>
