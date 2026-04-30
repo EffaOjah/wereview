@@ -43,7 +43,9 @@ const AuthForm: React.FC<AuthFormProps> = ({ initialView = 'login', onSuccess, o
       const data = await response.json();
 
       if (response.ok && data.success) {
-        login(data.data.user, data.data.accessToken);
+        // The user fields and accessToken are both in data.data
+        const { accessToken, ...userData } = data.data;
+        login(userData, accessToken);
         if (onSuccess) onSuccess();
       } else {
         setError(data.message || 'Authentication failed. Please try again.');

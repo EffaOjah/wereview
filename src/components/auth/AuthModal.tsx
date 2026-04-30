@@ -1,10 +1,26 @@
 import React, { useEffect } from 'react';
 import { X } from 'lucide-react';
 import { useAuthModal } from '../../context/AuthModalContext';
+import { useLocation, useNavigate } from 'react-router-dom';
 import AuthForm from './AuthForm';
 
 const AuthModal: React.FC = () => {
   const { isOpen, view, closeModal } = useAuthModal();
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const handleSuccess = () => {
+    closeModal();
+    
+    // Check if there's a redirect path from a protected route
+    const state = location.state as { from?: { pathname: string } };
+    if (state?.from) {
+      navigate(state.from.pathname, { replace: true });
+    } else {
+      // Fallback: Redirect to profile after manual login
+      navigate('/profile', { replace: true });
+    }
+  };
 
   // Prevent background scrolling when modal is open
   useEffect(() => {
@@ -41,7 +57,7 @@ const AuthModal: React.FC = () => {
          {/* Form handles the toggle logic natively inside itself via AuthForm Context overrides if needed, but we pass initial view */}
          <AuthForm 
             initialView={view} 
-            onSuccess={closeModal} 
+            onSuccess={handleSuccess} 
          />
       </div>
 

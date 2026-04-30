@@ -68,7 +68,7 @@ const TrendingGadgetsSection: React.FC = () => {
 
   return (
     <section className="pt-12 pb-24 bg-zinc-50/50">
-      <div className="container mx-auto px-4">
+      <div className="container">
         {/* Header Area */}
         <div className="flex flex-col md:flex-row justify-between items-end gap-6 mb-12">
           <div className="max-w-xl">

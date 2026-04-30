@@ -15,7 +15,7 @@ const Breadcrumb: React.FC<BreadcrumbProps> = ({ title, items }) => {
       {/* Dark overlay for text legibility */}
       <div className="absolute inset-0 bg-black/60"></div>
       
-      <div className="container mx-auto px-4 relative z-10">
+      <div className="container relative z-10">
         <div className="flex flex-col items-center">
           <h2 className="text-4xl md:text-5xl font-black text-white mb-4 uppercase tracking-wider">{title}</h2>
           <div className="flex items-center gap-2 text-white font-bold text-sm tracking-widest uppercase">

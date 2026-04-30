@@ -235,7 +235,7 @@ const GadgetsPage: React.FC = () => {
       <section className="relative py-24 overflow-hidden">
         <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=1600')" }} />
         <div className="absolute inset-0 bg-black/60" />
-        <div className="container mx-auto px-4 relative z-10 flex flex-col items-center text-center gap-6">
+        <div className="container relative z-10 flex flex-col items-center text-center gap-6">
           <p className="text-primary font-bold text-xs uppercase tracking-[4px]">GadgetHub</p>
           <h1 className="text-4xl md:text-5xl font-black text-white leading-tight">Browse All Gadgets</h1>
           <p className="text-zinc-300 font-medium max-w-xl">Real ratings from real Nigerians. Find your next phone, laptop, or earbud — filtered your way.</p>
@@ -273,7 +273,7 @@ const GadgetsPage: React.FC = () => {
       {isContextLoading || isInitialLoading ? (
         <div className="animate-pulse">
           <section className="py-16">
-            <div className="container mx-auto px-4">
+            <div className="container">
               <div className="flex flex-col lg:flex-row gap-10">
                 {/* Fake Desktop Sidebar */}
                 <div className="hidden lg:block lg:w-1/4 shrink-0">
@@ -302,7 +302,7 @@ const GadgetsPage: React.FC = () => {
         </div>
       ) : (
         <section className="py-16" id="Gadget-grid">
-        <div className="container mx-auto px-4">
+        <div className="container">
           <div className="flex flex-col lg:flex-row gap-10">
 
             {/* Desktop Sidebar */}

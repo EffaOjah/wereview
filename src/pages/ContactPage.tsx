@@ -8,7 +8,7 @@ const ContactPage: React.FC = () => {
       <Breadcrumb title="Contact Us" items={[{ name: 'Contact', path: '/contact' }]} />
 
       <section className="contact spad">
-        <div className="container mx-auto px-4">
+        <div className="container">
           <div className="flex flex-col lg:flex-row gap-12 mb-24">
             <div className="lg:w-1/4 flex flex-col items-center text-center p-12 bg-light group">
                <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center text-primary shadow-sm group-hover:bg-primary group-hover:text-white transition-all mb-6">

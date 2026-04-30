@@ -5,7 +5,7 @@ import { ArrowRight, Zap, Headphones } from 'lucide-react';
 const BannerSection: React.FC = () => {
   return (
     <section className="banner-section py-20 md:py-28 bg-white">
-      <div className="container mx-auto px-4">
+      <div className="container">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
           
           {/* Banner 1 — Smartphones */}

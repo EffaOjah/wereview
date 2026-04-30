@@ -68,7 +68,7 @@ const SellersPage: React.FC = () => {
   return (
     <div className="sellers-page bg-zinc-50/30 pb-24">
       <div className="bg-white border-b border-zinc-100 pt-8 pb-12">
-        <div className="container mx-auto px-4">
+        <div className="container">
           <Breadcrumb title="Verified Sellers" items={[{ name: 'Verified Sellers', path: '/sellers' }]} />
           <div className="mt-8 max-w-3xl">
             <h1 className="text-4xl md:text-5xl font-black text-dark tracking-tight leading-none mb-6">
@@ -81,7 +81,7 @@ const SellersPage: React.FC = () => {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 mt-12">
+      <div className="container mt-12">
         {/* Search & Filter Toolbar */}
         <div className="flex flex-col md:flex-row gap-4 mb-12">
            <div className="relative flex-grow">

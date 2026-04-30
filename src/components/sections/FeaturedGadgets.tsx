@@ -18,7 +18,7 @@ const FeaturedGadgets: React.FC = () => {
 
   return (
     <section className="featured spad bg-white">
-      <div className="container mx-auto px-4">
+      <div className="container">
         <div className="section-title">
           <h2>Featured Gadget</h2>
         </div>

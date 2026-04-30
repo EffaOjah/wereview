@@ -4,7 +4,7 @@ import SearchBar from '../layout/SearchBar';
 const HeroSlider: React.FC = () => {
   return (
     <section className="hero pb-6">
-      <div className="container mx-auto px-4">
+      <div className="container">
         <div className="flex flex-col gap-6">
 
           {/* Top Row: Search Bar */}

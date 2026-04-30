@@ -61,7 +61,7 @@ const ComparePage: React.FC = () => {
     <div className="compare-page bg-zinc-50/50 pb-24 min-h-screen">
       <Breadcrumb title="Compare Gadgets" items={[{ name: 'Compare', path: '/compare' }]} />
 
-      <div className="container mx-auto px-4 py-16">
+      <div className="container py-16">
         
         {/* Selector Modal Overlay */}
         {isSelectorOpen && (

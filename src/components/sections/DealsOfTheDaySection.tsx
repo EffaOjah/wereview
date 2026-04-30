@@ -9,7 +9,7 @@ const DealsOfTheDaySection: React.FC = () => {
 
     return (
         <section className="py-20 bg-white overflow-hidden">
-            <div className="container mx-auto px-4">
+            <div className="container">
                 <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-8">
                     <div className="max-w-xl">
                         <div className="flex items-center gap-2 text-primary font-black uppercase tracking-[3px] text-[10px] mb-4">

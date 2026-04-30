@@ -74,7 +74,7 @@ const PublicProfilePage: React.FC = () => {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-zinc-50/30 py-12 px-4 animate-pulse">
-        <div className="container mx-auto max-w-5xl">
+        <div className="container max-w-5xl">
           <div className="bg-white rounded-3xl p-10 shadow-sm border border-zinc-100 flex flex-col items-center gap-6 mb-12">
             <div className="w-32 h-32 rounded-full bg-zinc-200" />
             <div className="w-48 h-10 bg-zinc-200 rounded-lg" />
@@ -92,7 +92,7 @@ const PublicProfilePage: React.FC = () => {
 
   return (
     <div className="public-profile-page bg-zinc-50/30 pb-24 pt-10 min-h-screen">
-      <div className="container mx-auto px-4">
+      <div className="container">
         
         {/* Back Navigation */}
         <Link to="/reviews" className="inline-flex items-center gap-2 text-sm font-bold text-muted hover:text-primary transition-colors mb-8">

@@ -6,7 +6,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 const LatestGadgets: React.FC = () => {
   return (
     <section className="latest-Gadget spad bg-white">
-      <div className="container mx-auto px-4">
+      <div className="container">
         <div className="flex flex-col lg:flex-row gap-12">
           {/* Latest Gadgets Slider */}
           <div className="lg:w-1/2">

@@ -4,6 +4,7 @@ import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
 import { AuthModalProvider } from './context/AuthModalContext';
 import AuthModal from './components/auth/AuthModal';
+import ProtectedRoute from './components/auth/ProtectedRoute';
 import ScrollToTop from './components/ui/ScrollToTop';
 import BackToTopButton from './components/ui/BackToTopButton';
 
@@ -58,20 +59,24 @@ const AppContent: React.FC = () => {
           <Route path="/gadgets" element={<GadgetsPage />} />
           <Route path="/cart" element={<CartPage />} />
           <Route path="/compare" element={<ComparePage />} />
-          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/profile" element={
+            <ProtectedRoute>
+              <ProfilePage />
+            </ProtectedRoute>
+          } />
           <Route path="/user/:userId" element={<PublicProfilePage />} />
           <Route path="/sellers" element={<SellersPage />} />
           <Route path="/contact" element={<ContactPage />} />
           
           {/* Admin Routes */}
           <Route path="/admin/login" element={<AdminLoginPage />} />
-          <Route path="/admin/dashboard" element={<AdminDashboard />} />
-          <Route path="/admin/gadgets" element={<AdminGadgetsPage />} />
-          <Route path="/admin/reviews" element={<AdminReviewsPage />} />
-          <Route path="/admin/users" element={<AdminUsersPage />} />
-          <Route path="/admin/categories" element={<AdminCategoriesPage />} />
-          <Route path="/admin/settings" element={<AdminSettingsPage />} />
-          <Route path="/admin/notifications" element={<AdminNotificationsPage />} />
+          <Route path="/admin/dashboard" element={<ProtectedRoute adminOnly><AdminDashboard /></ProtectedRoute>} />
+          <Route path="/admin/gadgets" element={<ProtectedRoute adminOnly><AdminGadgetsPage /></ProtectedRoute>} />
+          <Route path="/admin/reviews" element={<ProtectedRoute adminOnly><AdminReviewsPage /></ProtectedRoute>} />
+          <Route path="/admin/users" element={<ProtectedRoute adminOnly><AdminUsersPage /></ProtectedRoute>} />
+          <Route path="/admin/categories" element={<ProtectedRoute adminOnly><AdminCategoriesPage /></ProtectedRoute>} />
+          <Route path="/admin/settings" element={<ProtectedRoute adminOnly><AdminSettingsPage /></ProtectedRoute>} />
+          <Route path="/admin/notifications" element={<ProtectedRoute adminOnly><AdminNotificationsPage /></ProtectedRoute>} />
           
           <Route path="*" element={<NotFoundPage />} />
         </Routes>

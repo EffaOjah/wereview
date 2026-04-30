@@ -1,5 +1,6 @@
-import React, { useState, useMemo } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useMemo, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { getApiUrl } from '../utils/api';
 import { 
   User as UserIcon, 
   Star, 
@@ -19,8 +20,6 @@ import {
   Info
 } from 'lucide-react';
 import { useAuthModal } from '../context/AuthModalContext';
-import { gadgets } from '../data/gadgets';
-import TrendingGadgetCard from '../components/ui/TrendingGadgetCard';
 import StarRating from '../components/ui/StarRating';
 import ReviewSubmissionModal from '../components/ui/ReviewSubmissionModal';
 import DeleteConfirmationModal from '../components/ui/DeleteConfirmationModal';
@@ -28,63 +27,154 @@ import DeleteConfirmationModal from '../components/ui/DeleteConfirmationModal';
 type TabType = 'dashboard' | 'reviews' | 'saved' | 'settings';
 
 const ProfilePage: React.FC = () => {
-  const { user, logout, openModal } = useAuthModal();
+  const navigate = useNavigate();
+  const { user, logout, login: updateLocalUser } = useAuthModal();
   const [activeTab, setActiveTab] = useState<TabType>('dashboard');
+  const [profile, setProfile] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [myReviews, setMyReviews] = useState<any[]>([]);
 
-  // Mock User Stats
-  const stats = [
-    { label: 'Total Reviews', value: '45', icon: Star, color: 'text-amber-500', bg: 'bg-amber-50' },
-    { label: 'Helpful Votes', value: '1,204', icon: TrendingUp, color: 'text-emerald-500', bg: 'bg-emerald-50' },
-    { label: 'Saved Gadgets', value: '12', icon: Heart, color: 'text-rose-500', bg: 'bg-rose-50' },
-    { label: 'Days Active', value: '284', icon: History, color: 'text-blue-500', bg: 'bg-blue-50' },
-  ];
+  // Form State for Settings
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phoneNumber: '',
+    location: '',
+    bio: '',
+    techPresence: ''
+  });
 
-  // Mock Saved Gadgets
-  const savedGadgets = gadgets.slice(0, 3).map((p, i) => ({ ...p, _key: `saved-${p.id}-${i}` }));
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [updateSuccess, setUpdateSuccess] = useState(false);
 
-  // Mock Published Reviews
-  const [myReviews, setMyReviews] = useState([
-    {
-      id: 'mr1',
-      GadgetName: 'Samsung Galaxy A54 5G',
-      rating: 5,
-      date: 'Oct 12, 2025',
-      comment: 'Still the best mid-range I’ve used in Nigeria. The battery backup is simply unmatched for its price bracket.',
-      helpful: 84,
-      pros: ['Great battery', 'Smooth screen'],
-      cons: ['Slow charging']
-    },
-    {
-      id: 'mr2',
-      GadgetName: 'Oraimo Freepods 4',
-      rating: 4,
-      date: 'Sept 5, 2025',
-      comment: 'Love the ANC! Perfect for blocking out generator noise while working from home.',
-      helpful: 12,
-      pros: ['Active noise cancellation', 'Good bass'],
-      cons: ['Bulky case']
+  useEffect(() => {
+    const fetchProfileData = async () => {
+      const token = localStorage.getItem('gadgethub_token');
+      console.log('ProfilePage: Attempting fetch with token:', !!token);
+      
+      if (!token) {
+        // Short delay to allow localStorage to settle after login redirect
+        setTimeout(async () => {
+          const retryToken = localStorage.getItem('gadgethub_token');
+          if (retryToken) {
+            console.log('ProfilePage: Token found on retry');
+            executeFetch(retryToken);
+          } else {
+            console.warn('ProfilePage: No token found after retry');
+            setIsLoading(false);
+          }
+        }, 100);
+        return;
+      }
+
+      executeFetch(token);
+    };
+
+    const executeFetch = async (authToken: string) => {
+      setIsLoading(true);
+      setError(null);
+      try {
+        console.log('ProfilePage: Fetching live data...');
+        const [profileRes, reviewsRes] = await Promise.all([
+          fetch(getApiUrl('/api/users/profile'), {
+            headers: { Authorization: `Bearer ${authToken}` }
+          }).then(r => r.json()),
+          fetch(getApiUrl('/api/users/reviews'), {
+            headers: { Authorization: `Bearer ${authToken}` }
+          }).then(r => r.json())
+        ]);
+
+        if (profileRes.success) {
+          console.log('ProfilePage: Profile data loaded');
+          setProfile(profileRes.data);
+          setFormData({
+            name: profileRes.data?.name || '',
+            email: profileRes.data?.email || '',
+            phoneNumber: profileRes.data?.phoneNumber || '',
+            location: profileRes.data?.location || '',
+            bio: profileRes.data?.bio || '',
+            techPresence: profileRes.data?.techPresence || ''
+          });
+        } else {
+          console.error('ProfilePage: API success false', profileRes.message);
+          setError(profileRes.message || 'Failed to load profile data');
+        }
+
+        if (reviewsRes?.success) {
+          setMyReviews(reviewsRes.data || []);
+        }
+      } catch (err) {
+        console.error('ProfilePage: Fetch error', err);
+        setError('Connection error while loading profile.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (user || localStorage.getItem('gadgethub_token')) {
+      fetchProfileData();
+    } else {
+      console.log('ProfilePage: No user/token in context, stopping load');
+      setIsLoading(false);
     }
-  ]);
+  }, [user]);
 
-  const [reviewSortBy, setReviewSortBy] = useState('newest');
-  
-  // Modal States
+  const handleSaveProfile = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const token = localStorage.getItem('gadgethub_token');
+    if (!token) return;
+
+    setIsUpdating(true);
+    setUpdateSuccess(false);
+    setError(null);
+
+    try {
+      const res = await fetch(getApiUrl('/api/users/profile'), {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify(formData)
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        setProfile((prev: any) => ({ ...prev, ...data.data }));
+        // Also update the context user so the Navbar updates
+        updateLocalUser({ ...user, ...data.data });
+        setUpdateSuccess(true);
+        setTimeout(() => setUpdateSuccess(false), 3000);
+      } else {
+        setError(data.message || 'Update failed');
+      }
+    } catch (err) {
+      setError('Network error updating profile');
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  const stats = useMemo(() => {
+    // Defensive check to prevent NaN or crashes if joinDate is invalid
+    const joinDate = profile?.joinDate ? new Date(profile.joinDate) : null;
+    const daysActive = joinDate && !isNaN(joinDate.getTime()) 
+      ? Math.max(0, Math.floor((Date.now() - joinDate.getTime()) / (1000 * 60 * 60 * 24)))
+      : 0;
+
+    return [
+      { label: 'Total Reviews', value: myReviews.length.toString(), icon: Star, color: 'text-amber-500', bg: 'bg-amber-50' },
+      { label: 'Helpful Votes', value: myReviews.reduce((acc, r: any) => acc + (r.helpfulCount || 0), 0).toString(), icon: TrendingUp, color: 'text-emerald-500', bg: 'bg-emerald-50' },
+      { label: 'Saved Gadgets', value: '0', icon: Heart, color: 'text-rose-500', bg: 'bg-rose-50' },
+      { label: 'Days Active', value: daysActive.toString(), icon: History, color: 'text-blue-500', bg: 'bg-blue-50' },
+    ];
+  }, [myReviews, profile]);
+
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedReview, setSelectedReview] = useState<any>(null);
-  const [isVerificationRequested, setIsVerificationRequested] = useState(false);
-  const [bio, setBio] = useState('Tech reviewer and gadget enthusiast. I focus on real-world performance for the Nigerian market.');
-  const [socialLinks, setSocialLinks] = useState([
-    { platform: 'Twitter', url: 'https://twitter.com/effa_ojah' },
-    { platform: 'LinkedIn', url: 'https://linkedin.com/in/effa-ojah' },
-    { platform: 'YouTube', url: 'https://youtube.com/@effa' }
-  ]);
-
-  const handleSocialChange = (index: number, field: string, value: string) => {
-    const newLinks = [...socialLinks];
-    newLinks[index] = { ...newLinks[index], [field]: value };
-    setSocialLinks(newLinks);
-  };
+  const [reviewSortBy, setReviewSortBy] = useState('newest');
 
   const handleEditClick = (review: any) => {
     setSelectedReview(review);
@@ -99,7 +189,7 @@ const ProfilePage: React.FC = () => {
   const handleUpdateReview = (updatedData: any) => {
     setMyReviews(prev => prev.map(rev => 
       rev.id === selectedReview.id 
-      ? { ...rev, ...updatedData, date: 'Updated Just Now' } 
+      ? { ...rev, ...updatedData } 
       : rev
     ));
     setIsEditModalOpen(false);
@@ -115,30 +205,33 @@ const ProfilePage: React.FC = () => {
   const sortedReviews = useMemo(() => {
     let result = [...myReviews];
     if (reviewSortBy === 'rating') return result.sort((a, b) => b.rating - a.rating);
-    if (reviewSortBy === 'helpful') return result.sort((a, b) => b.helpful - a.helpful);
-    // Sort by date (assuming parseable format for mock)
-    return result.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-  }, [reviewSortBy]);
+    if (reviewSortBy === 'helpful') return result.sort((a, b) => b.helpfulCount - a.helpfulCount);
+    return result.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  }, [myReviews, reviewSortBy]);
 
-  if (!user) {
+  if (isLoading) {
     return (
-      <div className="profile-page bg-zinc-50/50 min-h-[70vh] flex flex-col items-center justify-center p-4">
-         <div className="max-w-md w-full bg-white rounded-3xl p-12 text-center shadow-sm border border-zinc-100 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <div className="w-20 h-20 rounded-full bg-zinc-50 flex items-center justify-center mx-auto mb-6 text-zinc-300">
-               <UserIcon size={40} />
-            </div>
-            <h2 className="text-3xl font-black text-dark mb-4">Account Access</h2>
-            <p className="text-muted font-medium mb-8">Login to manage your reviews, track your helpful votes, and see your saved gadgets.</p>
-            <button 
-              onClick={() => openModal('login')}
-              className="primary-btn w-full py-4 shadow-lg"
-            >
-              Sign In to Account
-            </button>
-            <p className="mt-6 text-sm font-bold text-muted uppercase tracking-widest">
-              Don't have an account? <button onClick={() => openModal('signup')} className="text-primary hover:underline">Join Now</button>
-            </p>
-         </div>
+      <div className="min-h-screen bg-zinc-50 flex items-center justify-center p-4">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+          <p className="text-muted font-bold animate-pulse text-sm">Loading your profile...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !profile) {
+    return (
+      <div className="min-h-screen bg-zinc-50 flex flex-col items-center justify-center p-4 text-center">
+        <div className="w-20 h-20 bg-red-50 text-red-500 rounded-full flex items-center justify-center mb-6">
+           <UserIcon size={40} />
+        </div>
+        <h3 className="text-xl font-black text-dark mb-2">Profile Not Found</h3>
+        <p className="text-muted text-sm max-w-xs mb-8">{error || "We couldn't retrieve your profile information. Please try signing in again."}</p>
+        <div className="flex gap-4">
+          <button onClick={() => window.location.reload()} className="px-6 py-3 bg-dark text-white rounded-xl font-bold text-sm">Try Again</button>
+          <button onClick={() => { navigate('/', { replace: true }); logout(); }} className="px-6 py-3 bg-zinc-200 text-dark rounded-xl font-bold text-sm">Logout</button>
+        </div>
       </div>
     );
   }
@@ -148,18 +241,20 @@ const ProfilePage: React.FC = () => {
       
       {/* Mobile Profile Header (Visible only on mobile/tablet) */}
       <div className="lg:hidden bg-white border-b border-zinc-100 pt-10 pb-6 text-center">
-        <div className="container mx-auto px-4">
+        <div className="container">
            <div className="relative w-24 h-24 rounded-full overflow-hidden border-4 border-zinc-50 mx-auto mb-4 group shadow-sm">
               <img 
-                 src="/img/featured/user-08.jpg" 
-                 alt={user.name} 
+                 src={profile?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile?.name || 'User')}&background=0066ff&color=fff&bold=true&size=150`} 
+                 alt={profile?.name} 
                  className="w-full h-full object-cover"
               />
            </div>
-           <h5 className="text-xl font-black text-dark mb-1">{user.name}</h5>
-           <div className="flex items-center justify-center gap-1.5 text-[10px] font-black text-emerald-600 uppercase tracking-[2px]">
-             <ShieldCheck size={14} /> Verified Reviewer
-           </div>
+           <h5 className="text-xl font-black text-dark mb-1">{profile?.name}</h5>
+           {profile?.isVerified && (
+             <div className="flex items-center justify-center gap-1.5 text-[10px] font-black text-emerald-600 uppercase tracking-[2px]">
+               <ShieldCheck size={14} /> Verified Reviewer
+             </div>
+           )}
         </div>
       </div>
 
@@ -169,7 +264,7 @@ const ProfilePage: React.FC = () => {
           {[
             { id: 'dashboard', label: 'Overview', icon: LayoutDashboard },
             { id: 'reviews', label: 'Reviews', icon: MessageSquare, badge: myReviews.length },
-            { id: 'saved', label: 'Saved', icon: Heart, badge: savedGadgets.length },
+            { id: 'saved', label: 'Saved', icon: Heart, badge: 0 },
             { id: 'settings', label: 'Settings', icon: Settings },
           ].map((tab) => (
             <button
@@ -198,7 +293,7 @@ const ProfilePage: React.FC = () => {
         </nav>
       </div>
 
-      <section className="container mx-auto px-4 mt-8 lg:mt-12">
+      <section className="container mt-8 lg:mt-12">
         <div className="flex flex-col lg:flex-row gap-8">
           
           {/* Sidebar Navigation (Visible only on Desktop) */}
@@ -208,27 +303,29 @@ const ProfilePage: React.FC = () => {
                <div className="p-8 border-b border-zinc-50 flex flex-col items-center text-center">
                   <div className="relative w-28 h-28 rounded-full overflow-hidden border-4 border-zinc-50 mb-4 group shadow-sm">
                      <img 
-                        src="/img/featured/user-08.jpg" 
-                        alt={user.name} 
+                        src={profile?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile?.name || 'User')}&background=0066ff&color=fff&bold=true&size=150`} 
+                        alt={profile?.name} 
                         className="w-full h-full object-cover transition-transform group-hover:scale-110"
                      />
                      <div className="absolute inset-x-0 bottom-0 top-1/2 bg-black/40 flex items-center justify-center text-white cursor-pointer hover:bg-black/60 transition-colors">
                         <Camera size={18} />
                      </div>
                   </div>
-                  <h5 className="text-xl font-black text-dark mb-1">{user.name}</h5>
-                  <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-600 uppercase tracking-widest">
-                    <ShieldCheck size={14} /> Verified Reviewer
-                  </div>
+                  <h5 className="text-xl font-black text-dark mb-1">{profile?.name}</h5>
+                  {profile?.isVerified && (
+                    <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-600 uppercase tracking-widest">
+                      <ShieldCheck size={14} /> Verified Reviewer
+                    </div>
+                  )}
                </div>
 
                {/* Nav Links */}
                <nav className="p-4 flex flex-col gap-1">
                   {[
-                    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-                    { id: 'reviews', label: 'My Reviews', icon: MessageSquare, badge: myReviews.length },
-                    { id: 'saved', label: 'Saved Gadgets', icon: Heart, badge: savedGadgets.length },
-                    { id: 'settings', label: 'Account Settings', icon: Settings },
+                     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+                     { id: 'reviews', label: 'My Reviews', icon: MessageSquare, badge: myReviews.length },
+                     { id: 'saved', label: 'Saved Gadgets', icon: Heart, badge: 0 },
+                     { id: 'settings', label: 'Account Settings', icon: Settings },
                   ].map((tab) => (
                     <button
                       key={tab.id}
@@ -345,14 +442,14 @@ const ProfilePage: React.FC = () => {
                       <div key={rev.id} className="bg-white p-6 md:p-8 rounded-3xl border border-zinc-100 shadow-sm group">
                         <div className="flex flex-col md:flex-row gap-6">
                            <div className="md:w-1/4">
-                              <span className="text-[10px] font-black text-primary uppercase tracking-[2px] block mb-1">{rev.date}</span>
-                              <h4 className="font-black text-dark leading-tight mb-3 group-hover:text-primary transition-colors cursor-pointer">{rev.GadgetName}</h4>
+                              <span className="text-[10px] font-black text-primary uppercase tracking-[2px] block mb-1">{new Date(rev.createdAt).toLocaleDateString()}</span>
+                              <h4 className="font-black text-dark leading-tight mb-3 group-hover:text-primary transition-colors cursor-pointer">{rev.gadget?.name}</h4>
                               <StarRating rating={rev.rating} size={14} />
                            </div>
                            <div className="md:w-3/4 flex flex-col gap-4">
                               <p className="text-sm font-medium text-muted leading-relaxed  border-l-2 border-zinc-100 pl-4">"{rev.comment}"</p>
                               <div className="flex items-center justify-between pt-4 border-t border-zinc-50 mt-auto">
-                                 <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">👍 {rev.helpful} helpful votes</span>
+                                 <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">👍 {rev.helpfulCount || 0} helpful votes</span>
                                  <div className="flex items-center gap-3">
                                     <button 
                                       onClick={() => handleEditClick(rev)}
@@ -384,15 +481,8 @@ const ProfilePage: React.FC = () => {
                      <p className="text-muted font-medium text-sm mt-1">Found something interesting? Keep track of it here.</p>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                    {savedGadgets.map((gadget) => (
-                      <div key={gadget._key} className="relative">
-                         <TrendingGadgetCard gadget={gadget} />
-                         <button className="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/90 backdrop-blur shadow-md text-red-500 flex items-center justify-center hover:bg-red-500 hover:text-white transition-all z-10 scale-90 md:scale-100">
-                           <Trash2 size={18} />
-                         </button>
-                      </div>
-                    ))}
+                  <div className="flex items-center justify-center py-20 bg-white rounded-3xl border border-zinc-100 shadow-sm">
+                     <p className="text-muted font-bold">You haven't saved any gadgets yet.</p>
                   </div>
                </div>
              )}
@@ -407,73 +497,87 @@ const ProfilePage: React.FC = () => {
                      <h3 className="text-2xl font-black text-dark mb-2">Account Settings</h3>
                      <p className="text-muted font-medium text-sm mb-10 border-b pb-8">Update your personal information and preferences.</p>
 
-                     <form className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                      <form onSubmit={handleSaveProfile} className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
                         <div className="flex flex-col gap-2">
                            <label className="text-[10px] font-black text-dark uppercase tracking-widest pl-2">Full Name</label>
-                           <input type="text" defaultValue={user.name} className="w-full px-5 py-3.5 bg-zinc-50 border border-zinc-100 rounded-xl outline-none focus:border-primary focus:bg-white text-sm font-bold text-dark transition-all" />
+                           <input 
+                            type="text" 
+                            value={formData.name} 
+                            onChange={(e) => setFormData({...formData, name: e.target.value})}
+                            className="w-full px-5 py-3.5 bg-zinc-50 border border-zinc-100 rounded-xl outline-none focus:border-primary focus:bg-white text-sm font-bold text-dark transition-all" 
+                           />
                         </div>
                         <div className="flex flex-col gap-2">
                            <label className="text-[10px] font-black text-dark uppercase tracking-widest pl-2">Email Address</label>
-                           <input type="email" defaultValue={user.email} className="w-full px-5 py-3.5 bg-zinc-50 border border-zinc-100 rounded-xl outline-none focus:border-primary focus:bg-white text-sm font-bold text-dark transition-all" />
+                           <input 
+                            type="email" 
+                            value={formData.email} 
+                            disabled
+                            className="w-full px-5 py-3.5 bg-zinc-100 border border-zinc-100 rounded-xl outline-none text-sm font-bold text-zinc-500 cursor-not-allowed" 
+                           />
                         </div>
                         <div className="flex flex-col gap-2">
                            <label className="text-[10px] font-black text-dark uppercase tracking-widest pl-2">Phone Number</label>
-                           <input type="text" defaultValue="+234 800 123 4567" className="w-full px-5 py-3.5 bg-zinc-50 border border-zinc-100 rounded-xl outline-none focus:border-primary focus:bg-white text-sm font-bold text-dark transition-all" />
+                           <input 
+                            type="text" 
+                            value={formData.phoneNumber} 
+                            onChange={(e) => setFormData({...formData, phoneNumber: e.target.value})}
+                            className="w-full px-5 py-3.5 bg-zinc-50 border border-zinc-100 rounded-xl outline-none focus:border-primary focus:bg-white text-sm font-bold text-dark transition-all" 
+                           />
                         </div>
                         <div className="flex flex-col gap-2">
                            <label className="text-[10px] font-black text-dark uppercase tracking-widest pl-2">Location</label>
-                           <input type="text" defaultValue="Lagos, Nigeria" className="w-full px-5 py-3.5 bg-zinc-50 border border-zinc-100 rounded-xl outline-none focus:border-primary focus:bg-white text-sm font-bold text-dark transition-all" />
+                           <input 
+                            type="text" 
+                            value={formData.location} 
+                            onChange={(e) => setFormData({...formData, location: e.target.value})}
+                            className="w-full px-5 py-3.5 bg-zinc-50 border border-zinc-100 rounded-xl outline-none focus:border-primary focus:bg-white text-sm font-bold text-dark transition-all" 
+                           />
                         </div>
                         
                         <div className="md:col-span-2 flex flex-col gap-2">
                             <label className="text-[10px] font-black text-dark uppercase tracking-widest pl-2">Professional Bio</label>
                             <textarea 
-                              value={bio}
-                              onChange={(e) => setBio(e.target.value)}
+                              value={formData.bio}
+                              onChange={(e) => setFormData({...formData, bio: e.target.value})}
                               rows={3}
                               placeholder="Tell the community about your tech expertise..."
                               className="w-full px-5 py-3.5 bg-zinc-50 border border-zinc-100 rounded-xl outline-none focus:border-primary focus:bg-white text-sm font-bold text-dark transition-all resize-none"
                             />
                          </div>
 
-                         <div className="md:col-span-2 mt-4">
-                            <div className="flex items-center justify-between mb-6">
-                               <h4 className="text-sm font-black text-dark uppercase tracking-[2px]">Your Tech Presence (3 Max)</h4>
-                            </div>
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                               {socialLinks.map((link, idx) => (
-                                 <div key={idx} className="flex flex-col gap-3 p-5 bg-zinc-50 border border-zinc-100 rounded-2xl">
-                                    <select 
-                                      value={link.platform}
-                                      onChange={(e) => handleSocialChange(idx, 'platform', e.target.value)}
-                                      className="bg-white border border-zinc-200 text-xs font-black uppercase tracking-widest px-3 py-2 rounded-lg outline-none focus:border-primary cursor-pointer text-dark"
-                                    >
-                                       <option value="Twitter">Twitter / X</option>
-                                       <option value="LinkedIn">LinkedIn</option>
-                                       <option value="YouTube">YouTube</option>
-                                       <option value="Instagram">Instagram</option>
-                                       <option value="Facebook">Facebook</option>
-                                       <option value="Reddit">Reddit</option>
-                                       <option value="TikTok">TikTok</option>
-                                       <option value="Github">GitHub</option>
-                                    </select>
-                                    <input 
-                                       type="text" 
-                                       value={link.url}
-                                       onChange={(e) => handleSocialChange(idx, 'url', e.target.value)}
-                                       placeholder="Profile URL"
-                                       className="w-full px-4 py-2 bg-white border border-zinc-200 rounded-lg outline-none focus:border-primary text-xs font-bold text-dark transition-all shadow-sm"
-                                    />
-                                 </div>
-                               ))}
-                            </div>
-                         </div>
 
-                        <div className="md:col-span-2 pt-4 flex gap-4">
-                           <button type="submit" className="bg-dark text-white px-10 py-4 rounded-xl font-bold text-sm shadow-xl hover:bg-primary transition-colors">Save Profile</button>
-                           <button type="button" className="bg-zinc-100 text-dark px-10 py-4 rounded-xl font-bold text-sm transition-colors hover:bg-zinc-200">Change Password</button>
+                          <div className="md:col-span-2 mt-4">
+                             <div className="flex items-center justify-between mb-6">
+                                <h4 className="text-sm font-black text-dark uppercase tracking-[2px]">Your Tech Presence</h4>
+                             </div>
+                             <div className="flex flex-col gap-2">
+                                <label className="text-[10px] font-black text-dark uppercase tracking-widest pl-2">Portfolio / GitHub / Social URL</label>
+                                <input 
+                                  type="text" 
+                                  value={formData.techPresence}
+                                  onChange={(e) => setFormData({...formData, techPresence: e.target.value})}
+                                  placeholder="https://github.com/yourusername"
+                                  className="w-full px-5 py-3.5 bg-zinc-50 border border-zinc-100 rounded-xl outline-none focus:border-primary focus:bg-white text-sm font-bold text-dark transition-all" 
+                                />
+                             </div>
+                          </div>
+
+                        <div className="md:col-span-2 pt-4 flex flex-col gap-4">
+                           {error && <p className="text-red-500 text-xs font-bold">{error}</p>}
+                           {updateSuccess && <p className="text-emerald-500 text-xs font-bold">Profile updated successfully!</p>}
+                           <div className="flex gap-4">
+                            <button 
+                              type="submit" 
+                              disabled={isUpdating}
+                              className="bg-dark text-white px-10 py-4 rounded-xl font-bold text-sm shadow-xl hover:bg-primary transition-colors disabled:bg-zinc-400"
+                            >
+                              {isUpdating ? 'Saving...' : 'Save Profile'}
+                            </button>
+                            <button type="button" className="bg-zinc-100 text-dark px-10 py-4 rounded-xl font-bold text-sm transition-colors hover:bg-zinc-200">Change Password</button>
+                           </div>
                         </div>
-                     </form>
+                      </form>
                   </div>
 
                    {/* Verification & Badges Section */}
@@ -485,17 +589,17 @@ const ProfilePage: React.FC = () => {
                             </h4>
                             <p className="text-muted text-sm font-medium mt-1">Build your reputation and unlock exclusive community perks.</p>
                          </div>
-                         {!isVerificationRequested ? (
+                         {profile?.isVerified ? (
+                            <div className="px-6 py-3 bg-emerald-50 text-emerald-600 rounded-xl text-xs font-black uppercase tracking-widest flex items-center gap-2 animate-in fade-in zoom-in duration-300">
+                               <CheckCircle2 size={16} /> Verified Account
+                            </div>
+                         ) : (
                             <button 
-                              onClick={() => setIsVerificationRequested(true)}
+                              onClick={() => setUpdateSuccess(true)}
                               className="px-6 py-3 bg-zinc-50 border border-zinc-200 rounded-xl text-xs font-black uppercase tracking-widest text-dark hover:bg-zinc-100 transition-all flex items-center gap-2"
                             >
                               Request Verification
                             </button>
-                         ) : (
-                            <div className="px-6 py-3 bg-emerald-50 text-emerald-600 rounded-xl text-xs font-black uppercase tracking-widest flex items-center gap-2 animate-in fade-in zoom-in duration-300">
-                               <CheckCircle2 size={16} /> Request Pending
-                            </div>
                          )}
                       </div>
 

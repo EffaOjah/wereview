@@ -10,7 +10,7 @@ const CartPage: React.FC = () => {
       <Breadcrumb title="Shopping Cart" items={[{ name: 'Shop', path: '/gadgets' }, { name: 'Cart', path: '/cart' }]} />
 
       <section className="shoping-cart spad">
-        <div className="container mx-auto px-4">
+        <div className="container">
           <div className="flex flex-col lg:flex-row gap-12">
             {/* Table Area */}
             <div className="lg:w-2/3">

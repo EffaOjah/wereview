@@ -8,7 +8,7 @@ const Footer: React.FC = () => {
       {/* Decorative Glow */}
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 blur-[120px] rounded-full -translate-y-1/2 translate-x-1/4 pointer-events-none" />
       
-      <div className="container mx-auto px-4 relative z-10">
+      <div className="container relative z-10">
         
         {/* Top Newsletter & Branding Header */}
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-10 pb-16 border-b border-white/5 mb-16">

@@ -11,7 +11,7 @@ const SignupPage: React.FC = () => {
 
   return (
     <div className="signup-page bg-zinc-50/50 py-16 min-h-[80vh] flex items-center justify-center">
-      <div className="container mx-auto px-4 flex justify-center">
+      <div className="container flex justify-center">
         <AuthForm 
           initialView="signup" 
           onNavigate={(view) => navigate(`/${view}`)} 

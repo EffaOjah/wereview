@@ -111,7 +111,7 @@ const ReviewsPage: React.FC = () => {
       <Breadcrumb title="The Review Feed" items={[{ name: 'Reviews', path: '/reviews' }]} />
 
       <section className="py-16">
-        <div className="container mx-auto px-4">
+        <div className="container">
           <div className="flex flex-col lg:flex-row gap-10">
             
             {/* Desktop Sidebar */}

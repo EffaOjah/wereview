@@ -6,12 +6,15 @@ export type AuthView = 'login' | 'signup';
 interface User {
   name: string;
   email: string;
+  role?: string;
 }
 
 interface AuthModalContextType {
   isOpen: boolean;
   view: AuthView;
   user: User | null;
+  isLoading: boolean;
+  isLoggingOut: boolean;
   openModal: (view?: AuthView) => void;
   closeModal: () => void;
   login: (userData: User, token?: string) => void;
@@ -24,6 +27,8 @@ export const AuthModalProvider: React.FC<{ children: ReactNode }> = ({ children 
   const [isOpen, setIsOpen] = useState(false);
   const [view, setView] = useState<AuthView>('login');
   const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   React.useEffect(() => {
     const checkAuth = async () => {
@@ -37,11 +42,17 @@ export const AuthModalProvider: React.FC<{ children: ReactNode }> = ({ children 
           if (data.success) {
             setUser(data.data);
           } else {
+            console.warn('Session restoration failed:', data.message);
             localStorage.removeItem('gadgethub_token');
           }
         } catch (err) {
-          console.error('Auth check failed', err);
+          console.error('Auth check network/server error:', err);
+          // Don't remove token on network error, might be temporary
+        } finally {
+          setIsLoading(false);
         }
+      } else {
+        setIsLoading(false);
       }
     };
     checkAuth();
@@ -57,20 +68,24 @@ export const AuthModalProvider: React.FC<{ children: ReactNode }> = ({ children 
   };
 
   const login = (userData: User, token?: string) => {
-    setUser(userData);
+    // Spread user data to ensure a new reference for React state reactivity
+    setUser({ ...userData });
+    
     if (token) {
       localStorage.setItem('gadgethub_token', token);
     }
-    setIsOpen(false);
   };
 
   const logout = () => {
+    setIsLoggingOut(true);
     setUser(null);
     localStorage.removeItem('gadgethub_token');
+    // Reset the flag after a short delay to allow navigation to complete
+    setTimeout(() => setIsLoggingOut(false), 500);
   };
 
   return (
-    <AuthModalContext.Provider value={{ isOpen, view, user, openModal, closeModal, login, logout }}>
+    <AuthModalContext.Provider value={{ isOpen, view, user, isLoading, isLoggingOut, openModal, closeModal, login, logout }}>
       {children}
     </AuthModalContext.Provider>
   );

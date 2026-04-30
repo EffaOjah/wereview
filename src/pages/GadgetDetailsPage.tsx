@@ -50,7 +50,7 @@ const GadgetDetailsPage: React.FC = () => {
          {/* Fake Breadcrumb/Hero Background */}
          <div className="h-[200px] bg-zinc-200 w-full" />
          
-         <section className="container mx-auto px-4 mt-8">
+         <section className="container mt-8">
             <div className="bg-white rounded-3xl p-8 lg:p-12 shadow-sm border border-zinc-100 flex flex-col lg:flex-row gap-12 mb-8">
                {/* Fake Image */}
                <div className="lg:w-2/5 aspect-square bg-zinc-200 rounded-2xl" />
@@ -114,7 +114,7 @@ const GadgetDetailsPage: React.FC = () => {
     <div className="review-details-page bg-zinc-50/30 pb-24">
       <Breadcrumb title={Gadget.name} items={[{ name: 'Gadgets', path: '/gadgets' }, { name: Gadget.name, path: '#' }]} />
 
-      <section className="container mx-auto px-4 mt-8">
+      <section className="container mt-8">
         {/* Main Gadget Hero */}
         <div className="bg-white rounded-3xl p-8 lg:p-12 shadow-sm border border-zinc-100 flex flex-col lg:flex-row gap-12 mb-8">
           

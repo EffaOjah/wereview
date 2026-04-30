@@ -57,7 +57,7 @@ const BlogDetailsPage: React.FC = () => {
     return (
       <div className="blog-details-page bg-zinc-50/50 pb-24">
         <Breadcrumb title="Loading Article..." items={[{ name: 'Blog', path: '/blog' }]} />
-        <div className="container mx-auto px-4 py-16">
+        <div className="container py-16">
           <div className="flex flex-col lg:flex-row gap-10">
             <div className="hidden lg:block lg:w-1/3 shrink-0 opacity-50"><SidebarContent /></div>
             <div className="flex-1 flex flex-col gap-8 animate-pulse">
@@ -78,7 +78,7 @@ const BlogDetailsPage: React.FC = () => {
     return (
       <div className="blog-details-page bg-zinc-50/50 pb-24">
         <Breadcrumb title="Article Not Found" items={[{ name: 'Blog', path: '/blog' }]} />
-        <div className="container mx-auto px-4 py-32 flex flex-col items-center justify-center text-center">
+        <div className="container py-32 flex flex-col items-center justify-center text-center">
             <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center mb-6 border border-zinc-100 shadow-sm">
                 <span className="text-5xl">🕵️‍♂️</span>
             </div>
@@ -97,7 +97,7 @@ const BlogDetailsPage: React.FC = () => {
       <Breadcrumb title={post.title} items={[{ name: 'Blog', path: '/blog' }, { name: 'Details', path: `/blog/${post.id}` }]} />
 
       <section className="py-16">
-        <div className="container mx-auto px-4">
+        <div className="container">
           <div className="flex flex-col lg:flex-row gap-10">
             {/* Desktop Sidebar */}
             <div className="hidden lg:block lg:w-1/3 shrink-0">

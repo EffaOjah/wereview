@@ -7,7 +7,7 @@ import { ArrowRight } from 'lucide-react';
 const BlogSection: React.FC = () => {
   return (
     <section className="py-24 bg-zinc-50 border-t border-zinc-100">
-      <div className="container mx-auto px-4">
+      <div className="container">
         
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">

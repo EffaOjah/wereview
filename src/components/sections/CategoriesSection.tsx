@@ -21,7 +21,7 @@ const CategoriesSection: React.FC = () => {
 
   return (
     <section className="categories-section py-12 md:py-16 bg-white overflow-hidden border-b border-zinc-50">
-      <div className="container mx-auto px-4 relative">
+      <div className="container relative">
         
         {/* Simple Header */}
         <div className="flex items-center justify-between mb-10">

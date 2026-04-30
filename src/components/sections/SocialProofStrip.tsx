@@ -11,7 +11,7 @@ const stats = [
 const SocialProofStrip: React.FC = () => {
   return (
     <div className="bg-white border-y border-zinc-100">
-      <div className="container mx-auto px-4 py-6">
+      <div className="container py-6">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
           {stats.map(({ icon: Icon, value, label, color, bg }) => (
             <div key={label} className="flex items-center gap-4">

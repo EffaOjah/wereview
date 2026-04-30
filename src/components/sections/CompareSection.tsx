@@ -36,7 +36,7 @@ const CompareSection: React.FC = () => {
   if (isLoading) {
     return (
       <section className="compare-section py-24 bg-white relative overflow-hidden">
-        <div className="container mx-auto px-4 relative z-10 flex justify-center py-20">
+        <div className="container relative z-10 flex justify-center py-20">
           <div className="flex flex-col items-center gap-4">
             <div className="w-10 h-10 rounded-full border-4 border-primary border-t-transparent animate-spin" />
             <p className="text-zinc-500 font-bold tracking-widest text-sm uppercase">Loading Comparison...</p>
@@ -50,7 +50,7 @@ const CompareSection: React.FC = () => {
   if (error || !gadgetA || !gadgetB) {
     return (
       <section className="compare-section py-24 bg-white relative overflow-hidden">
-        <div className="container mx-auto px-4 relative z-10 flex justify-center py-16">
+        <div className="container relative z-10 flex justify-center py-16">
           <div className="flex flex-col items-center gap-4 text-center max-w-sm">
             <div className="w-16 h-16 rounded-2xl bg-zinc-100 flex items-center justify-center">
               <GitCompare size={28} className="text-zinc-300" />
@@ -122,7 +122,7 @@ const CompareSection: React.FC = () => {
       <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:32px_32px] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_70%,transparent_100%)] opacity-40" />
       <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-primary/5 via-transparent to-blue-500/5 pointer-events-none" />
 
-      <div className="container mx-auto px-4 relative z-10">
+      <div className="container relative z-10">
         
         {/* Section Header - Centered for better focus */}
         <div className="text-center max-w-3xl mx-auto mb-16 md:mb-24">
