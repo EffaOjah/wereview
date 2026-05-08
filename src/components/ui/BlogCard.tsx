@@ -2,6 +2,7 @@ import React from 'react';
 import type { BlogPost } from '../../types';
 import { MessageSquare, ArrowUpRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { getImageUrl } from '../../utils/image';
 
 interface BlogCardProps {
   post: BlogPost;
@@ -14,7 +15,7 @@ const BlogCard: React.FC<BlogCardProps> = ({ post }) => {
       {/* Blog Image & Date Badge */}
       <div className="relative aspect-[4/3] overflow-hidden bg-zinc-100">
         <img 
-          src={post.image || '/img/blog/pcs.jpg'} // Fallback if image doesn't load
+          src={getImageUrl(post.image) || '/img/blog/pcs.jpg'} // Fallback if image doesn't load
           alt={post.title} 
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" 
         />

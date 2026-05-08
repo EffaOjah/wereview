@@ -1,6 +1,7 @@
 import React from 'react';
 import type { Category } from '../../types';
 import { Link } from 'react-router-dom';
+import { getImageUrl } from '../../utils/image';
 
 interface CategoryCardProps {
   category: Category;
@@ -15,7 +16,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({ category }) => {
       {/* Circle Image Container */}
       <div className="relative w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden bg-zinc-100 border-2 border-transparent group-hover:border-primary group-hover:shadow-lg group-hover:shadow-primary/20 transition-all duration-500">
         <img 
-          src={category.image} 
+          src={getImageUrl(category.image)} 
           alt={category.name} 
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" 
         />

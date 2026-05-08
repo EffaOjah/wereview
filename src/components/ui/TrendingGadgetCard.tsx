@@ -4,6 +4,7 @@ import StarRating from './StarRating';
 import { GitCompare } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import NairaPrice from './NairaPrice';
+import { getImageUrl } from '../../utils/image';
 
 interface TrendingGadgetCardProps {
   gadget: Gadget;
@@ -28,7 +29,7 @@ const TrendingGadgetCard: React.FC<TrendingGadgetCardProps> = ({ gadget, viewMod
         
         {/* Image */}
         <img 
-          src={gadget.image} 
+          src={getImageUrl(gadget.image)} 
           alt={gadget.name} 
           className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500 ease-out" 
         />

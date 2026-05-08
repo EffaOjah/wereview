@@ -1,5 +1,5 @@
 import React, { useState, useEffect, type ReactNode } from 'react';
-import { LayoutDashboard, Package, MessageSquare, Users, Tags, Settings, LogOut, Bell, Search, Menu, X, Info, AlertTriangle, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { LayoutDashboard, Package, MessageSquare, Users, Tags, Settings, LogOut, Bell, Search, Menu, X, Info, AlertTriangle, AlertCircle, CheckCircle2, ShieldCheck } from 'lucide-react';
 import { useAuthModal } from '../../context/AuthModalContext';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import type { AdminNotification } from '../../types';
@@ -52,6 +52,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
     { icon: Package, label: 'Gadgets', path: '/admin/gadgets' },
     { icon: MessageSquare, label: 'Reviews', path: '/admin/reviews' },
     { icon: Users, label: 'Users', path: '/admin/users' },
+    { icon: ShieldCheck, label: 'Sellers', path: '/admin/sellers' },
     { icon: Tags, label: 'Categories', path: '/admin/categories' },
     { icon: Settings, label: 'Settings', path: '/admin/settings' },
   ];
@@ -74,10 +75,8 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
       `}>
         <div className="flex items-center justify-between mb-10 px-2">
           <Link to="/admin/dashboard" className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-zinc-900 rounded-lg flex items-center justify-center">
-              <LayoutDashboard size={18} className="text-white" />
-            </div>
-            <span className="font-black text-lg tracking-tight text-zinc-900">Admin<span className="text-primary">Panel</span></span>
+            <img src="/img/GH1.png" alt="GadgetHub" className="h-8 w-auto" />
+            <span className="text-primary text-[10px] font-black uppercase tracking-widest pt-1">Admin</span>
           </Link>
           <button 
             onClick={() => setIsSidebarOpen(false)}

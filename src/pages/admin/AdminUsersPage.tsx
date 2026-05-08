@@ -1,42 +1,57 @@
 import React, { useState, useEffect } from 'react';
-import { Search, UserCheck, UserX, Calendar, MessageSquare, ExternalLink, Shield } from 'lucide-react';
+import { Search, UserCheck, UserX, Calendar, MessageSquare, ExternalLink, Shield, AlertCircle } from 'lucide-react';
 import AdminLayout from '../../components/admin/AdminLayout';
-import type { User } from '../../types';
-
-const initialUsers: User[] = [
-  { id: 'u1', name: 'Effa Ojah', email: 'effa.ojah@example.com', role: 'admin', status: 'active', joinDate: 'Jan 12, 2024', reviewCount: 15, avatar: 'https://i.pravatar.cc/150?u=effa' },
-  { id: 'u2', name: 'Chinedu Eze', email: 'chinedu.eze@example.com', role: 'user', status: 'active', joinDate: 'Feb 05, 2024', reviewCount: 8, avatar: 'https://i.pravatar.cc/150?u=chinedu' },
-  { id: 'u3', name: 'Amina Bello', email: 'amina.b@example.com', role: 'user', status: 'active', joinDate: 'Mar 18, 2024', reviewCount: 12, avatar: 'https://i.pravatar.cc/150?u=amina' },
-  { id: 'u4', name: 'Tunde Badmus', email: 'tunde.badmus@example.com', role: 'user', status: 'suspended', joinDate: 'Apr 02, 2024', reviewCount: 3, avatar: 'https://i.pravatar.cc/150?u=tunde' },
-  { id: 'u5', name: 'Nneka Nwosu', email: 'nneka.nwosu@example.com', role: 'user', status: 'active', joinDate: 'May 10, 2024', reviewCount: 5, avatar: 'https://i.pravatar.cc/150?u=nneka' },
-  { id: 'u6', name: 'Tobi A.', email: 'tobi.a@example.com', role: 'user', status: 'active', joinDate: 'Jun 22, 2024', reviewCount: 2, avatar: 'https://i.pravatar.cc/150?u=tobi' },
-];
+import { getApiUrl } from '../../utils/api';
 
 const AdminUsersPage: React.FC = () => {
-  const [users, setUsers] = useState<User[]>([]);
+  const [users, setUsers] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<'All' | 'active' | 'suspended'>('All');
 
-  useEffect(() => {
-    const savedUsers = localStorage.getItem('gadgethub_users');
-    if (savedUsers) {
-      setUsers(JSON.parse(savedUsers));
-    } else {
-      setUsers(initialUsers);
-      localStorage.setItem('gadgethub_users', JSON.stringify(initialUsers));
+  const fetchUsers = async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetch(getApiUrl('/api/admin/users'), {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('gadgethub_token')}`
+        }
+      });
+      const data = await response.json();
+      if (data.success) {
+        setUsers(data.data);
+      } else {
+        setError(data.message);
+      }
+    } catch (err) {
+      setError('Failed to fetch platform users.');
+    } finally {
+      setIsLoading(false);
     }
+  };
+
+  useEffect(() => {
+    fetchUsers();
   }, []);
 
-  const handleToggleStatus = (id: string) => {
-    const updated = users.map(u => {
-      if (u.id === id) {
-        const newStatus = u.status === 'active' ? 'suspended' : 'active';
-        return { ...u, status: newStatus as 'active' | 'suspended' };
+  const handleToggleStatus = async (id: string) => {
+    try {
+      const response = await fetch(getApiUrl(`/api/admin/toggle-user-status/${id}`), {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('gadgethub_token')}`
+        }
+      });
+      const data = await response.json();
+      if (data.success) {
+        setUsers(users.map(u => u.id === id ? data.data : u));
+      } else {
+        alert(data.message);
       }
-      return u;
-    });
-    setUsers(updated);
-    localStorage.setItem('gadgethub_users', JSON.stringify(updated));
+    } catch (err) {
+      alert('Error updating user status');
+    }
   };
 
   const filteredUsers = users.filter(u => {
@@ -57,11 +72,13 @@ const AdminUsersPage: React.FC = () => {
           <div className="flex items-center gap-3">
              <div className="flex -space-x-3 overflow-hidden">
                {users.slice(0, 4).map(u => (
-                 <img key={u.id} className="inline-block h-10 w-10 rounded-full ring-4 ring-white" src={u.avatar} alt={u.name} />
+                 <img key={u.id} className="inline-block h-10 w-10 rounded-full ring-4 ring-white" src={u.avatar || 'https://i.pravatar.cc/150?u=placeholder'} alt={u.name} />
                ))}
-               <div className="flex items-center justify-center h-10 w-10 rounded-full bg-zinc-100 ring-4 ring-white text-[10px] font-black text-zinc-400">
-                 +{users.length - 4}
-               </div>
+               {users.length > 4 && (
+                 <div className="flex items-center justify-center h-10 w-10 rounded-full bg-zinc-100 ring-4 ring-white text-[10px] font-black text-zinc-400">
+                   +{users.length - 4}
+                 </div>
+               )}
              </div>
           </div>
         </div>
@@ -91,6 +108,13 @@ const AdminUsersPage: React.FC = () => {
           </div>
         </div>
 
+        {error && (
+          <div className="mb-8 p-6 bg-red-50 border border-red-100 rounded-3xl flex items-center gap-4 text-red-600">
+            <AlertCircle size={24} />
+            <p className="font-bold">{error}</p>
+          </div>
+        )}
+
         {/* Users Table */}
         <div className="bg-white border border-zinc-200 rounded-[2rem] overflow-hidden shadow-sm">
           <div className="overflow-x-auto">
@@ -106,11 +130,18 @@ const AdminUsersPage: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-zinc-50">
-                {filteredUsers.map((user) => (
+                {isLoading ? (
+                  <tr>
+                    <td colSpan={6} className="py-20 text-center">
+                       <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+                       <p className="text-zinc-400 font-bold">Synchronizing user data...</p>
+                    </td>
+                  </tr>
+                ) : filteredUsers.map((user) => (
                   <tr key={user.id} className="hover:bg-zinc-50/50 transition-colors group">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-4">
-                        <img src={user.avatar} alt={user.name} className="w-10 h-10 rounded-xl object-cover shrink-0" />
+                        <img src={user.avatar || 'https://i.pravatar.cc/150?u=placeholder'} alt={user.name} className="w-10 h-10 rounded-xl object-cover shrink-0" />
                         <div>
                           <p className="text-sm font-bold text-zinc-900 leading-none mb-1">{user.name}</p>
                           <p className="text-[10px] text-zinc-400 font-medium">{user.email}</p>
@@ -119,12 +150,12 @@ const AdminUsersPage: React.FC = () => {
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
-                        {user.role === 'admin' ? (
+                        {user.role === 'ADMIN' ? (
                           <Shield size={14} className="text-primary" />
                         ) : (
                           <Shield size={14} className="text-zinc-300" />
                         )}
-                        <span className={`text-[10px] font-black uppercase tracking-wider ${user.role === 'admin' ? 'text-primary' : 'text-zinc-500'}`}>
+                        <span className={`text-[10px] font-black uppercase tracking-wider ${user.role === 'ADMIN' ? 'text-primary' : 'text-zinc-500'}`}>
                           {user.role}
                         </span>
                       </div>
@@ -141,13 +172,13 @@ const AdminUsersPage: React.FC = () => {
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2 text-zinc-400">
                         <Calendar size={14} />
-                        <span className="text-xs font-bold text-zinc-600">{user.joinDate}</span>
+                        <span className="text-xs font-bold text-zinc-600">{new Date(user.createdAt).toLocaleDateString()}</span>
                       </div>
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2 text-zinc-400">
                         <MessageSquare size={14} />
-                        <span className="text-xs font-bold text-zinc-900">{user.reviewCount}</span>
+                        <span className="text-xs font-bold text-zinc-900">{user._count?.reviews || 0}</span>
                       </div>
                     </td>
                     <td className="px-6 py-4 text-right">
@@ -174,7 +205,7 @@ const AdminUsersPage: React.FC = () => {
             </table>
           </div>
 
-          {filteredUsers.length === 0 && (
+          {!isLoading && filteredUsers.length === 0 && (
             <div className="p-20 text-center">
               <div className="w-16 h-16 bg-zinc-50 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-zinc-100">
                 <Search size={24} className="text-zinc-300" />
@@ -184,29 +215,9 @@ const AdminUsersPage: React.FC = () => {
             </div>
           )}
         </div>
-
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-           <div className="bg-white border border-zinc-200 p-6 rounded-3xl">
-              <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-4">New Users (This Month)</p>
-              <h4 className="text-2xl font-black text-zinc-900">24</h4>
-              <p className="text-[10px] text-green-600 font-bold mt-2">+12% from last month</p>
-           </div>
-           <div className="bg-white border border-zinc-200 p-6 rounded-3xl">
-              <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-4">Active Contributors</p>
-              <h4 className="text-2xl font-black text-zinc-900">156</h4>
-              <p className="text-[10px] text-primary font-bold mt-2">65% of total users</p>
-           </div>
-           <div className="bg-white border border-zinc-200 p-6 rounded-3xl">
-              <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-4">Reported Users</p>
-              <h4 className="text-2xl font-black text-red-600">3</h4>
-              <p className="text-[10px] text-zinc-400 font-bold mt-2">Requires immediate attention</p>
-           </div>
-        </div>
       </div>
     </AdminLayout>
   );
 };
 
 export default AdminUsersPage;
-

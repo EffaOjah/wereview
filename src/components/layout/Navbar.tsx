@@ -20,8 +20,8 @@ const Navbar: React.FC = () => {
       <div className="container h-20 flex justify-between items-center">
 
         {/* Left: Logo */}
-        <Link to="/" className="text-[26px] font-black text-primary tracking-tight hover:opacity-90 transition-opacity">
-          GadgetHub
+        <Link to="/" className="flex items-center gap-2 hover:opacity-90 transition-opacity">
+          <img src="/img/GH1.png" alt="GadgetHub" className="h-12 w-auto" />
         </Link>
 
         {/* Center: Desktop Nav */}
@@ -96,7 +96,9 @@ const Navbar: React.FC = () => {
       {/* Mobile Menu Overlay */}
       <div className={`lg:hidden fixed inset-0 bg-white z-[999] transform ${isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'} transition-transform duration-300 ease-in-out`}>
         <div className="p-4 border-b flex justify-between items-center bg-[#f9f8f8]">
-          <Link to="/" className="text-2xl font-black text-primary" onClick={() => setIsMobileMenuOpen(false)}>GadgetHub</Link>
+          <Link to="/" className="flex items-center" onClick={() => setIsMobileMenuOpen(false)}>
+            <img src="/img/GH1.png" alt="GadgetHub" className="h-10 w-auto" />
+          </Link>
           <button onClick={() => setIsMobileMenuOpen(false)} className="p-2 bg-white rounded-full shadow-sm"><X size={24} /></button>
         </div>
         <div className="flex flex-col p-6 gap-6">

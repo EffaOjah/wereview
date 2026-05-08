@@ -22,6 +22,7 @@ import ComparePage from './pages/ComparePage';
 import ProfilePage from './pages/ProfilePage';
 import PublicProfilePage from './pages/PublicProfilePage';
 import SellersPage from './pages/SellersPage';
+import BecomeSellerPage from './pages/BecomeSellerPage';
 import ContactPage from './pages/ContactPage';
 import NotFoundPage from './pages/NotFoundPage';
 import AIAssistantWidget from './components/ui/AIAssistantWidget';
@@ -35,6 +36,7 @@ import AdminUsersPage from './pages/admin/AdminUsersPage';
 import AdminCategoriesPage from './pages/admin/AdminCategoriesPage';
 import AdminSettingsPage from './pages/admin/AdminSettingsPage';
 import AdminNotificationsPage from './pages/admin/AdminNotificationsPage';
+import AdminSellersPage from './pages/admin/AdminSellersPage';
 
 import { GadgetProvider } from './context/GadgetContext';
 
@@ -66,6 +68,11 @@ const AppContent: React.FC = () => {
           } />
           <Route path="/user/:userId" element={<PublicProfilePage />} />
           <Route path="/sellers" element={<SellersPage />} />
+          <Route path="/become-seller" element={
+            <ProtectedRoute>
+              <BecomeSellerPage />
+            </ProtectedRoute>
+          } />
           <Route path="/contact" element={<ContactPage />} />
           
           {/* Admin Routes */}
@@ -76,6 +83,7 @@ const AppContent: React.FC = () => {
           <Route path="/admin/users" element={<ProtectedRoute adminOnly><AdminUsersPage /></ProtectedRoute>} />
           <Route path="/admin/categories" element={<ProtectedRoute adminOnly><AdminCategoriesPage /></ProtectedRoute>} />
           <Route path="/admin/settings" element={<ProtectedRoute adminOnly><AdminSettingsPage /></ProtectedRoute>} />
+          <Route path="/admin/sellers" element={<ProtectedRoute adminOnly><AdminSellersPage /></ProtectedRoute>} />
           <Route path="/admin/notifications" element={<ProtectedRoute adminOnly><AdminNotificationsPage /></ProtectedRoute>} />
           
           <Route path="*" element={<NotFoundPage />} />

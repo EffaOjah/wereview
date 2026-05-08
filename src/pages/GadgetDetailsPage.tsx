@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { getApiUrl } from '../utils/api';
 import Breadcrumb from '../components/ui/Breadcrumb';
+import { getImageUrl } from '../utils/image';
 import StarRating from '../components/ui/StarRating';
 import NairaPrice from '../components/ui/NairaPrice';
 import VerifiedBadge from '../components/ui/VerifiedBadge';
@@ -121,7 +122,7 @@ const GadgetDetailsPage: React.FC = () => {
           {/* Image Gallery */}
           <div className="lg:w-2/5 flex flex-col gap-6">
             <div className="bg-zinc-50 p-12 rounded-2xl flex items-center justify-center aspect-square">
-               <img src={Gadget.image} alt={Gadget.name} className="max-w-full max-h-full object-contain mix-blend-multiply" />
+               <img src={getImageUrl(Gadget.image)} alt={Gadget.name} className="max-w-full max-h-full object-contain mix-blend-multiply" />
             </div>
           </div>
 

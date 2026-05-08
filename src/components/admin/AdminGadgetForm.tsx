@@ -1,73 +1,92 @@
 import React, { useState, useEffect } from 'react';
 import { X, Plus, Trash2, Image as ImageIcon, Check, Loader2 } from 'lucide-react';
-import type { Gadget } from '../../types';
+import type { Gadget, Category } from '../../types';
+import { getApiUrl } from '../../utils/api';
+import { getImageUrl } from '../../utils/image';
 
 interface AdminGadgetFormProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (Gadget: Gadget) => void;
-  Gadget?: Gadget | null;
+  onSave: (gadget: any) => void;
+  gadget?: Gadget | null;
 }
 
-const AdminGadgetForm: React.FC<AdminGadgetFormProps> = ({ isOpen, onClose, onSave, Gadget }) => {
-  const [formData, setFormData] = useState<Partial<Gadget>>({
+const AdminGadgetForm: React.FC<AdminGadgetFormProps> = ({ isOpen, onClose, onSave, gadget }) => {
+  const [formData, setFormData] = useState<any>({
     name: '',
-    category: 'gadgets',
+    categoryId: '',
     image: '',
-    price: 0,
-    nigerianPrices: { jumia: 0, konga: 0, slot: 0, average: 0 },
+    originalPrice: 0,
     description: '',
     specs: {},
     badges: [],
     pros: [],
-    cons: []
+    cons: [],
+    discount: 0
   });
 
+  const [categories, setCategories] = useState<Category[]>([]);
   const [newSpec, setNewSpec] = useState({ key: '', value: '' });
   const [newBadge, setNewBadge] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    if (Gadget) {
-      setFormData(Gadget);
-    } else {
-      setFormData({
-        id: Math.random().toString(36).substr(2, 9),
-        name: '',
-        category: 'gadgets',
-        image: '',
-        rating: 0,
-        price: 0,
-        nigerianPrices: { jumia: 0, konga: 0, slot: 0, average: 0 },
-        description: '',
-        specs: {},
-        badges: [],
-        pros: [],
-        cons: [],
-        reviewCount: 0
-      });
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch(getApiUrl('/api/categories'));
+        const data = await response.json();
+        if (data.success) {
+          setCategories(data.data);
+          // Set default category if creating new
+          if (!gadget && data.data.length > 0) {
+            setFormData((prev: any) => ({ ...prev, categoryId: data.data[0].id }));
+          }
+        }
+      } catch (err) {
+        console.error('Error fetching categories:', err);
+      }
+    };
+
+    if (isOpen) {
+      fetchCategories();
+      if (gadget) {
+        setFormData({
+          ...gadget,
+          categoryId: gadget.categoryId || (gadget.category as any)?.id || ''
+        });
+      } else {
+        setFormData({
+          name: '',
+          categoryId: '',
+          image: '',
+          originalPrice: 0,
+          description: '',
+          specs: {},
+          badges: [],
+          pros: [],
+          cons: [],
+          discount: 0
+        });
+      }
     }
-  }, [Gadget, isOpen]);
+  }, [gadget, isOpen]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     
-    // Calculate average Naira price automatically
-    const prices = formData.nigerianPrices || {};
-    const validPrices = [prices.jumia, prices.konga, prices.slot].filter(p => p && p > 0) as number[];
-    const average = validPrices.length > 0 ? Math.round(validPrices.reduce((a, b) => a + b, 0) / validPrices.length) : 0;
+    // Preparation for API: Strip out relations that shouldn't be sent to backend
+    const { category, prices, nigerianPrices, reviews, sellers, ...cleanData } = formData;
     
-    const finalGadget = {
-      ...formData,
-      nigerianPrices: { ...prices, average }
-    } as Gadget;
+    const finalData = {
+      ...cleanData,
+      originalPrice: formData.originalPrice ? Number(formData.originalPrice) : null,
+      discount: formData.discount ? Number(formData.discount) : 0,
+      dealEndTime: formData.dealEndTime || null
+    };
 
-    setTimeout(() => {
-      onSave(finalGadget);
-      setIsLoading(false);
-      onClose();
-    }, 1000);
+    onSave(finalData);
+    setIsLoading(false);
   };
 
   const handleSpecAdd = () => {
@@ -94,8 +113,8 @@ const AdminGadgetForm: React.FC<AdminGadgetFormProps> = ({ isOpen, onClose, onSa
       <div className="relative w-full max-w-2xl bg-white h-full shadow-2xl flex flex-col overflow-hidden animate-slide-left">
         <div className="flex items-center justify-between p-6 border-b border-zinc-100">
           <div>
-            <h2 className="text-xl font-black text-zinc-900">{Gadget ? 'Edit Gadget' : 'Add New Gadget'}</h2>
-            <p className="text-zinc-500 text-xs font-medium mt-1">Fill in the details to update your catalog.</p>
+            <h2 className="text-xl font-black text-zinc-900">{gadget ? 'Edit Gadget' : 'Add New Gadget'}</h2>
+            <p className="text-zinc-500 text-xs font-medium mt-1">Configure technical specs and pricing for this unit.</p>
           </div>
           <button onClick={onClose} className="p-2 text-zinc-400 hover:text-zinc-900 hover:bg-zinc-50 rounded-xl transition-all">
             <X size={24} />
@@ -106,106 +125,134 @@ const AdminGadgetForm: React.FC<AdminGadgetFormProps> = ({ isOpen, onClose, onSa
           
           {/* Basic Info */}
           <section className="space-y-4">
-            <h3 className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] mb-4">Basic Information</h3>
+            <h3 className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] mb-4">Core Identification</h3>
             <div className="grid grid-cols-2 gap-4">
               <div className="flex flex-col gap-2">
-                <label className="text-xs font-bold text-zinc-900 ml-1">Gadget Name</label>
+                <label className="text-xs font-bold text-zinc-900 ml-1">Official Name</label>
                 <input 
                   type="text" 
                   value={formData.name}
                   onChange={(e) => setFormData({...formData, name: e.target.value})}
-                  placeholder="e.g. iPhone 15 Pro"
+                  placeholder="e.g. Galaxy S24 Ultra"
                   className="w-full px-4 py-3 bg-zinc-50 border border-zinc-100 rounded-2xl outline-none focus:border-primary/50 focus:bg-white transition-all text-sm font-medium"
                   required
                 />
               </div>
               <div className="flex flex-col gap-2">
-                <label className="text-xs font-bold text-zinc-900 ml-1">Category</label>
+                <label className="text-xs font-bold text-zinc-900 ml-1">Category Group</label>
                 <select 
-                  value={formData.category}
-                  onChange={(e) => setFormData({...formData, category: e.target.value})}
+                  value={formData.categoryId}
+                  onChange={(e) => setFormData({...formData, categoryId: e.target.value})}
                   className="w-full px-4 py-3 bg-zinc-50 border border-zinc-100 rounded-2xl outline-none focus:border-primary/50 focus:bg-white transition-all text-sm font-bold"
+                  required
                 >
-                  <option value="gadgets">Gadgets</option>
-                  <option value="laptops">Laptops</option>
-                  <option value="headphones">Headphones</option>
-                  <option value="gaming">Gaming</option>
-                  <option value="cameras">Cameras</option>
-                  <option value="smartwatches">Smartwatches</option>
+                  <option value="" disabled>Select Category</option>
+                  {categories.map(cat => (
+                    <option key={cat.id} value={cat.id}>{cat.name}</option>
+                  ))}
                 </select>
               </div>
             </div>
             
             <div className="flex flex-col gap-2">
-              <label className="text-xs font-bold text-zinc-900 ml-1">Image URL</label>
+              <label className="text-xs font-bold text-zinc-900 ml-1">Primary Image URL</label>
               <div className="flex gap-4">
                 <div className="relative flex-grow">
                   <ImageIcon className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400" size={18} />
                   <input 
-                    type="text" 
+                    type="url" 
                     value={formData.image}
                     onChange={(e) => setFormData({...formData, image: e.target.value})}
-                    placeholder="https://images.unsplash.com/..."
+                    placeholder="Paste image URL or upload below..."
                     className="w-full pl-12 pr-4 py-3 bg-zinc-50 border border-zinc-100 rounded-2xl outline-none focus:border-primary/50 focus:bg-white transition-all text-sm font-medium"
                     required
                   />
                 </div>
+                <div className="relative group">
+                   <input 
+                     type="file" 
+                     id="image-upload"
+                     className="hidden" 
+                     accept="image/*"
+                     onChange={async (e) => {
+                       const file = e.target.files?.[0];
+                       if (!file) return;
+
+                       const formDataUpload = new FormData();
+                       formDataUpload.append('image', file);
+
+                       try {
+                         setIsLoading(true);
+                         const response = await fetch(getApiUrl('/api/upload'), {
+                           method: 'POST',
+                           headers: {
+                             'Authorization': `Bearer ${localStorage.getItem('gadgethub_token')}`
+                           },
+                           body: formDataUpload
+                         });
+                         const data = await response.json();
+                         if (data.success) {
+                           setFormData((prev: any) => ({ ...prev, image: data.data.fullUrl }));
+                         } else {
+                           alert(data.message || 'Upload failed');
+                         }
+                       } catch (err) {
+                         alert('Network error during upload');
+                       } finally {
+                         setIsLoading(false);
+                       }
+                     }}
+                   />
+                   <label 
+                     htmlFor="image-upload"
+                     className="px-6 py-3 bg-zinc-900 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest cursor-pointer hover:bg-black transition-all flex items-center gap-2 whitespace-nowrap"
+                   >
+                     {isLoading ? <Loader2 className="animate-spin" size={14} /> : <ImageIcon size={14} />}
+                     Upload Image
+                   </label>
+                </div>
                 <div className="w-12 h-12 rounded-xl border border-zinc-200 overflow-hidden bg-zinc-50 shrink-0">
-                  {formData.image && <img src={formData.image} alt="Preview" className="w-full h-full object-cover" />}
+                  {formData.image && <img src={getImageUrl(formData.image)} alt="Preview" className="w-full h-full object-cover" />}
                 </div>
               </div>
             </div>
 
             <div className="flex flex-col gap-2">
-              <label className="text-xs font-bold text-zinc-900 ml-1">Description</label>
+              <label className="text-xs font-bold text-zinc-900 ml-1">Market Description</label>
               <textarea 
                 value={formData.description}
                 onChange={(e) => setFormData({...formData, description: e.target.value})}
                 rows={3}
-                placeholder="Brief overview of the Gadget..."
+                placeholder="A compelling summary of why this gadget matters..."
                 className="w-full px-4 py-3 bg-zinc-50 border border-zinc-100 rounded-2xl outline-none focus:border-primary/50 focus:bg-white transition-all text-sm font-medium"
+                required
               />
             </div>
           </section>
 
           {/* Pricing */}
           <section className="space-y-4">
-             <h3 className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] mb-4">Pricing (Global & Local)</h3>
-             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+             <h3 className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] mb-4">Pricing Strategy</h3>
+             <div className="grid grid-cols-2 gap-4">
                <div className="flex flex-col gap-2">
-                 <label className="text-xs font-bold text-zinc-900 ml-1">Base ($)</label>
+                 <label className="text-xs font-bold text-zinc-900 ml-1">Global Base Price ($)</label>
                  <input 
                    type="number" 
-                   value={formData.price}
-                   onChange={(e) => setFormData({...formData, price: Number(e.target.value)})}
+                   value={formData.originalPrice}
+                   onChange={(e) => setFormData({...formData, originalPrice: Number(e.target.value)})}
                    className="w-full px-4 py-3 bg-zinc-50 border border-zinc-100 rounded-2xl outline-none focus:border-primary/50 focus:bg-white transition-all text-sm font-bold"
+                   required
                  />
                </div>
                <div className="flex flex-col gap-2">
-                 <label className="text-xs font-bold text-zinc-900 ml-1">Jumia (₦)</label>
+                 <label className="text-xs font-bold text-zinc-900 ml-1">Campaign Discount (%)</label>
                  <input 
                    type="number" 
-                   value={formData.nigerianPrices?.jumia}
-                   onChange={(e) => setFormData({...formData, nigerianPrices: {...formData.nigerianPrices!, jumia: Number(e.target.value)}})}
+                   value={formData.discount}
+                   onChange={(e) => setFormData({...formData, discount: Number(e.target.value)})}
                    className="w-full px-4 py-3 bg-zinc-50 border border-zinc-100 rounded-2xl outline-none focus:border-primary/50 focus:bg-white transition-all text-sm font-bold"
-                 />
-               </div>
-               <div className="flex flex-col gap-2">
-                 <label className="text-xs font-bold text-zinc-900 ml-1">Konga (₦)</label>
-                 <input 
-                   type="number" 
-                   value={formData.nigerianPrices?.konga}
-                   onChange={(e) => setFormData({...formData, nigerianPrices: {...formData.nigerianPrices!, konga: Number(e.target.value)}})}
-                   className="w-full px-4 py-3 bg-zinc-50 border border-zinc-100 rounded-2xl outline-none focus:border-primary/50 focus:bg-white transition-all text-sm font-bold"
-                 />
-               </div>
-               <div className="flex flex-col gap-2">
-                 <label className="text-xs font-bold text-zinc-900 ml-1">Slot (₦)</label>
-                 <input 
-                   type="number" 
-                   value={formData.nigerianPrices?.slot}
-                   onChange={(e) => setFormData({...formData, nigerianPrices: {...formData.nigerianPrices!, slot: Number(e.target.value)}})}
-                   className="w-full px-4 py-3 bg-zinc-50 border border-zinc-100 rounded-2xl outline-none focus:border-primary/50 focus:bg-white transition-all text-sm font-bold"
+                   min="0"
+                   max="100"
                  />
                </div>
              </div>
@@ -213,18 +260,18 @@ const AdminGadgetForm: React.FC<AdminGadgetFormProps> = ({ isOpen, onClose, onSa
 
           {/* Dynamic Specs */}
           <section className="space-y-4">
-             <h3 className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] mb-4">Technical Specifications</h3>
+             <h3 className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] mb-4">Detailed Specifications</h3>
              <div className="flex gap-2 mb-4">
                <input 
                  type="text" 
-                 placeholder="Key (e.g. Battery)" 
+                 placeholder="Feature (e.g. CPU)" 
                  value={newSpec.key}
                  onChange={(e) => setNewSpec({...newSpec, key: e.target.value})}
                  className="flex-1 px-4 py-3 bg-zinc-50 border border-zinc-100 rounded-2xl text-sm font-medium"
                />
                <input 
                  type="text" 
-                 placeholder="Value (e.g. 5000mAh)" 
+                 placeholder="Value (e.g. A17 Pro)" 
                  value={newSpec.value}
                  onChange={(e) => setNewSpec({...newSpec, value: e.target.value})}
                  className="flex-1 px-4 py-3 bg-zinc-50 border border-zinc-100 rounded-2xl text-sm font-medium"
@@ -238,7 +285,7 @@ const AdminGadgetForm: React.FC<AdminGadgetFormProps> = ({ isOpen, onClose, onSa
                </button>
              </div>
              <div className="grid grid-cols-2 gap-2">
-               {Object.entries(formData.specs || {}).map(([key, val]) => (
+               {Object.entries(formData.specs || {}).map(([key, val]: any) => (
                  <div key={key} className="flex items-center justify-between px-4 py-2 bg-zinc-50 border border-zinc-100 rounded-xl group">
                    <div className="flex flex-col">
                      <span className="text-[10px] font-black text-zinc-400 uppercase">{key}</span>
@@ -262,11 +309,11 @@ const AdminGadgetForm: React.FC<AdminGadgetFormProps> = ({ isOpen, onClose, onSa
 
           {/* Badges/Tags */}
           <section className="space-y-4 pb-12">
-             <h3 className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] mb-4">Badges & Social</h3>
+             <h3 className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] mb-4">Marketing Badges</h3>
              <div className="flex gap-2">
                <input 
                  type="text" 
-                 placeholder="Add badge (e.g. 🔥 Trending)" 
+                 placeholder="Type badge and press Enter..." 
                  value={newBadge}
                  onChange={(e) => setNewBadge(e.target.value)}
                  onKeyPress={(e) => {
@@ -282,10 +329,10 @@ const AdminGadgetForm: React.FC<AdminGadgetFormProps> = ({ isOpen, onClose, onSa
                />
              </div>
              <div className="flex flex-wrap gap-2">
-               {formData.badges?.map((badge, idx) => (
-                 <span key={idx} className="flex items-center gap-2 px-3 py-1.5 bg-primary/10 text-primary border border-primary/20 rounded-full text-xs font-bold">
+               {formData.badges?.map((badge: string, idx: number) => (
+                 <span key={idx} className="flex items-center gap-2 px-3 py-1.5 bg-zinc-900 text-white rounded-full text-[10px] font-black uppercase tracking-wider">
                    {badge}
-                   <button type="button" onClick={() => setFormData({...formData, badges: formData.badges?.filter((_, i) => i !== idx)})}><X size={12} /></button>
+                   <button type="button" onClick={() => setFormData({...formData, badges: formData.badges?.filter((_: any, i: number) => i !== idx)})}><X size={10} /></button>
                  </span>
                ))}
              </div>
@@ -299,14 +346,14 @@ const AdminGadgetForm: React.FC<AdminGadgetFormProps> = ({ isOpen, onClose, onSa
              onClick={onClose}
              className="flex-1 py-4 bg-white border border-zinc-200 text-zinc-900 font-black text-sm rounded-2xl hover:bg-zinc-100 transition-all"
            >
-             Discard Changes
+             Cancel
            </button>
            <button 
              onClick={handleSubmit}
              disabled={isLoading}
-             className="flex-[2] py-4 bg-zinc-900 text-white font-black text-sm rounded-2xl hover:bg-black transition-all shadow-xl shadow-zinc-900/10 flex items-center justify-center gap-3 disabled:opacity-70"
+             className="flex-[2] py-4 bg-primary text-white font-black text-sm rounded-2xl hover:bg-zinc-900 transition-all shadow-xl shadow-primary/20 flex items-center justify-center gap-3 disabled:opacity-70"
            >
-             {isLoading ? <Loader2 className="animate-spin" size={18} /> : <><Check size={18} /> {Gadget ? 'Save Changes' : 'Create Gadget'}</>}
+             {isLoading ? <Loader2 className="animate-spin" size={18} /> : <><Check size={18} /> {gadget ? 'Update Unit' : 'Publish Gadget'}</>}
            </button>
         </div>
       </div>

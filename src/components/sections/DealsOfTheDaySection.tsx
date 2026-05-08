@@ -3,6 +3,7 @@ import { Flame, ShoppingCart, ArrowRight, GitCompare } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import NairaPrice from '../ui/NairaPrice';
 import { useGadgets } from '../../context/GadgetContext';
+import { getImageUrl } from '../../utils/image';
 
 const DealsOfTheDaySection: React.FC = () => {
     const { deals: dealGadgets, isLoading } = useGadgets();
@@ -41,7 +42,7 @@ const DealsOfTheDaySection: React.FC = () => {
                             <div key={gadget.id} className="group flex flex-col h-full bg-zinc-50/50 rounded-[40px] p-2 border border-zinc-100 hover:bg-white hover:shadow-2xl hover:shadow-primary/10 transition-all duration-500">
                                 <div className="relative aspect-square rounded-[32px] overflow-hidden bg-white mb-6">
                                     <img
-                                        src={gadget.image}
+                                        src={getImageUrl(gadget.image)}
                                         alt={gadget.name}
                                         className="w-full h-full object-contain p-8 group-hover:scale-110 transition-transform duration-700"
                                     />

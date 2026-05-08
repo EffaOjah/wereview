@@ -75,7 +75,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ initialView = 'login', onSuccess, o
          
          <div className="relative z-10 flex flex-col h-full justify-between">
            <div>
-             <h2 className="text-3xl font-black tracking-tight text-white mb-2">GadgetHub</h2>
+             <img src="/img/GH.png" alt="GadgetHub" className="h-12 w-auto mb-6 brightness-0 invert" />
              <span className="text-primary text-sm font-bold uppercase tracking-widest border-b border-primary/50 pb-1 inline-block">Join The Club</span>
            </div>
 

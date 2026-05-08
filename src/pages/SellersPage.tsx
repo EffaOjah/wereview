@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { ShieldCheck, MapPin, Star, Phone, ExternalLink, Search, SlidersHorizontal } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { ShieldCheck, MapPin, Star, Phone, ExternalLink, Search, SlidersHorizontal, ArrowRight, TrendingUp } from 'lucide-react';
 import Breadcrumb from '../components/ui/Breadcrumb';
 
 const sellers = [
@@ -163,6 +164,44 @@ const SellersPage: React.FC = () => {
             <p className="text-muted">We couldn't find any sellers matching "{searchTerm}".</p>
           </div>
         )}
+      </div>
+
+      {/* Become a Seller CTA */}
+      <div className="container mt-24">
+         <div className="bg-dark rounded-[40px] p-12 md:p-20 relative overflow-hidden group shadow-2xl shadow-primary/20">
+            <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-primary/10 blur-[120px] rounded-full -translate-y-1/2 translate-x-1/4 group-hover:scale-110 transition-transform duration-700" />
+            <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-12">
+               <div className="max-w-xl text-center lg:text-left">
+                  <h2 className="text-4xl md:text-5xl font-black text-white leading-tight mb-6">
+                     Are you a <br />
+                     <span className="text-primary text-5xl md:text-6xl">Tech Seller?</span>
+                  </h2>
+                  <p className="text-zinc-400 font-medium text-lg leading-relaxed mb-8">
+                     Reach thousands of tech enthusiasts across Nigeria. Join our verified network and grow your business today.
+                  </p>
+                  <Link 
+                    to="/become-seller" 
+                    className="inline-flex items-center gap-3 px-8 py-5 bg-primary text-white rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-white hover:text-dark transition-all shadow-xl shadow-primary/20 group/btn"
+                  >
+                    Register Your Business <ArrowRight size={20} className="group-hover/btn:translate-x-1 transition-transform" />
+                  </Link>
+               </div>
+               
+               <div className="grid grid-cols-2 gap-4">
+                  {[
+                    { label: 'Market Reach', icon: TrendingUp },
+                    { label: 'Trust Badges', icon: ShieldCheck },
+                    { label: 'Price Insights', icon: SlidersHorizontal },
+                    { label: 'Direct Leads', icon: ExternalLink }
+                  ].map((feature, i) => (
+                    <div key={i} className="p-6 bg-white/5 border border-white/10 rounded-3xl backdrop-blur-sm flex flex-col items-center text-center group/feat hover:bg-white/10 transition-colors">
+                       <feature.icon className="text-primary mb-3 group-hover/feat:scale-110 transition-transform" size={24} />
+                       <span className="text-xs font-bold text-zinc-300 uppercase tracking-widest">{feature.label}</span>
+                    </div>
+                  ))}
+               </div>
+            </div>
+         </div>
       </div>
     </div>
   );

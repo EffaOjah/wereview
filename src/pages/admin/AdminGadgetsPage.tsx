@@ -1,47 +1,77 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Search, Edit2, Trash2 } from 'lucide-react';
+import { Plus, Search, Edit2, Trash2, AlertCircle } from 'lucide-react';
 import AdminLayout from '../../components/admin/AdminLayout';
 import AdminGadgetForm from '../../components/admin/AdminGadgetForm';
-import { gadgets as initialGadgets } from '../../data/gadgets';
 import type { Gadget } from '../../types';
+import { getApiUrl } from '../../utils/api';
+import { getImageUrl } from '../../utils/image';
 
 const AdminGadgetsPage: React.FC = () => {
   const [gadgetList, setGadgetList] = useState<Gadget[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   
   // Form State
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingGadget, setEditingGadget] = useState<Gadget | null>(null);
 
-  useEffect(() => {
-    const savedGadgets = localStorage.getItem('gadgethub_gadgets');
-    if (savedGadgets) {
-      setGadgetList(JSON.parse(savedGadgets));
-    } else {
-      setGadgetList(initialGadgets);
-      localStorage.setItem('gadgethub_gadgets', JSON.stringify(initialGadgets));
+  const fetchGadgets = async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetch(getApiUrl('/api/gadgets'));
+      const data = await response.json();
+      if (data.success) {
+        setGadgetList(data.data);
+      } else {
+        setError(data.message);
+      }
+    } catch (err) {
+      setError('Failed to load gadgets.');
+    } finally {
+      setIsLoading(false);
     }
-  }, []);
-
-  const handleSaveGadget = (gadget: Gadget) => {
-    let updatedGadgets: Gadget[];
-    if (gadgetList.some(p => p.id === gadget.id)) {
-      // Update
-      updatedGadgets = gadgetList.map(p => p.id === gadget.id ? gadget : p);
-    } else {
-      // Create
-      updatedGadgets = [gadget, ...gadgetList];
-    }
-    
-    setGadgetList(updatedGadgets);
-    localStorage.setItem('gadgethub_gadgets', JSON.stringify(updatedGadgets));
-    setIsFormOpen(false);
-    setEditingGadget(null);
   };
 
-  const handleEdit = (Gadget: Gadget) => {
-    setEditingGadget(Gadget);
+  useEffect(() => {
+    fetchGadgets();
+  }, []);
+
+  const handleSaveGadget = async (gadgetData: any) => {
+    try {
+      const isUpdate = !!gadgetData.id;
+      const url = isUpdate ? getApiUrl(`/api/gadgets/${gadgetData.id}`) : getApiUrl('/api/gadgets');
+      const method = isUpdate ? 'PUT' : 'POST';
+
+      const response = await fetch(url, {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('gadgethub_token')}`
+        },
+        body: JSON.stringify(gadgetData)
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        if (isUpdate) {
+          setGadgetList(gadgetList.map(g => g.id === data.data.id ? data.data : g));
+        } else {
+          setGadgetList([data.data, ...gadgetList]);
+        }
+        setIsFormOpen(false);
+        setEditingGadget(null);
+      } else {
+        alert(data.message || 'Error saving gadget');
+      }
+    } catch (err) {
+      alert('Network error while saving gadget');
+    }
+  };
+
+  const handleEdit = (gadget: Gadget) => {
+    setEditingGadget(gadget);
     setIsFormOpen(true);
   };
 
@@ -52,19 +82,32 @@ const AdminGadgetsPage: React.FC = () => {
 
   const filteredGadgets = gadgetList.filter(p => {
     const matchesSearch = p.name.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory === 'All' || p.category.toLowerCase() === selectedCategory.toLowerCase();
+    const matchesCategory = selectedCategory === 'All' || p.category?.name?.toLowerCase() === selectedCategory.toLowerCase();
     return matchesSearch && matchesCategory;
   });
 
-  const handleDelete = (id: string) => {
-    if (window.confirm('Are you sure you want to delete this gadget?')) {
-      const updated = gadgetList.filter(p => p.id !== id);
-      setGadgetList(updated);
-      localStorage.setItem('gadgethub_gadgets', JSON.stringify(updated));
+  const handleDelete = async (id: string) => {
+    if (!window.confirm('Are you sure you want to delete this gadget?')) return;
+    
+    try {
+      const response = await fetch(getApiUrl(`/api/gadgets/${id}`), {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('gadgethub_token')}`
+        }
+      });
+      const data = await response.json();
+      if (data.success) {
+        setGadgetList(gadgetList.filter(p => p.id !== id));
+      } else {
+        alert(data.message);
+      }
+    } catch (err) {
+      alert('Error deleting gadget');
     }
   };
 
-  const categories = ['All', ...new Set(gadgetList.map(p => p.category))] as string[];
+  const categories = ['All', ...new Set(gadgetList.map(p => p.category?.name).filter(Boolean))] as string[];
 
   return (
     <AdminLayout>
@@ -72,7 +115,7 @@ const AdminGadgetsPage: React.FC = () => {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-10">
           <div>
             <h1 className="text-2xl md:text-3xl font-black text-zinc-900 mb-1">Gadget Management</h1>
-            <p className="text-zinc-500 text-sm font-medium">Manage your Gadget catalog, specs, and local pricing.</p>
+            <p className="text-zinc-500 text-sm font-medium">Manage your gadget catalog, specs, and local pricing.</p>
           </div>
           <button 
             onClick={handleAddNew}
@@ -89,7 +132,7 @@ const AdminGadgetsPage: React.FC = () => {
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 group-focus-within:text-primary transition-colors" size={18} />
             <input 
               type="text" 
-              placeholder="Search Gadgets by name..." 
+              placeholder="Search gadgets by name..." 
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-12 pr-4 py-3 bg-zinc-50 border border-zinc-100 rounded-2xl outline-none focus:border-primary/30 focus:bg-white transition-all text-sm font-medium"
@@ -108,6 +151,13 @@ const AdminGadgetsPage: React.FC = () => {
           </div>
         </div>
 
+        {error && (
+          <div className="mb-8 p-6 bg-red-50 border border-red-100 rounded-3xl flex items-center gap-4 text-red-600">
+            <AlertCircle size={24} />
+            <p className="font-bold">{error}</p>
+          </div>
+        )}
+
         {/* Gadgets Table */}
         <div className="bg-white border border-zinc-200 rounded-[2rem] overflow-hidden shadow-sm">
           <div className="overflow-x-auto">
@@ -116,37 +166,38 @@ const AdminGadgetsPage: React.FC = () => {
                 <tr className="bg-zinc-50/50 border-b border-zinc-100">
                   <th className="px-6 py-5 text-[10px] font-black text-zinc-400 uppercase tracking-widest">Gadget</th>
                   <th className="px-6 py-5 text-[10px] font-black text-zinc-400 uppercase tracking-widest">Category</th>
-                  <th className="px-6 py-5 text-[10px] font-black text-zinc-400 uppercase tracking-widest">Price (USD)</th>
-                  <th className="px-6 py-5 text-[10px] font-black text-zinc-400 uppercase tracking-widest">Avg. Naira</th>
+                  <th className="px-6 py-5 text-[10px] font-black text-zinc-400 uppercase tracking-widest">Base Price</th>
                   <th className="px-6 py-5 text-[10px] font-black text-zinc-400 uppercase tracking-widest text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-zinc-50">
-                {filteredGadgets.map((gadget) => (
+                {isLoading ? (
+                  <tr>
+                    <td colSpan={4} className="py-20 text-center">
+                       <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+                       <p className="text-zinc-400 font-bold">Synchronizing catalog...</p>
+                    </td>
+                  </tr>
+                ) : filteredGadgets.map((gadget) => (
                   <tr key={gadget.id} className="hover:bg-zinc-50/50 transition-colors group">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-4">
                         <div className="w-12 h-12 rounded-xl bg-zinc-100 border border-zinc-100 p-1 shrink-0 overflow-hidden">
-                          <img src={gadget.image} alt={gadget.name} className="w-full h-full object-contain" />
+                          <img src={getImageUrl(gadget.image)} alt={gadget.name} className="w-full h-full object-contain" />
                         </div>
                         <div>
                           <p className="text-sm font-bold text-zinc-900 leading-none mb-1">{gadget.name}</p>
-                          <p className="text-[10px] text-zinc-400 font-medium">ID: {gadget.id}</p>
+                          <p className="text-[10px] text-zinc-400 font-medium truncate max-w-[150px]">ID: {gadget.id}</p>
                         </div>
                       </div>
                     </td>
                     <td className="px-6 py-4">
                       <span className="px-3 py-1 bg-zinc-100 text-zinc-600 rounded-full text-[10px] font-bold uppercase tracking-wider">
-                        {gadget.category}
+                        {gadget.category?.name || 'Uncategorized'}
                       </span>
                     </td>
                     <td className="px-6 py-4 font-bold text-sm text-zinc-900">
-                      ${gadget.price}
-                    </td>
-                    <td className="px-6 py-4">
-                       <span className="font-bold text-sm text-zinc-900">
-                         ₦{gadget.nigerianPrices?.average?.toLocaleString() || 'N/A'}
-                       </span>
+                      ${gadget.originalPrice || 'N/A'}
                     </td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end gap-2">
@@ -170,12 +221,12 @@ const AdminGadgetsPage: React.FC = () => {
             </table>
           </div>
           
-          {filteredGadgets.length === 0 && (
+          {!isLoading && filteredGadgets.length === 0 && (
             <div className="p-20 text-center">
               <div className="w-16 h-16 bg-zinc-50 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-zinc-100">
                 <Search size={24} className="text-zinc-300" />
               </div>
-              <h3 className="text-lg font-bold text-zinc-900">No Gadgets found</h3>
+              <h3 className="text-lg font-bold text-zinc-900">No gadgets found</h3>
               <p className="text-zinc-500 text-sm">Try adjusting your search or category filter.</p>
             </div>
           )}
@@ -186,7 +237,7 @@ const AdminGadgetsPage: React.FC = () => {
         isOpen={isFormOpen} 
         onClose={() => { setIsFormOpen(false); setEditingGadget(null); }}
         onSave={handleSaveGadget}
-        Gadget={editingGadget}
+        gadget={editingGadget}
       />
     </AdminLayout>
   );

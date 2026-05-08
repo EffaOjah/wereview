@@ -10,6 +10,7 @@ const AdminLoginPage: React.FC = () => {
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [adminUser, setAdminUser] = useState<any>(null);
   const navigate = useNavigate();
   const { login } = useAuthModal();
 
@@ -22,15 +23,34 @@ const AdminLoginPage: React.FC = () => {
     setIsLoading(true);
     setError('');
 
-    // Simulate API call
-    setTimeout(() => {
-      if (email === 'admin@gadgethub.ng' && password === 'admin123') {
+    try {
+      const response = await fetch('http://localhost:5000/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        if (data.data.role !== 'ADMIN') {
+          setError('Access denied. This portal is for administrators only.');
+          setIsLoading(false);
+          return;
+        }
+        
+        setAdminUser(data.data);
+        // For now, we simulate 2FA but use the real token
+        localStorage.setItem('gadgethub_token', data.data.accessToken);
         setStep('2fa');
       } else {
-        setError('Invalid credentials. Use admin@gadgethub.ng / admin123');
+        setError(data.message || 'Invalid credentials.');
       }
+    } catch (err) {
+      setError('A network error occurred. Please check your backend connection.');
+    } finally {
       setIsLoading(false);
-    }, 1500);
+    }
   };
 
   const handleOtpChange = (index: number, value: string) => {
@@ -50,12 +70,16 @@ const AdminLoginPage: React.FC = () => {
     e.preventDefault();
     setIsLoading(true);
     
-    // Simulate OTP verification
+    // Finalize session
     setTimeout(() => {
-      login({ name: 'System Admin', email: 'admin@gadgethub.ng' });
+      // In a real app, you'd verify the OTP on the backend here
+      // For now we assume success if they got this far
+      if (adminUser) {
+        login(adminUser, adminUser.accessToken);
+      }
       navigate('/admin/dashboard');
       setIsLoading(false);
-    }, 1500);
+    }, 1000);
   };
 
   return (
@@ -74,11 +98,9 @@ const AdminLoginPage: React.FC = () => {
           
           <div className="relative z-10 h-full flex flex-col justify-between">
             <div>
-              <div className="flex items-center gap-3 mb-8">
-                <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
-                  <ShieldCheck className="text-white" size={24} />
-                </div>
-                <h2 className="text-2xl font-black text-white tracking-tight">GadgetHub <span className="text-primary text-sm align-top">Admin</span></h2>
+              <div className="flex items-center gap-4 mb-8">
+                <img src="/img/GH.png" alt="GadgetHub" className="h-10 w-auto brightness-0 invert" />
+                <span className="text-primary text-xs font-black uppercase tracking-[0.2em] pt-1">Admin</span>
               </div>
               
               <h1 className="text-4xl lg:text-5xl font-black text-white leading-tight mb-6">
@@ -233,6 +255,16 @@ const AdminLoginPage: React.FC = () => {
           </div>
         </div>
       </div>
+
+      <style>{`
+        @keyframes slide-left {
+          from { transform: translateX(100%); }
+          to { transform: translateX(0); }
+        }
+        .animate-slide-left {
+          animation: slide-left 0.3s ease-out;
+        }
+      `}</style>
     </div>
   );
 };
