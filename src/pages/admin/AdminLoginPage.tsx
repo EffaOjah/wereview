@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Lock, Mail, ShieldCheck, ArrowRight, Loader2, ChevronLeft, Fingerprint } from 'lucide-react';
 import { useAuthModal } from '../../context/AuthModalContext';
+import { getApiUrl } from '../../utils/api';
 
 const AdminLoginPage: React.FC = () => {
   const [step, setStep] = useState<'login' | '2fa'>('login');
@@ -24,7 +25,7 @@ const AdminLoginPage: React.FC = () => {
     setError('');
 
     try {
-      const response = await fetch('http://localhost:5000/api/auth/login', {
+      const response = await fetch(getApiUrl('/api/auth/login'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
@@ -38,7 +39,7 @@ const AdminLoginPage: React.FC = () => {
           setIsLoading(false);
           return;
         }
-        
+
         setAdminUser(data.data);
         // For now, we simulate 2FA but use the real token
         localStorage.setItem('gadgethub_token', data.data.accessToken);
@@ -69,7 +70,7 @@ const AdminLoginPage: React.FC = () => {
   const handle2FASubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    
+
     // Finalize session
     setTimeout(() => {
       // In a real app, you'd verify the OTP on the backend here
@@ -87,24 +88,24 @@ const AdminLoginPage: React.FC = () => {
       {/* Background Orbs */}
       <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/5 blur-[120px] rounded-full" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-accent/5 blur-[120px] rounded-full" />
-      
+
       <div className="w-full max-w-[1100px] bg-white border border-zinc-200 rounded-[2rem] overflow-hidden shadow-2xl shadow-zinc-200/50 flex flex-col md:flex-row relative z-10">
-        
+
         {/* Left Side: Branding/Visual */}
         <div className="hidden md:flex flex-col w-[45%] bg-zinc-900 p-12 relative overflow-hidden">
           <div className="absolute inset-0 opacity-10 pointer-events-none">
             <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] mix-blend-overlay" />
           </div>
-          
+
           <div className="relative z-10 h-full flex flex-col justify-between">
             <div>
               <div className="flex items-center gap-4 mb-8">
                 <img src="/img/GH.png" alt="GadgetHub" className="h-10 w-auto brightness-0 invert" />
                 <span className="text-primary text-xs font-black uppercase tracking-[0.2em] pt-1">Admin</span>
               </div>
-              
+
               <h1 className="text-4xl lg:text-5xl font-black text-white leading-tight mb-6">
-                Secure Portal <br /> 
+                Secure Portal <br />
                 <span className="text-zinc-500">Management Dashboard</span>
               </h1>
               <p className="text-zinc-400 text-lg font-medium leading-relaxed max-w-sm">
@@ -115,7 +116,7 @@ const AdminLoginPage: React.FC = () => {
             <div className="space-y-6">
               <div className="flex items-start gap-4">
                 <div className="mt-1 w-8 h-8 rounded-full bg-zinc-800 flex items-center justify-center shrink-0">
-                   <Fingerprint className="text-primary" size={16} />
+                  <Fingerprint className="text-primary" size={16} />
                 </div>
                 <div>
                   <h4 className="text-white font-bold text-sm">Enhanced Security</h4>
@@ -148,11 +149,11 @@ const AdminLoginPage: React.FC = () => {
                     <label className="text-[10px] font-black text-zinc-400 uppercase tracking-widest ml-1">Email Address</label>
                     <div className="relative group">
                       <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 group-focus-within:text-primary transition-colors" size={18} />
-                      <input 
-                        type="email" 
+                      <input
+                        type="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        placeholder="admin@gadgethub.ng" 
+                        placeholder="admin@gadgethub.ng"
                         required
                         className="w-full pl-12 pr-4 py-3.5 md:py-4 bg-white border border-zinc-200 rounded-2xl outline-none focus:border-primary/50 focus:ring-4 focus:ring-primary/5 transition-all text-zinc-900 font-medium"
                       />
@@ -166,19 +167,19 @@ const AdminLoginPage: React.FC = () => {
                     </div>
                     <div className="relative group">
                       <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 group-focus-within:text-primary transition-colors" size={18} />
-                      <input 
-                        type="password" 
+                      <input
+                        type="password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        placeholder="••••••••" 
+                        placeholder="••••••••"
                         required
                         className="w-full pl-12 pr-4 py-3.5 md:py-4 bg-white border border-zinc-200 rounded-2xl outline-none focus:border-primary/50 focus:ring-4 focus:ring-primary/5 transition-all text-zinc-900 font-medium"
                       />
                     </div>
                   </div>
 
-                  <button 
-                    type="submit" 
+                  <button
+                    type="submit"
                     disabled={isLoading}
                     className="w-full py-4 bg-zinc-900 hover:bg-black text-white font-black text-sm rounded-2xl transition-all shadow-xl shadow-zinc-900/10 flex items-center justify-center gap-3 group disabled:opacity-70 disabled:cursor-not-allowed mt-2"
                   >
@@ -195,7 +196,7 @@ const AdminLoginPage: React.FC = () => {
               </>
             ) : (
               <>
-                <button 
+                <button
                   onClick={() => setStep('login')}
                   className="mb-8 flex items-center gap-2 text-zinc-400 hover:text-zinc-900 transition-colors text-xs font-bold uppercase tracking-widest"
                 >
@@ -229,8 +230,8 @@ const AdminLoginPage: React.FC = () => {
                     </p>
                   </div>
 
-                  <button 
-                    type="submit" 
+                  <button
+                    type="submit"
                     disabled={isLoading || otp.some(d => !d)}
                     className="w-full py-4 bg-primary hover:bg-primary-hover text-white font-black text-sm rounded-2xl transition-all shadow-xl shadow-primary/20 flex items-center justify-center gap-3 group disabled:opacity-50 disabled:cursor-not-allowed"
                   >
