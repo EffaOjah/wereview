@@ -3,7 +3,6 @@ import type { Gadget } from '../../types';
 import StarRating from './StarRating';
 import { GitCompare } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import NairaPrice from './NairaPrice';
 import { getImageUrl } from '../../utils/image';
 
 interface TrendingGadgetCardProps {

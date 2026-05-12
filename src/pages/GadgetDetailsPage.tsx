@@ -4,12 +4,11 @@ import { getApiUrl } from '../utils/api';
 import Breadcrumb from '../components/ui/Breadcrumb';
 import { getImageUrl } from '../utils/image';
 import StarRating from '../components/ui/StarRating';
-import NairaPrice from '../components/ui/NairaPrice';
 import VerifiedBadge from '../components/ui/VerifiedBadge';
 import ReviewSummaryBar from '../components/ui/ReviewSummaryBar';
 import HelpfulButton from '../components/ui/HelpfulButton';
 import ReviewSubmissionModal from '../components/ui/ReviewSubmissionModal';
-import { PenSquare, CheckCircle, TrendingUp, ArrowLeft } from 'lucide-react';
+import { PenSquare, TrendingUp, ArrowLeft } from 'lucide-react';
 import { useAuthModal } from '../context/AuthModalContext';
 
 const GadgetDetailsPage: React.FC = () => {
@@ -107,9 +106,6 @@ const GadgetDetailsPage: React.FC = () => {
     }
   }
 
-  // Use prices object (NigerianPrices) or originalPrice
-  const priceObj = Gadget.prices; // single object, not array
-  const averagePrice = priceObj?.average || Gadget.price || 0;
 
   return (
     <div className="review-details-page bg-zinc-50/30 pb-24">
