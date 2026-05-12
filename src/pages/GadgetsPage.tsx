@@ -2,7 +2,7 @@ import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import TrendingGadgetCard from '../components/ui/TrendingGadgetCard';
 import { useGadgets } from '../context/GadgetContext';
-import { ChevronRight, LayoutGrid, List, Search, SlidersHorizontal, X, SearchX } from 'lucide-react';
+import { ChevronRight, ChevronLeft, LayoutGrid, List, Search, SlidersHorizontal, X, SearchX } from 'lucide-react';
 
 
 
@@ -35,9 +35,9 @@ const GadgetsPage: React.FC = () => {
   const selectedDept = searchParams.get('category') || '';
   const minRating = Number(searchParams.get('rating') || 0);
   const maxPrice = Number(searchParams.get('maxPrice') || 2000000);
-  const sortBy = searchParams.get('sort') || 'default';
+  const sortBy = searchParams.get('sort') || 'random';
   const currentPage = Number(searchParams.get('page') || 1);
-  const itemsPerPage = viewMode === 'grid' ? 6 : 4;
+  const itemsPerPage = 21;
 
   // Hero input — controlled separately, only committed on submit
   const [heroInput, setHeroInput] = useState(searchQuery);
@@ -51,12 +51,12 @@ const GadgetsPage: React.FC = () => {
       } else {
         next.set(key, value);
       }
-      
+
       // Reset page to 1 if we're filtering or sorting (i.e. changing anything other than page)
       if (key !== 'page') {
         next.delete('page');
       }
-      
+
       return next;
     });
   };
@@ -78,12 +78,40 @@ const GadgetsPage: React.FC = () => {
     setHeroInput('');
   };
 
+  const getPageNumbers = () => {
+    const pages: (number | string)[] = [];
+
+    if (totalPages <= 50) {
+      for (let i = 1; i <= totalPages; i++) pages.push(i);
+    } else {
+      // Always show first 2
+      pages.push(1, 2);
+
+      if (currentPage > 5) pages.push('...');
+
+      // Show pages around current
+      const start = Math.max(3, currentPage - 2);
+      const end = Math.min(totalPages - 2, currentPage + 2);
+
+      for (let i = start; i <= end; i++) {
+        if (!pages.includes(i)) pages.push(i);
+      }
+
+      if (currentPage < totalPages - 4) pages.push('...');
+
+      // Always show last 2
+      if (!pages.includes(totalPages - 1)) pages.push(totalPages - 1);
+      if (!pages.includes(totalPages)) pages.push(totalPages);
+    }
+    return pages;
+  };
+
   const hasActiveFilters = searchQuery || selectedDept || minRating > 0 || maxPrice < 2000000;
 
   // Combined filter + sort pipeline
   const filteredGadgets = useMemo(() => {
     if (!globalGadgets) return [];
-    
+
     let result = [...globalGadgets];
 
     // Helper to get category string
@@ -92,14 +120,14 @@ const GadgetsPage: React.FC = () => {
       return (typeof p.category === 'object' ? p.category.name : p.category).toLowerCase();
     };
 
-    // 1. Search filter — name, description, category, shortSummary
+    // 1. Search filter — name, brand, description, category
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
       result = result.filter(p =>
         p.name.toLowerCase().includes(q) ||
+        p.brand.toLowerCase().includes(q) ||
         p.description.toLowerCase().includes(q) ||
-        getCategoryString(p).includes(q) ||
-        (p.shortSummary?.toLowerCase().includes(q) ?? false)
+        getCategoryString(p).includes(q)
       );
     }
 
@@ -112,25 +140,25 @@ const GadgetsPage: React.FC = () => {
       });
     }
 
-    // 3. Rating filter
     if (minRating > 0) {
-      result = result.filter(p => (p.avgRating || p.rating || 0) >= minRating);
+      result = result.filter(p => (p.avgRating || 0) >= minRating);
     }
 
     // 4. Price filter
     result = result.filter(p => {
-      const avgPrice = (p.prices as any)?.[0]?.price || p.nigerianPrices?.average || p.originalPrice || 0;
+      const avgPrice = p.price || 0;
       return avgPrice <= maxPrice;
     });
 
     // 5. Sort
     return result.sort((a, b) => {
-      if (sortBy === 'rating') return (b.avgRating || b.rating || 0) - (a.avgRating || a.rating || 0);
+      if (sortBy === 'random') return Math.random() - 0.5;
+      if (sortBy === 'rating') return (b.avgRating || 0) - (a.avgRating || 0);
       if (sortBy === 'reviews') return (b.reviewCount || b.reviews?.length || 0) - (a.reviewCount || a.reviews?.length || 0);
-      
-      const priceA = (a.prices as any)?.[0]?.price || a.nigerianPrices?.average || a.originalPrice || 0;
-      const priceB = (b.prices as any)?.[0]?.price || b.nigerianPrices?.average || b.originalPrice || 0;
-      
+
+      const priceA = a.price || 0;
+      const priceB = b.price || 0;
+
       if (sortBy === 'price-low') return priceA - priceB;
       if (sortBy === 'price-high') return priceB - priceA;
       return 0;
@@ -180,7 +208,7 @@ const GadgetsPage: React.FC = () => {
       </div>
 
       {/* Price Filter */}
-      <div>
+      {/* <div>
         <h4 className="text-lg font-black text-dark mb-5 border-l-4 border-primary pl-4 uppercase tracking-tight">Max Price (₦)</h4>
         <div className="flex flex-col gap-3">
           <input
@@ -197,7 +225,7 @@ const GadgetsPage: React.FC = () => {
             <span className="text-primary">Up to ₦{maxPrice.toLocaleString()}</span>
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* Rating Filter */}
       <div>
@@ -279,7 +307,7 @@ const GadgetsPage: React.FC = () => {
                 <div className="hidden lg:block lg:w-1/4 shrink-0">
                   <div className="w-full h-[600px] bg-zinc-200 rounded-xl" />
                 </div>
-                
+
                 {/* Fake Main Content */}
                 <div className="flex-1">
                   <div className="w-full h-14 bg-zinc-200 rounded-xl mb-8" />
@@ -302,156 +330,169 @@ const GadgetsPage: React.FC = () => {
         </div>
       ) : (
         <section className="py-16" id="Gadget-grid">
-        <div className="container">
-          <div className="flex flex-col lg:flex-row gap-10">
+          <div className="container">
+            <div className="flex flex-col lg:flex-row gap-10">
 
-            {/* Desktop Sidebar */}
-            <div className="hidden lg:block lg:w-1/4 shrink-0">
-              <Sidebar />
-            </div>
-
-            {/* Mobile Sidebar Overlay */}
-            {isSidebarOpen && (
-              <div className="fixed inset-0 z-50 flex lg:hidden">
-                <div className="bg-white w-80 h-full overflow-y-auto p-6 shadow-2xl">
-                  <div className="flex justify-between items-center mb-8">
-                    <h3 className="font-black text-dark text-xl">Filters</h3>
-                    <button onClick={() => setIsSidebarOpen(false)}><X size={24} /></button>
-                  </div>
-                  <Sidebar />
-                </div>
-                <div className="flex-1 bg-black/40" onClick={() => setIsSidebarOpen(false)} />
+              {/* Desktop Sidebar */}
+              <div className="hidden lg:block lg:w-1/4 shrink-0">
+                <Sidebar />
               </div>
-            )}
 
-            {/* Main Content */}
-            <div className="flex-1">
-
-              {/* Active filter pills */}
-              {(searchQuery || selectedDept || minRating > 0) && (
-                <div className="flex flex-wrap gap-2 mb-6">
-                  {searchQuery && (
-                    <span className="flex items-center gap-1.5 bg-primary/10 text-primary text-xs font-bold px-3 py-1.5 rounded-full">
-                      Search: "{searchQuery}"
-                      <X size={12} className="cursor-pointer" onClick={() => { setParam('q', null); setHeroInput(''); }} />
-                    </span>
-                  )}
-                  {selectedDept && (
-                    <span className="flex items-center gap-1.5 bg-primary/10 text-primary text-xs font-bold px-3 py-1.5 rounded-full">
-                      {selectedDept}
-                      <X size={12} className="cursor-pointer" onClick={() => setParam('category', null)} />
-                    </span>
-                  )}
-                  {minRating > 0 && (
-                    <span className="flex items-center gap-1.5 bg-primary/10 text-primary text-xs font-bold px-3 py-1.5 rounded-full">
-                      ⭐ {minRating}+ Stars
-                      <X size={12} className="cursor-pointer" onClick={() => setParam('rating', null)} />
-                    </span>
-                  )}
+              {/* Mobile Sidebar Overlay */}
+              {isSidebarOpen && (
+                <div className="fixed inset-0 z-50 flex lg:hidden">
+                  <div className="bg-white w-80 h-full overflow-y-auto p-6 shadow-2xl">
+                    <div className="flex justify-between items-center mb-8">
+                      <h3 className="font-black text-dark text-xl">Filters</h3>
+                      <button onClick={() => setIsSidebarOpen(false)}><X size={24} /></button>
+                    </div>
+                    <Sidebar />
+                  </div>
+                  <div className="flex-1 bg-black/40" onClick={() => setIsSidebarOpen(false)} />
                 </div>
               )}
 
-              {/* Controls Bar */}
-              <div className="flex flex-wrap items-center justify-between gap-4 mb-8 pb-6 border-b border-zinc-100">
-                <div className="flex items-center gap-4">
-                  <button
-                    onClick={() => setIsSidebarOpen(true)}
-                    className="lg:hidden flex items-center gap-2 px-4 py-2 bg-dark text-white rounded-lg text-sm font-bold"
-                  >
-                    <SlidersHorizontal size={16} /> Filters
-                  </button>
-                  <div className="flex items-center gap-3">
-                    <span className="text-sm font-bold text-muted hidden sm:block">Sort by:</span>
-                    <select
-                      value={sortBy}
-                      onChange={(e) => setParam('sort', e.target.value)}
-                      className="border border-zinc-200 text-dark font-bold text-sm px-3 py-2 rounded-lg outline-none cursor-pointer hover:border-primary transition-colors"
+              {/* Main Content */}
+              <div className="flex-1">
+
+                {/* Active filter pills */}
+                {(searchQuery || selectedDept || minRating > 0) && (
+                  <div className="flex flex-wrap gap-2 mb-6">
+                    {searchQuery && (
+                      <span className="flex items-center gap-1.5 bg-primary/10 text-primary text-xs font-bold px-3 py-1.5 rounded-full">
+                        Search: "{searchQuery}"
+                        <X size={12} className="cursor-pointer" onClick={() => { setParam('q', null); setHeroInput(''); }} />
+                      </span>
+                    )}
+                    {selectedDept && (
+                      <span className="flex items-center gap-1.5 bg-primary/10 text-primary text-xs font-bold px-3 py-1.5 rounded-full">
+                        {selectedDept}
+                        <X size={12} className="cursor-pointer" onClick={() => setParam('category', null)} />
+                      </span>
+                    )}
+                    {minRating > 0 && (
+                      <span className="flex items-center gap-1.5 bg-primary/10 text-primary text-xs font-bold px-3 py-1.5 rounded-full">
+                        ⭐ {minRating}+ Stars
+                        <X size={12} className="cursor-pointer" onClick={() => setParam('rating', null)} />
+                      </span>
+                    )}
+                  </div>
+                )}
+
+                {/* Controls Bar */}
+                <div className="flex flex-wrap items-center justify-between gap-4 mb-8 pb-6 border-b border-zinc-100">
+                  <div className="flex items-center gap-4">
+                    <button
+                      onClick={() => setIsSidebarOpen(true)}
+                      className="lg:hidden flex items-center gap-2 px-4 py-2 bg-dark text-white rounded-lg text-sm font-bold"
                     >
-                      <option value="default">Default</option>
-                      <option value="rating">Top Rated</option>
-                      <option value="reviews">Most Reviewed</option>
-                      <option value="price-low">Price: Low to High</option>
-                      <option value="price-high">Price: High to Low</option>
-                    </select>
-                  </div>
-                </div>
-                <div className="flex items-center gap-4">
-                  <span className="text-sm font-black text-dark">
-                    <span className="text-primary">{filteredGadgets.length}</span> gadgets found
-                  </span>
-                  <div className="flex items-center gap-1">
-                    <button className={`p-2 rounded-lg ${viewMode === 'grid' ? 'bg-primary text-white' : 'bg-zinc-100 text-dark'}`} onClick={() => setViewMode('grid')}>
-                      <LayoutGrid size={16} />
+                      <SlidersHorizontal size={16} /> Filters
                     </button>
-                    <button className={`p-2 rounded-lg ${viewMode === 'list' ? 'bg-primary text-white' : 'bg-zinc-100 text-dark'}`} onClick={() => setViewMode('list')}>
-                      <List size={16} />
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Results or Empty State */}
-              {isLoading ? (
-                <div className={`grid gap-6 ${viewMode === 'grid' ? 'grid-cols-1 sm:grid-cols-2 xl:grid-cols-3' : 'grid-cols-1'}`}>
-                  {Array.from({ length: itemsPerPage }).map((_, i) => <SkeletonCard key={i} />)}
-                </div>
-              ) : filteredGadgets.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-24 gap-4 text-center">
-                  <SearchX size={56} className="text-zinc-200" />
-                  <h3 className="text-xl font-black text-dark">No gadgets found</h3>
-                  <p className="text-muted font-medium max-w-sm">
-                    We couldn't find any gadgets matching "<span className="text-primary font-bold">{searchQuery}</span>". Try adjusting your search or filters.
-                  </p>
-                  <button
-                    onClick={() => { clearAllFilters(); }}
-                    className="px-6 py-3 bg-dark text-white rounded-xl font-bold text-sm hover:bg-primary transition-colors"
-                  >
-                    Clear Filters
-                  </button>
-                </div>
-              ) : (
-                <div className={`grid gap-6 ${viewMode === 'grid' ? 'grid-cols-1 sm:grid-cols-2 xl:grid-cols-3' : 'grid-cols-1'}`}>
-                  {paginatedGadgets.map((gadget: any) => (
-                    <TrendingGadgetCard key={gadget.id} gadget={gadget} viewMode={viewMode} />
-                  ))}
-                </div>
-              )}
-
-              {/* Pagination */}
-              {!isLoading && totalPages > 1 && (
-                <div className="flex justify-center flex-wrap gap-2 mt-12 pt-8 border-t border-zinc-100">
-                  {Array.from({ length: totalPages }).map((_, i) => {
-                    const page = i + 1;
-                    return (
-                      <button 
-                        key={page} 
-                        onClick={() => {
-                          setParam('page', String(page));
-                          document.getElementById('Gadget-grid')?.scrollIntoView({ behavior: 'smooth' });
-                        }}
-                        className={`w-10 h-10 rounded-lg flex items-center justify-center font-bold text-sm transition-colors ${page === currentPage ? 'bg-primary text-white' : 'border border-zinc-200 hover:bg-primary hover:text-white'}`}
+                    <div className="flex items-center gap-3">
+                      <span className="text-sm font-bold text-muted hidden sm:block">Sort by:</span>
+                      <select
+                        value={sortBy}
+                        onChange={(e) => setParam('sort', e.target.value)}
+                        className="border border-zinc-200 text-dark font-bold text-sm px-3 py-2 rounded-lg outline-none cursor-pointer hover:border-primary transition-colors"
                       >
-                        {page}
+                        <option value="random">Random</option>
+                        <option value="default">Default</option>
+                        <option value="rating">Top Rated</option>
+                        <option value="reviews">Most Reviewed</option>
+                        {/* <option value="price-low">Price: Low to High</option>
+                        <option value="price-high">Price: High to Low</option> */}
+                      </select>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <span className="text-sm font-black text-dark">
+                      <span className="text-primary">{filteredGadgets.length}</span> gadgets found
+                    </span>
+                    <div className="flex items-center gap-1">
+                      <button className={`p-2 rounded-lg ${viewMode === 'grid' ? 'bg-primary text-white' : 'bg-zinc-100 text-dark'}`} onClick={() => setViewMode('grid')}>
+                        <LayoutGrid size={16} />
                       </button>
-                    )
-                  })}
-                  {currentPage < totalPages && (
-                    <button 
+                      <button className={`p-2 rounded-lg ${viewMode === 'list' ? 'bg-primary text-white' : 'bg-zinc-100 text-dark'}`} onClick={() => setViewMode('list')}>
+                        <List size={16} />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Results or Empty State */}
+                {isLoading ? (
+                  <div className={`grid gap-6 ${viewMode === 'grid' ? 'grid-cols-1 sm:grid-cols-2 xl:grid-cols-3' : 'grid-cols-1'}`}>
+                    {Array.from({ length: itemsPerPage }).map((_, i) => <SkeletonCard key={i} />)}
+                  </div>
+                ) : filteredGadgets.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center py-24 gap-4 text-center">
+                    <SearchX size={56} className="text-zinc-200" />
+                    <h3 className="text-xl font-black text-dark">No gadgets found</h3>
+                    <p className="text-muted font-medium max-w-sm">
+                      We couldn't find any gadgets matching "<span className="text-primary font-bold">{searchQuery}</span>". Try adjusting your search or filters.
+                    </p>
+                    <button
+                      onClick={() => { clearAllFilters(); }}
+                      className="px-6 py-3 bg-dark text-white rounded-xl font-bold text-sm hover:bg-primary transition-colors"
+                    >
+                      Clear Filters
+                    </button>
+                  </div>
+                ) : (
+                  <div className={`grid gap-6 ${viewMode === 'grid' ? 'grid-cols-1 sm:grid-cols-2 xl:grid-cols-3' : 'grid-cols-1'}`}>
+                    {paginatedGadgets.map((gadget: any) => (
+                      <TrendingGadgetCard key={gadget.id} gadget={gadget} viewMode={viewMode} />
+                    ))}
+                  </div>
+                )}
+
+                {/* Pagination */}
+                {!isLoading && totalPages > 1 && (
+                  <div className="flex justify-center items-center flex-wrap gap-2 mt-12 pt-8 border-t border-zinc-100">
+                    <button
+                      disabled={currentPage === 1}
+                      onClick={() => {
+                        setParam('page', String(currentPage - 1));
+                        document.getElementById('Gadget-grid')?.scrollIntoView({ behavior: 'smooth' });
+                      }}
+                      className="w-10 h-10 rounded-full flex items-center justify-center border border-zinc-200 text-zinc-400 hover:text-primary hover:border-primary transition-all disabled:opacity-30 disabled:hover:text-zinc-400 disabled:hover:border-zinc-200"
+                    >
+                      <ChevronLeft size={16} />
+                    </button>
+
+                    {getPageNumbers().map((page, i) => (
+                      page === '...' ? (
+                        <span key={`dots-${i}`} className="px-2 text-zinc-400 font-bold">...</span>
+                      ) : (
+                        <button
+                          key={page}
+                          onClick={() => {
+                            setParam('page', String(page));
+                            document.getElementById('Gadget-grid')?.scrollIntoView({ behavior: 'smooth' });
+                          }}
+                          className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all ${page === currentPage ? 'bg-primary text-white shadow-lg shadow-primary/30' : 'text-primary hover:bg-primary/5'}`}
+                        >
+                          {page}
+                        </button>
+                      )
+                    ))}
+
+                    <button
+                      disabled={currentPage === totalPages}
                       onClick={() => {
                         setParam('page', String(currentPage + 1));
                         document.getElementById('Gadget-grid')?.scrollIntoView({ behavior: 'smooth' });
                       }}
-                      className="w-10 h-10 rounded-lg flex items-center justify-center border border-zinc-200 font-bold hover:bg-primary hover:text-white transition-colors"
+                      className="w-10 h-10 rounded-full flex items-center justify-center border border-zinc-200 text-zinc-400 hover:text-primary hover:border-primary transition-all disabled:opacity-30 disabled:hover:text-zinc-400 disabled:hover:border-zinc-200"
                     >
                       <ChevronRight size={16} />
                     </button>
-                  )}
-                </div>
-              )}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
       )}
     </div>
   );

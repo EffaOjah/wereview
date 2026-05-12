@@ -25,7 +25,7 @@ export const GadgetProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       setError(null);
       try {
         const [gadgetsRes, dealsRes, categoriesRes] = await Promise.all([
-          fetch(getApiUrl('/api/gadgets')).then(r => r.json()),
+          fetch(getApiUrl('/api/gadgets?sort=random')).then(r => r.json()),
           fetch(getApiUrl('/api/gadgets/deals')).then(r => r.json()),
           fetch(getApiUrl('/api/categories')).then(r => r.json())
         ]);

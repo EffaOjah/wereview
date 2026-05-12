@@ -8,7 +8,7 @@ const TrendingGadgetsSection: React.FC = () => {
   
   const [searchTerm, setSearchTerm] = useState('');
   const [activeCategory, setActiveCategory] = useState('*');
-  const [sortBy, setSortBy] = useState('hottest'); // 'hottest', 'rating', 'most-reviewed'
+  const [sortBy, setSortBy] = useState('random'); // 'random', 'hottest', 'rating', 'most-reviewed'
   const [visibleCount, setVisibleCount] = useState(4);
 
   const categories = [
@@ -28,7 +28,6 @@ const TrendingGadgetsSection: React.FC = () => {
       const lowerQuery = searchTerm.toLowerCase();
       result = result.filter(p => 
         p.name.toLowerCase().includes(lowerQuery) || 
-        (p.shortSummary && p.shortSummary.toLowerCase().includes(lowerQuery)) ||
         p.description.toLowerCase().includes(lowerQuery)
       );
     }
@@ -45,7 +44,9 @@ const TrendingGadgetsSection: React.FC = () => {
       const countA = a.reviews?.length || 0;
       const countB = b.reviews?.length || 0;
 
-      if (sortBy === 'rating') {
+      if (sortBy === 'random') {
+        return 0; // Keep the order from the API (which is already randomized)
+      } else if (sortBy === 'rating') {
         return ratingB - ratingA;
       } else if (sortBy === 'most-reviewed') {
         return countB - countA;
@@ -126,6 +127,7 @@ const TrendingGadgetsSection: React.FC = () => {
               value={sortBy}
               onChange={(e) => { setSortBy(e.target.value); setVisibleCount(4); }}
             >
+              <option value="random">🎲 Random</option>
               <option value="hottest">🔥 Hottest</option>
               <option value="rating">⭐ Top Rated</option>
               <option value="most-reviewed">💬 Most Reviewed</option>

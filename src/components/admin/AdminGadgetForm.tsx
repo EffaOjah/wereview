@@ -14,20 +14,16 @@ interface AdminGadgetFormProps {
 const AdminGadgetForm: React.FC<AdminGadgetFormProps> = ({ isOpen, onClose, onSave, gadget }) => {
   const [formData, setFormData] = useState<any>({
     name: '',
+    brand: '',
     categoryId: '',
     image: '',
-    originalPrice: 0,
+    price: 0,
     description: '',
     specs: {},
-    badges: [],
-    pros: [],
-    cons: [],
-    discount: 0
   });
 
   const [categories, setCategories] = useState<Category[]>([]);
   const [newSpec, setNewSpec] = useState({ key: '', value: '' });
-  const [newBadge, setNewBadge] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -57,15 +53,12 @@ const AdminGadgetForm: React.FC<AdminGadgetFormProps> = ({ isOpen, onClose, onSa
       } else {
         setFormData({
           name: '',
+          brand: '',
           categoryId: '',
           image: '',
-          originalPrice: 0,
+          price: 0,
           description: '',
           specs: {},
-          badges: [],
-          pros: [],
-          cons: [],
-          discount: 0
         });
       }
     }
@@ -80,9 +73,7 @@ const AdminGadgetForm: React.FC<AdminGadgetFormProps> = ({ isOpen, onClose, onSa
     
     const finalData = {
       ...cleanData,
-      originalPrice: formData.originalPrice ? Number(formData.originalPrice) : null,
-      discount: formData.discount ? Number(formData.discount) : 0,
-      dealEndTime: formData.dealEndTime || null
+      price: formData.price ? Number(formData.price) : 0,
     };
 
     onSave(finalData);
@@ -139,6 +130,17 @@ const AdminGadgetForm: React.FC<AdminGadgetFormProps> = ({ isOpen, onClose, onSa
                 />
               </div>
               <div className="flex flex-col gap-2">
+                <label className="text-xs font-bold text-zinc-900 ml-1">Brand</label>
+                <input 
+                  type="text" 
+                  value={formData.brand}
+                  onChange={(e) => setFormData({...formData, brand: e.target.value})}
+                  placeholder="e.g. Apple, Samsung"
+                  className="w-full px-4 py-3 bg-zinc-50 border border-zinc-100 rounded-2xl outline-none focus:border-primary/50 focus:bg-white transition-all text-sm font-medium"
+                  required
+                />
+              </div>
+              <div className="flex flex-col gap-2 col-span-2">
                 <label className="text-xs font-bold text-zinc-900 ml-1">Category Group</label>
                 <select 
                   value={formData.categoryId}
@@ -233,26 +235,15 @@ const AdminGadgetForm: React.FC<AdminGadgetFormProps> = ({ isOpen, onClose, onSa
           {/* Pricing */}
           <section className="space-y-4">
              <h3 className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] mb-4">Pricing Strategy</h3>
-             <div className="grid grid-cols-2 gap-4">
+             <div className="grid grid-cols-1 gap-4">
                <div className="flex flex-col gap-2">
-                 <label className="text-xs font-bold text-zinc-900 ml-1">Global Base Price ($)</label>
+                 <label className="text-xs font-bold text-zinc-900 ml-1">Standard Price ($)</label>
                  <input 
                    type="number" 
-                   value={formData.originalPrice}
-                   onChange={(e) => setFormData({...formData, originalPrice: Number(e.target.value)})}
+                   value={formData.price}
+                   onChange={(e) => setFormData({...formData, price: Number(e.target.value)})}
                    className="w-full px-4 py-3 bg-zinc-50 border border-zinc-100 rounded-2xl outline-none focus:border-primary/50 focus:bg-white transition-all text-sm font-bold"
                    required
-                 />
-               </div>
-               <div className="flex flex-col gap-2">
-                 <label className="text-xs font-bold text-zinc-900 ml-1">Campaign Discount (%)</label>
-                 <input 
-                   type="number" 
-                   value={formData.discount}
-                   onChange={(e) => setFormData({...formData, discount: Number(e.target.value)})}
-                   className="w-full px-4 py-3 bg-zinc-50 border border-zinc-100 rounded-2xl outline-none focus:border-primary/50 focus:bg-white transition-all text-sm font-bold"
-                   min="0"
-                   max="100"
                  />
                </div>
              </div>
@@ -307,36 +298,6 @@ const AdminGadgetForm: React.FC<AdminGadgetFormProps> = ({ isOpen, onClose, onSa
              </div>
           </section>
 
-          {/* Badges/Tags */}
-          <section className="space-y-4 pb-12">
-             <h3 className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] mb-4">Marketing Badges</h3>
-             <div className="flex gap-2">
-               <input 
-                 type="text" 
-                 placeholder="Type badge and press Enter..." 
-                 value={newBadge}
-                 onChange={(e) => setNewBadge(e.target.value)}
-                 onKeyPress={(e) => {
-                   if (e.key === 'Enter') {
-                     e.preventDefault();
-                     if (newBadge) {
-                       setFormData({...formData, badges: [...(formData.badges || []), newBadge]});
-                       setNewBadge('');
-                     }
-                   }
-                 }}
-                 className="flex-1 px-4 py-3 bg-zinc-50 border border-zinc-100 rounded-2xl text-sm font-medium"
-               />
-             </div>
-             <div className="flex flex-wrap gap-2">
-               {formData.badges?.map((badge: string, idx: number) => (
-                 <span key={idx} className="flex items-center gap-2 px-3 py-1.5 bg-zinc-900 text-white rounded-full text-[10px] font-black uppercase tracking-wider">
-                   {badge}
-                   <button type="button" onClick={() => setFormData({...formData, badges: formData.badges?.filter((_: any, i: number) => i !== idx)})}><X size={10} /></button>
-                 </span>
-               ))}
-             </div>
-          </section>
 
         </form>
 

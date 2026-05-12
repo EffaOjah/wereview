@@ -29,7 +29,6 @@ const LatestGadgets: React.FC = () => {
                       <p className="text-xs text-muted mb-2 line-clamp-1">{Gadget.description}</p>
                       <div className="flex items-center gap-4">
                          <span className="text-primary font-bold text-base">${Gadget.price}</span>
-                         {Gadget.originalPrice && <span className="text-muted line-through text-xs">${Gadget.originalPrice}</span>}
                       </div>
                     </div>
                   </div>

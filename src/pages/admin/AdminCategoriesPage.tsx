@@ -141,14 +141,6 @@ const AdminCategoriesPage: React.FC = () => {
                   </div>
                 </div>
                 <div className="p-6">
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    {category.badges?.map((badge, idx) => (
-                      <span key={idx} className="px-2 py-1 bg-zinc-100 text-zinc-500 rounded-lg text-[9px] font-black uppercase tracking-wider border border-zinc-200/50">
-                        {badge}
-                      </span>
-                    ))}
-                    {(!category.badges || category.badges.length === 0) && <span className="text-[10px] text-zinc-300 font-bold uppercase ">No active tags</span>}
-                  </div>
                   <div className="flex items-center justify-between pt-4 border-t border-zinc-50">
                     <div className="flex items-center gap-2">
                       <LayoutGrid size={14} className="text-zinc-400" />

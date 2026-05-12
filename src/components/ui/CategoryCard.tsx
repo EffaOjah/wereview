@@ -29,11 +29,6 @@ const CategoryCard: React.FC<CategoryCardProps> = ({ category }) => {
         <h5 className="text-sm font-black text-dark uppercase tracking-widest group-hover:text-primary transition-colors">
           {category.name}
         </h5>
-        {category.badges.length > 0 && (
-          <span className="text-[9px] font-bold text-muted uppercase tracking-tighter opacity-0 group-hover:opacity-100 transition-opacity">
-            {category.badges[0]}
-          </span>
-        )}
       </div>
     </Link>
   );

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Plus, Image as ImageIcon, Check, Loader2 } from 'lucide-react';
+import { X, Image as ImageIcon, Check, Loader2 } from 'lucide-react';
 import type { Category } from '../../types';
 
 interface AdminCategoryFormProps {
@@ -13,10 +13,8 @@ const AdminCategoryForm: React.FC<AdminCategoryFormProps> = ({ isOpen, onClose, 
   const [formData, setFormData] = useState<Partial<Category>>({
     name: '',
     image: '',
-    badges: [],
   });
 
-  const [newBadge, setNewBadge] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -27,7 +25,6 @@ const AdminCategoryForm: React.FC<AdminCategoryFormProps> = ({ isOpen, onClose, 
         id: 'c' + Math.random().toString(36).substr(2, 4),
         name: '',
         image: '',
-        badges: [],
       });
     }
   }, [category, isOpen]);
@@ -41,16 +38,6 @@ const AdminCategoryForm: React.FC<AdminCategoryFormProps> = ({ isOpen, onClose, 
       setIsLoading(false);
       onClose();
     }, 800);
-  };
-
-  const handleAddBadge = () => {
-    if (newBadge && !formData.badges?.includes(newBadge)) {
-      setFormData({
-        ...formData,
-        badges: [...(formData.badges || []), newBadge]
-      });
-      setNewBadge('');
-    }
   };
 
   if (!isOpen) return null;
@@ -68,7 +55,7 @@ const AdminCategoryForm: React.FC<AdminCategoryFormProps> = ({ isOpen, onClose, 
         <div className="flex items-center justify-between p-8 border-b border-zinc-100">
           <div>
             <h2 className="text-xl font-black text-zinc-900">{category ? 'Edit Category' : 'New Category'}</h2>
-            <p className="text-zinc-500 text-xs font-medium mt-1">Configure site category and badges.</p>
+            <p className="text-zinc-500 text-xs font-medium mt-1">Configure site category details.</p>
           </div>
           <button onClick={onClose} className="p-2 text-zinc-400 hover:text-zinc-900 hover:bg-zinc-50 rounded-xl transition-all">
             <X size={24} />
@@ -105,35 +92,6 @@ const AdminCategoryForm: React.FC<AdminCategoryFormProps> = ({ isOpen, onClose, 
               <div className="w-14 h-14 rounded-2xl border border-zinc-200 overflow-hidden bg-zinc-50 shrink-0">
                 {formData.image && <img src={formData.image} alt="Preview" className="w-full h-full object-cover" />}
               </div>
-            </div>
-          </div>
-
-          <div className="flex flex-col gap-2">
-            <label className="text-xs font-bold text-zinc-900 ml-1">Badges & Tags</label>
-            <div className="flex gap-2 mb-2">
-              <input 
-                type="text" 
-                placeholder="e.g. ⭐ New" 
-                value={newBadge}
-                onChange={(e) => setNewBadge(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddBadge())}
-                className="flex-grow px-5 py-3 bg-zinc-50 border border-zinc-100 rounded-2xl text-sm font-medium"
-              />
-              <button 
-                type="button" 
-                onClick={handleAddBadge}
-                className="p-3 bg-zinc-900 text-white rounded-2xl hover:bg-black transition-all"
-              >
-                <Plus size={20} />
-              </button>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {formData.badges?.map((badge, idx) => (
-                <span key={idx} className="flex items-center gap-2 px-3 py-1.5 bg-primary/10 text-primary border border-primary/20 rounded-full text-[10px] font-black uppercase tracking-wider">
-                  {badge}
-                  <button type="button" onClick={() => setFormData({...formData, badges: formData.badges?.filter((_, i) => i !== idx)})}><X size={10} /></button>
-                </span>
-              ))}
             </div>
           </div>
 

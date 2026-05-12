@@ -9,7 +9,7 @@ import VerifiedBadge from '../components/ui/VerifiedBadge';
 import ReviewSummaryBar from '../components/ui/ReviewSummaryBar';
 import HelpfulButton from '../components/ui/HelpfulButton';
 import ReviewSubmissionModal from '../components/ui/ReviewSubmissionModal';
-import { PenSquare, CheckCircle, TrendingUp, AlertTriangle, ArrowLeft } from 'lucide-react';
+import { PenSquare, CheckCircle, TrendingUp, ArrowLeft } from 'lucide-react';
 import { useAuthModal } from '../context/AuthModalContext';
 
 const GadgetDetailsPage: React.FC = () => {
@@ -109,7 +109,7 @@ const GadgetDetailsPage: React.FC = () => {
 
   // Use prices object (NigerianPrices) or originalPrice
   const priceObj = Gadget.prices; // single object, not array
-  const averagePrice = priceObj?.average || Gadget.originalPrice || 0;
+  const averagePrice = priceObj?.average || Gadget.price || 0;
 
   return (
     <div className="review-details-page bg-zinc-50/30 pb-24">
@@ -128,12 +128,9 @@ const GadgetDetailsPage: React.FC = () => {
 
           {/* Core Info & Trust Signals */}
           <div className="lg:w-3/5 flex flex-col pt-4">
-             {Gadget.badges && Gadget.badges.length > 0 && (
-               <div className="inline-flex items-center gap-2 px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-bold uppercase tracking-widest self-start mb-4">
-                  ⭐ {Gadget.badges[0]}
-               </div>
-             )}
-             
+             <div className="text-primary font-bold text-sm uppercase tracking-widest mb-1">
+                {Gadget.brand}
+             </div>
              <h1 className="text-4xl lg:text-5xl font-black text-dark tracking-tight leading-tight mb-4">{Gadget.name}</h1>
              
              {/* Main Rating Ribbon */}
@@ -155,7 +152,7 @@ const GadgetDetailsPage: React.FC = () => {
              </p>
 
              {/* Pricing Card */}
-             <div className="bg-zinc-50 rounded-2xl p-6 border border-zinc-200 mt-auto">
+             {/* <div className="bg-zinc-50 rounded-2xl p-6 border border-zinc-200 mt-auto">
                <h3 className="text-sm font-bold text-muted uppercase tracking-widest mb-4 flex items-center gap-2">
                  Current Market Prices (Avg)
                </h3>
@@ -186,50 +183,14 @@ const GadgetDetailsPage: React.FC = () => {
                  </div>
                ) : (
                  <div className="flex flex-col">
-                    <span className="text-xs font-bold text-muted mb-1">Estimated Original Price</span>
-                    <NairaPrice amount={Gadget.originalPrice || 0} className="text-2xl text-primary" />
+                    <span className="text-xs font-bold text-muted mb-1">Standard Price</span>
+                    <NairaPrice amount={Gadget.price || 0} className="text-2xl text-primary" />
                  </div>
                )}
-             </div>
+             </div> */}
           </div>
         </div>
 
-        {/* Aggregated Pros and Cons Box */}
-        {(Gadget.pros?.length > 0 || Gadget.cons?.length > 0) && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
-            {Gadget.pros && Gadget.pros.length > 0 && (
-              <div className="bg-emerald-50 rounded-2xl p-6 lg:p-8 border border-emerald-100">
-                <h3 className="flex items-center gap-2 text-emerald-800 font-bold mb-6">
-                   <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center"><CheckCircle size={18} /></div>
-                   What Users Love (Pros)
-                </h3>
-                <ul className="flex flex-col gap-4">
-                  {Gadget.pros.map((pro: string, i: number) => (
-                    <li key={i} className="flex items-start gap-4 text-emerald-900 font-medium">
-                      <span className="mt-1 flex-shrink-0 w-2 h-2 rounded-full bg-emerald-500" /> {pro}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-            
-            {Gadget.cons && Gadget.cons.length > 0 && (
-              <div className="bg-red-50 rounded-2xl p-6 lg:p-8 border border-red-100">
-                <h3 className="flex items-center gap-2 text-red-800 font-bold mb-6">
-                   <div className="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center"><AlertTriangle size={18} /></div>
-                   What Users Dislike (Cons)
-                </h3>
-                <ul className="flex flex-col gap-4">
-                  {Gadget.cons.map((con: string, i: number) => (
-                    <li key={i} className="flex items-start gap-4 text-red-900 font-medium">
-                      <span className="mt-1 flex-shrink-0 w-2 h-2 rounded-full bg-red-500" /> {con}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-          </div>
-        )}
 
         {/* UGC Review Section */}
         <div className="bg-white rounded-3xl shadow-sm border border-zinc-100 overflow-hidden">

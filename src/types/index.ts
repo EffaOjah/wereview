@@ -8,25 +8,17 @@ export interface NigerianPrices {
 export interface Gadget {
     id: string;
     name: string;
-    category: any; // string in mock, object in API
-    categoryId?: string;
+    brand: string;
+    categoryId: string;
+    category?: any;
     image: string;
-    rating: number;
     price: number; 
-    prices?: NigerianPrices; // API
-    nigerianPrices?: NigerianPrices; // Mock
-    originalPrice?: number;
-    discount?: number;
-    badges: string[];
     description: string;
     specs: Record<string, string>;
-    dealEndTime?: Date;
+    prices?: NigerianPrices;
     reviewCount?: number;
-    avgRating?: number;   // computed from reviews on the backend
-    reviews?: any[]; // API
-    shortSummary?: string;
-    pros?: string[]; 
-    cons?: string[];
+    avgRating?: number;
+    reviews?: any[];
 }
 
 export interface Review {
@@ -59,8 +51,6 @@ export interface Category {
     id: string;
     name: string;
     image: string;
-    badges: string[];
-    discount?: number;
 }
 
 export interface User {

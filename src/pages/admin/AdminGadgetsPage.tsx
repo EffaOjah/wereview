@@ -197,7 +197,7 @@ const AdminGadgetsPage: React.FC = () => {
                       </span>
                     </td>
                     <td className="px-6 py-4 font-bold text-sm text-zinc-900">
-                      ${gadget.originalPrice || 'N/A'}
+                      ${gadget.price ?? 0}
                     </td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end gap-2">
