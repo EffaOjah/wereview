@@ -8,7 +8,7 @@ const TrendingGadgetsSection: React.FC = () => {
   
   const [searchTerm, setSearchTerm] = useState('');
   const [activeCategory, setActiveCategory] = useState('*');
-  const [sortBy, setSortBy] = useState('random'); // 'random', 'hottest', 'rating', 'most-reviewed'
+  const [sortBy, setSortBy] = useState('hottest'); // 'hottest', 'random', 'rating', 'most-reviewed'
   const [visibleCount, setVisibleCount] = useState(4);
 
   const categories = [
@@ -39,20 +39,25 @@ const TrendingGadgetsSection: React.FC = () => {
 
     // 3. Sorting
     result = [...result].sort((a, b) => {
-      const ratingA = 4.5; // Placeholder until reviews are fetched
-      const ratingB = 4.5;
-      const countA = a.reviews?.length || 0;
-      const countB = b.reviews?.length || 0;
+      const ratingA = a.avgRating || 0;
+      const ratingB = b.avgRating || 0;
+      const countA = a.reviewCount || 0;
+      const countB = b.reviewCount || 0;
 
       if (sortBy === 'random') {
-        return 0; // Keep the order from the API (which is already randomized)
+        return Math.random() - 0.5;
       } else if (sortBy === 'rating') {
         return ratingB - ratingA;
       } else if (sortBy === 'most-reviewed') {
         return countB - countA;
       } else {
+        // hottest combines reviews and rating
         const scoreA = (ratingA * 10) + countA;
         const scoreB = (ratingB * 10) + countB;
+        
+        if (scoreB === scoreA) {
+          return countB - countA; // Tie breaker
+        }
         return scoreB - scoreA;
       }
     });

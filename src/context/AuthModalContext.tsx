@@ -4,6 +4,7 @@ import { getApiUrl } from '../utils/api';
 export type AuthView = 'login' | 'signup';
 
 interface User {
+  id?: string;
   name: string;
   email: string;
   role?: string;

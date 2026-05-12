@@ -8,6 +8,7 @@ interface GadgetContextType {
   categories: any[];
   isLoading: boolean;
   error: string | null;
+  refreshGadgets: () => Promise<void>;
 }
 
 const GadgetContext = createContext<GadgetContextType | undefined>(undefined);
@@ -19,33 +20,42 @@ export const GadgetProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const fetchAllData = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const [gadgetsRes, dealsRes, categoriesRes] = await Promise.all([
+        fetch(getApiUrl('/api/gadgets?sort=random')).then(r => r.json()),
+        fetch(getApiUrl('/api/gadgets/deals')).then(r => r.json()),
+        fetch(getApiUrl('/api/categories')).then(r => r.json())
+      ]);
+
+      if (gadgetsRes.success) setGadgets(gadgetsRes.data);
+      if (dealsRes.success) setDeals(dealsRes.data);
+      if (categoriesRes.success) setCategories(categoriesRes.data);
+    } catch (err) {
+      console.error('Error fetching global data:', err);
+      setError('Failed to load application data. Please refresh the page.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const refreshGadgets = async () => {
+    try {
+      const res = await fetch(getApiUrl('/api/gadgets?sort=random')).then(r => r.json());
+      if (res.success) setGadgets(res.data);
+    } catch (err) {
+      console.error('Error refreshing gadgets:', err);
+    }
+  };
+
   useEffect(() => {
-    const fetchAllData = async () => {
-      setIsLoading(true);
-      setError(null);
-      try {
-        const [gadgetsRes, dealsRes, categoriesRes] = await Promise.all([
-          fetch(getApiUrl('/api/gadgets?sort=random')).then(r => r.json()),
-          fetch(getApiUrl('/api/gadgets/deals')).then(r => r.json()),
-          fetch(getApiUrl('/api/categories')).then(r => r.json())
-        ]);
-
-        if (gadgetsRes.success) setGadgets(gadgetsRes.data);
-        if (dealsRes.success) setDeals(dealsRes.data);
-        if (categoriesRes.success) setCategories(categoriesRes.data);
-      } catch (err) {
-        console.error('Error fetching global data:', err);
-        setError('Failed to load application data. Please refresh the page.');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
     fetchAllData();
   }, []);
 
   return (
-    <GadgetContext.Provider value={{ gadgets, deals, categories, isLoading, error }}>
+    <GadgetContext.Provider value={{ gadgets, deals, categories, isLoading, error, refreshGadgets }}>
       {children}
     </GadgetContext.Provider>
   );

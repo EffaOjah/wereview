@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import React, { useState, useEffect, useRef } from 'react';
+import { useParams, Link, useLocation } from 'react-router-dom';
 import { getApiUrl } from '../utils/api';
 import Breadcrumb from '../components/ui/Breadcrumb';
 import { getImageUrl } from '../utils/image';
@@ -10,9 +10,11 @@ import HelpfulButton from '../components/ui/HelpfulButton';
 import ReviewSubmissionModal from '../components/ui/ReviewSubmissionModal';
 import { PenSquare, TrendingUp, ArrowLeft } from 'lucide-react';
 import { useAuthModal } from '../context/AuthModalContext';
+import { useGadgets } from '../context/GadgetContext';
 
 const GadgetDetailsPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
+  const location = useLocation();
   const [activeTab, setActiveTab] = useState<'reviews' | 'specs'>('reviews');
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   const [reviewSort, setReviewSort] = useState('recent'); // recent, top
@@ -22,11 +24,13 @@ const GadgetDetailsPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   const { user, openModal } = useAuthModal();
+  const { refreshGadgets } = useGadgets();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  useEffect(() => {
-    setIsLoading(true);
-    window.scrollTo({ top: 0, behavior: 'instant' });
-    
+  // Added ref to handle scrolling after reviews render
+  const reviewsContainerRef = useRef<HTMLDivElement>(null);
+
+  const fetchGadgetData = () => {
     fetch(getApiUrl(`/api/gadgets/${id}`))
       .then(res => res.json())
       .then(data => {
@@ -42,7 +46,73 @@ const GadgetDetailsPage: React.FC = () => {
         setError('Error fetching gadget');
         setIsLoading(false);
       });
+  };
+
+  useEffect(() => {
+    setIsLoading(true);
+    // Don't scroll to top if there's a hash, otherwise scroll to top
+    if (!window.location.hash) {
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    }
+    fetchGadgetData();
   }, [id]);
+
+  useEffect(() => {
+    // Scroll to review if hash is present and Gadget data is loaded
+    if (!isLoading && Gadget && location.hash) {
+      setTimeout(() => {
+        const element = document.querySelector(location.hash);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          // Highlight the review briefly
+          element.classList.add('bg-primary/5', 'rounded-xl', 'transition-colors', 'duration-1000');
+          setTimeout(() => {
+            element.classList.remove('bg-primary/5');
+          }, 2000);
+        }
+      }, 300); // Small delay to ensure DOM is fully painted
+    }
+  }, [isLoading, Gadget, location.hash]);
+
+  const userReview = user && Gadget?.reviews ? Gadget.reviews.find((r: any) => r.userId === user.id) : null;
+
+  const handleReviewSubmit = async (reviewData: any) => {
+    setIsSubmitting(true);
+    try {
+      const token = localStorage.getItem('gadgethub_token');
+      const isEditing = !!userReview;
+      const url = isEditing ? getApiUrl(`/api/reviews/${userReview.id}`) : getApiUrl('/api/reviews');
+      const method = isEditing ? 'PUT' : 'POST';
+
+      const response = await fetch(url, {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          gadgetId: id,
+          ...reviewData
+        })
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        // Refresh local gadget data and global gadgets data
+        fetchGadgetData();
+        refreshGadgets();
+        setIsReviewModalOpen(false);
+        // Could add a toast success notification here
+      } else {
+        alert(data.message || 'Failed to submit review');
+      }
+    } catch (err) {
+      console.error('Error submitting review:', err);
+      alert('Network error. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -248,7 +318,7 @@ const GadgetDetailsPage: React.FC = () => {
                         }}
                         className="w-full xl:w-auto bg-dark text-white px-8 py-4 rounded-xl font-bold flex items-center justify-center gap-3 hover:bg-primary transition-colors hover:-translate-y-1 duration-300 shadow-md"
                       >
-                        <PenSquare size={20} /> Write a Review
+                        <PenSquare size={20} /> {userReview ? 'Edit Your Review' : 'Write a Review'}
                       </button>
                     </div>
                  </div>
@@ -267,9 +337,9 @@ const GadgetDetailsPage: React.FC = () => {
                  </div>
 
                  {/* Reviews Feed */}
-                 <div className="flex flex-col gap-10">
+                 <div className="flex flex-col gap-10" ref={reviewsContainerRef}>
                    {sortedReviews.length > 0 ? sortedReviews.map((review: any) => (
-                     <div key={review.id} className="flex flex-col md:flex-row gap-6 border-b border-zinc-100 pb-10 last:border-0 last:pb-0">
+                     <div id={`review-${review.id}`} key={review.id} className="flex flex-col md:flex-row gap-6 border-b border-zinc-100 pb-10 last:border-0 last:pb-0 px-4 -mx-4 pt-4 -mt-4">
                        
                        {/* User Info Column */}
                        <div className="md:w-1/4 flex flex-col gap-3">
@@ -281,7 +351,10 @@ const GadgetDetailsPage: React.FC = () => {
                              <Link to={`/user/${review.userId || review.authorId}`} className="font-black text-dark leading-tight hover:text-primary transition-colors">
                                {review.user?.name || review.author || 'Anonymous'}
                              </Link>
-                             <span className="text-xs font-bold text-muted">{new Date(review.createdAt || review.date).toLocaleDateString()}</span>
+                             <span className="text-xs font-bold text-muted">
+                               {new Date(review.createdAt || review.date).toLocaleDateString()}
+                               {review.updatedAt && new Date(review.updatedAt).getTime() - new Date(review.createdAt || review.date).getTime() > 2000 && <span className="italic ml-1">(edited)</span>}
+                             </span>
                            </div>
                          </div>
                          {review.isVerifiedPurchase && <VerifiedBadge className="mt-2" />}
@@ -322,7 +395,7 @@ const GadgetDetailsPage: React.FC = () => {
 
                          {/* Actions */}
                          <div className="flex items-center gap-4 mt-auto">
-                           <HelpfulButton initialCount={review.helpfulCount || 0} />
+                           <HelpfulButton initialCount={review.helpfulCount || 0} reviewId={review.id} />
                            {/* Add Reply/Report UI here later */}
                          </div>
                        </div>
@@ -344,7 +417,16 @@ const GadgetDetailsPage: React.FC = () => {
       <ReviewSubmissionModal 
         isOpen={isReviewModalOpen} 
         onClose={() => setIsReviewModalOpen(false)} 
-        GadgetName={Gadget.name} 
+        GadgetName={Gadget?.name} 
+        onSubmit={handleReviewSubmit}
+        initialData={userReview ? {
+          rating: userReview.rating,
+          title: userReview.title || '',
+          comment: userReview.comment || '',
+          pros: userReview.pros || [],
+          cons: userReview.cons || []
+        } : undefined}
+        isSubmitting={isSubmitting}
       />
     </div>
   );

@@ -34,6 +34,7 @@ const ProfilePage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [myReviews, setMyReviews] = useState<any[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Form State for Settings
   const [formData, setFormData] = useState({
@@ -186,14 +187,37 @@ const ProfilePage: React.FC = () => {
     setIsDeleteModalOpen(true);
   };
 
-  const handleUpdateReview = (updatedData: any) => {
-    setMyReviews(prev => prev.map(rev => 
-      rev.id === selectedReview.id 
-      ? { ...rev, ...updatedData } 
-      : rev
-    ));
-    setIsEditModalOpen(false);
-    setSelectedReview(null);
+  const handleUpdateReview = async (updatedData: any) => {
+    if (!selectedReview) return;
+    setIsSubmitting(true);
+    try {
+      const token = localStorage.getItem('gadgethub_token');
+      const res = await fetch(getApiUrl(`/api/reviews/${selectedReview.id}`), {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ gadgetId: selectedReview.gadgetId, ...updatedData })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setMyReviews(prev => prev.map(rev => 
+          rev.id === selectedReview.id 
+          ? { ...rev, ...data.data } 
+          : rev
+        ));
+        setIsEditModalOpen(false);
+        setSelectedReview(null);
+      } else {
+        alert(data.message || 'Failed to update review');
+      }
+    } catch (err) {
+      console.error('Error updating review:', err);
+      alert('Network error updating review');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleConfirmDelete = () => {
@@ -443,7 +467,9 @@ const ProfilePage: React.FC = () => {
                         <div className="flex flex-col md:flex-row gap-6">
                            <div className="md:w-1/4">
                               <span className="text-[10px] font-black text-primary uppercase tracking-[2px] block mb-1">{new Date(rev.createdAt).toLocaleDateString()}</span>
-                              <h4 className="font-black text-dark leading-tight mb-3 group-hover:text-primary transition-colors cursor-pointer">{rev.gadget?.name}</h4>
+                              <Link to={`/gadgets/${rev.gadgetId}#review-${rev.id}`} className="font-black text-dark leading-tight mb-3 group-hover:text-primary transition-colors block">
+                                {rev.gadget?.name || 'Gadget'}
+                              </Link>
                               <StarRating rating={rev.rating} size={14} />
                            </div>
                            <div className="md:w-3/4 flex flex-col gap-4">
@@ -679,6 +705,7 @@ const ProfilePage: React.FC = () => {
             cons: selectedReview.cons || []
           }}
           onSubmit={handleUpdateReview}
+          isSubmitting={isSubmitting}
         />
       )}
 
