@@ -1,6 +1,7 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { getApiUrl } from '../utils/api';
+import { getImageUrl } from '../utils/image';
 import { 
   User as UserIcon, 
   Star, 
@@ -48,6 +49,7 @@ const ProfilePage: React.FC = () => {
 
   const [isUpdating, setIsUpdating] = useState(false);
   const [updateSuccess, setUpdateSuccess] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const fetchProfileData = async () => {
@@ -120,6 +122,49 @@ const ProfilePage: React.FC = () => {
       setIsLoading(false);
     }
   }, [user]);
+
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      setError('Please upload an image file');
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('avatar', file);
+
+    const token = localStorage.getItem('gadgethub_token');
+    if (!token) return;
+
+    setIsUpdating(true);
+    try {
+      const res = await fetch(getApiUrl('/api/users/avatar'), {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`
+        },
+        body: formData
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        setProfile((prev: any) => ({ ...prev, avatar: data.data.avatar }));
+        updateLocalUser({ ...user, avatar: data.data.avatar });
+        setUpdateSuccess(true);
+        setTimeout(() => setUpdateSuccess(false), 3000);
+      } else {
+        setError(data.message || 'Failed to upload avatar');
+      }
+    } catch (err) {
+      console.error('Error uploading avatar:', err);
+      setError('Network error uploading avatar');
+    } finally {
+      setIsUpdating(false);
+    }
+  };
 
   const handleSaveProfile = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -325,16 +370,26 @@ const ProfilePage: React.FC = () => {
             <div className="bg-white rounded-3xl border border-zinc-100 shadow-sm overflow-hidden sticky top-24">
                {/* User Basic Info Header */}
                <div className="p-8 border-b border-zinc-50 flex flex-col items-center text-center">
-                  <div className="relative w-28 h-28 rounded-full overflow-hidden border-4 border-zinc-50 mb-4 group shadow-sm">
+                  <div 
+                    onClick={() => fileInputRef.current?.click()}
+                    className="relative w-28 h-28 rounded-full overflow-hidden border-4 border-zinc-50 mb-4 group shadow-sm cursor-pointer"
+                  >
                      <img 
-                        src={profile?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile?.name || 'User')}&background=0066ff&color=fff&bold=true&size=150`} 
+                        src={profile?.avatar ? getImageUrl(profile.avatar) : `https://ui-avatars.com/api/?name=${encodeURIComponent(profile?.name || 'User')}&background=0066ff&color=fff&bold=true&size=150`} 
                         alt={profile?.name} 
                         className="w-full h-full object-cover transition-transform group-hover:scale-110"
                      />
-                     <div className="absolute inset-x-0 bottom-0 top-1/2 bg-black/40 flex items-center justify-center text-white cursor-pointer hover:bg-black/60 transition-colors">
+                     <div className="absolute inset-x-0 bottom-0 h-1/3 bg-black/40 flex items-center justify-center text-white transition-colors group-hover:bg-black/60">
                         <Camera size={18} />
                      </div>
                   </div>
+                  <input 
+                    type="file"
+                    ref={fileInputRef}
+                    className="hidden"
+                    accept="image/*"
+                    onChange={handleAvatarUpload}
+                  />
                   <h5 className="text-xl font-black text-dark mb-1">{profile?.name}</h5>
                   {profile?.isVerified && (
                     <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-600 uppercase tracking-widest">
@@ -467,7 +522,7 @@ const ProfilePage: React.FC = () => {
                         <div className="flex flex-col md:flex-row gap-6">
                            <div className="md:w-1/4">
                               <span className="text-[10px] font-black text-primary uppercase tracking-[2px] block mb-1">{new Date(rev.createdAt).toLocaleDateString()}</span>
-                              <Link to={`/gadgets/${rev.gadgetId}#review-${rev.id}`} className="font-black text-dark leading-tight mb-3 group-hover:text-primary transition-colors block">
+                              <Link to={`/gadgets/${rev.gadget?.slug || rev.gadgetId}#review-${rev.id}`} className="font-black text-dark leading-tight mb-3 group-hover:text-primary transition-colors block">
                                 {rev.gadget?.name || 'Gadget'}
                               </Link>
                               <StarRating rating={rev.rating} size={14} />

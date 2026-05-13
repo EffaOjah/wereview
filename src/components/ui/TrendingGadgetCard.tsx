@@ -64,7 +64,7 @@ const TrendingGadgetCard: React.FC<TrendingGadgetCardProps> = ({ gadget, viewMod
               <GitCompare size={16} /> Compare
             </button>
             <Link 
-              to={`/gadgets/${gadget.id}`}
+              to={`/gadgets/${gadget.slug || gadget.id}`}
               className={`bg-dark text-white rounded-lg font-bold text-sm hover:bg-primary transition-colors flex items-center justify-center gap-2 group-hover:scale-[1.02] active:scale-95 duration-200 ${isList ? 'px-6 py-3 shrink-0' : 'flex-1 py-3'}`}
             >
               See Gadget

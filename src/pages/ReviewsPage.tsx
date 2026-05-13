@@ -1,10 +1,9 @@
-import React, { useMemo, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import Breadcrumb from '../components/ui/Breadcrumb';
 import ReviewCard from '../components/ui/ReviewCard';
-import NairaPrice from '../components/ui/NairaPrice';
-import { reviews, gadgets } from '../data/gadgets';
 import { ChevronRight, ChevronLeft, SlidersHorizontal, X } from 'lucide-react';
+import { getApiUrl } from '../utils/api';
 
 const ReviewsPage: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -12,34 +11,81 @@ const ReviewsPage: React.FC = () => {
   const itemsPerPage = 8;
   const categoryFilter = searchParams.get('category');
   
+  const [reviewsData, setReviewsData] = useState<any[]>([]);
+  const [totalPages, setTotalPages] = useState(1);
+  const [categories, setCategories] = useState<any[]>([]);
+  const [trendingGadgets, setTrendingGadgets] = useState<any[]>([]);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isLoadingCategories, setIsLoadingCategories] = useState(true);
+  const [isLoadingTrending, setIsLoadingTrending] = useState(true);
 
-  // Trigger loading state on initial mount or category change
   useEffect(() => {
-    setIsInitialLoading(true);
-    const timer = setTimeout(() => setIsInitialLoading(false), 600);
-    return () => clearTimeout(timer);
-  }, [categoryFilter]);
-  
-  // Filter reviews by Gadget category if selected
-  const allReviews = useMemo(() => {
-    let filtered = reviews;
-    const category = searchParams.get('category');
-    
-    if (category) {
-      filtered = reviews.filter(r => {
-        const prod = gadgets.find(p => p.id === r.GadgetId);
-        return prod && prod.category?.toLowerCase() === category.toLowerCase();
-      });
-    }
-    
-    // Duplicate for mock pagination showcase
-    return [...filtered, ...filtered, ...filtered];
-  }, [searchParams]);
-  
-  const totalPages = Math.ceil(allReviews.length / itemsPerPage);
-  const paginatedReviews = allReviews.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+    const fetchReviews = async () => {
+      setIsInitialLoading(true);
+      try {
+        const queryParams = new URLSearchParams();
+        queryParams.set('page', String(currentPage));
+        queryParams.set('limit', String(itemsPerPage));
+        if (categoryFilter && categoryFilter !== 'All Reviews') {
+          queryParams.set('category', categoryFilter);
+        }
+
+        const res = await fetch(getApiUrl(`/api/reviews?${queryParams.toString()}`));
+        const data = await res.json();
+
+        if (data.success) {
+          setReviewsData(data.data);
+          setTotalPages(data.pagination.totalPages);
+        } else {
+          setReviewsData([]);
+          setTotalPages(1);
+        }
+      } catch (error) {
+        console.error('Error fetching reviews:', error);
+        setReviewsData([]);
+      } finally {
+        setIsInitialLoading(false);
+      }
+    };
+
+    fetchReviews();
+  }, [currentPage, categoryFilter]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await fetch(getApiUrl('/api/categories'));
+        const data = await res.json();
+        if (data.success) {
+          setCategories(data.data);
+        }
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      } finally {
+        setIsLoadingCategories(false);
+      }
+    };
+
+    const fetchTrending = async () => {
+      try {
+        const res = await fetch(getApiUrl('/api/gadgets/trending'));
+        const data = await res.json();
+        if (data.success) {
+          setTrendingGadgets(data.data.slice(0, 4));
+        }
+      } catch (error) {
+        console.error('Error fetching trending gadgets:', error);
+      } finally {
+        setIsLoadingTrending(false);
+      }
+    };
+
+    fetchCategories();
+    fetchTrending();
+  }, []);
+
+  const paginatedReviews = reviewsData;
 
   const setPage = (page: number) => {
     setSearchParams(prev => {
@@ -59,32 +105,38 @@ const ReviewsPage: React.FC = () => {
             Browse All Gadgets <ChevronRight size={14} />
           </Link>
 
-          {['All Reviews', 'Gadgets', 'Accessories', 'Tablets', 'Cameras', 'Smartwatches'].map((dept) => {
-            const activeDept = searchParams.get('category') || 'All Reviews';
-            const isActive = activeDept === dept;
-            
-            return (
-              <li 
-                key={dept} 
-                onClick={() => {
-                  setSearchParams(prev => {
-                    const next = new URLSearchParams(prev);
-                    if (dept === 'All Reviews') {
-                      next.delete('category');
-                    } else {
-                      next.set('category', dept);
-                    }
-                    next.delete('page'); // reset to page 1
-                    return next;
-                  });
-                  setIsSidebarOpen(false);
-                }}
-                className={`cursor-pointer flex items-center justify-between py-2 px-3 rounded-lg transition-colors ${isActive ? 'bg-primary/10 text-primary' : 'text-zinc-500 hover:text-primary hover:bg-zinc-50'}`}
-              >
-                {dept} {isActive && <ChevronRight size={14} />}
-              </li>
-            );
-          })}
+          {isLoadingCategories ? (
+             <div className="flex flex-col gap-2">
+               {[1, 2, 3, 4, 5].map(i => <div key={i} className="h-9 bg-zinc-50 rounded-lg animate-pulse" />)}
+             </div>
+          ) : (
+            ['All Reviews', ...categories.map(c => c.name)].map((dept) => {
+              const activeDept = searchParams.get('category') || 'All Reviews';
+              const isActive = activeDept === dept;
+              
+              return (
+                <li 
+                  key={dept} 
+                  onClick={() => {
+                    setSearchParams(prev => {
+                      const next = new URLSearchParams(prev);
+                      if (dept === 'All Reviews') {
+                        next.delete('category');
+                      } else {
+                        next.set('category', dept);
+                      }
+                      next.delete('page'); // reset to page 1
+                      return next;
+                    });
+                    setIsSidebarOpen(false);
+                  }}
+                  className={`cursor-pointer flex items-center justify-between py-2 px-3 rounded-lg transition-colors ${isActive ? 'bg-primary/10 text-primary' : 'text-zinc-500 hover:text-primary hover:bg-zinc-50'}`}
+                >
+                  {dept} {isActive && <ChevronRight size={14} />}
+                </li>
+              );
+            })
+          )}
         </ul>
       </div>
 
@@ -92,15 +144,29 @@ const ReviewsPage: React.FC = () => {
       <div className="bg-white p-6 rounded-2xl shadow-sm border border-zinc-100">
         <h4 className="text-xl font-black text-dark mb-6 border-l-4 border-primary pl-4">Trending Gadgets</h4>
         <div className="flex flex-col gap-6">
-          {gadgets.slice(0, 4).map((gadget) => (
-            <Link onClick={() => setIsSidebarOpen(false)} to={`/gadgets/${gadget.id}`} key={gadget.id} className="flex gap-4 items-center group">
-               <img src={gadget.image} alt={gadget.name} className="w-16 h-16 object-contain p-2 border border-zinc-100 rounded-lg group-hover:border-primary transition-colors mix-blend-multiply" />
-               <div className="flex flex-col">
-                  <h6 className="text-sm font-bold text-dark group-hover:text-primary transition-colors line-clamp-2">{gadget.name}</h6>
-                  <NairaPrice amount={gadget.price * 1500} className="text-primary font-bold text-sm mt-1" />
-               </div>
-            </Link>
-          ))}
+          {isLoadingTrending ? (
+             <div className="flex flex-col gap-6">
+                {[1, 2, 3, 4].map(i => (
+                  <div key={i} className="flex gap-4 items-center animate-pulse">
+                    <div className="w-16 h-16 bg-zinc-50 rounded-lg shrink-0" />
+                    <div className="flex-1">
+                       <div className="w-full h-4 bg-zinc-50 rounded" />
+                    </div>
+                  </div>
+                ))}
+             </div>
+          ) : trendingGadgets.length === 0 ? (
+            <p className="text-xs text-muted font-bold uppercase tracking-widest text-center py-4">No trending items</p>
+          ) : (
+            trendingGadgets.map((gadget) => (
+              <Link onClick={() => setIsSidebarOpen(false)} to={`/gadgets/${gadget.slug || gadget.id}`} key={gadget.id} className="flex gap-4 items-center group">
+                 <img src={gadget.image} alt={gadget.name} className="w-16 h-16 object-contain p-2 border border-zinc-100 rounded-lg group-hover:border-primary transition-colors mix-blend-multiply" />
+                 <div className="flex flex-col">
+                    <h6 className="text-sm font-bold text-dark group-hover:text-primary transition-colors line-clamp-2">{gadget.name}</h6>
+                 </div>
+              </Link>
+            ))
+          )}
         </div>
       </div>
     </div>

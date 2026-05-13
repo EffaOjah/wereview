@@ -7,6 +7,7 @@ export interface NigerianPrices {
 
 export interface Gadget {
     id: string;
+    slug?: string;
     name: string;
     brand: string;
     categoryId: string;
@@ -24,9 +25,12 @@ export interface Gadget {
 export interface Review {
     id: string;
     GadgetId: string;
+    gadget?: any;
     author: string;
     authorId: string;
+    user?: any;
     date: string;
+    createdAt?: string;
     rating: number;
     title?: string;
     comment: string;

@@ -10,9 +10,12 @@ interface ReviewCardProps {
 }
 
 const ReviewCard: React.FC<ReviewCardProps> = ({ review }) => {
-  const Gadget = gadgets.find(p => p.id === review.GadgetId);
+  const Gadget = review.gadget || gadgets.find(p => p.id === review.GadgetId);
   const title = review.title || (Gadget ? `Review for ${Gadget.name}` : 'Customer Review');
   const image = review.image || (Gadget?.image) || '/img/latest-Gadget/lp-1.png';
+  const authorName = review.user?.name || review.author || 'Anonymous';
+  const authorId = review.user?.id || review.authorId;
+  const date = review.createdAt ? new Date(review.createdAt).toLocaleDateString() : review.date;
 
   return (
     <div className="flex flex-col md:flex-row bg-[#f9f8f8] p-6 rounded-sm border border-transparent hover:border-zinc-200 transition-all gap-6 group">
@@ -35,7 +38,7 @@ const ReviewCard: React.FC<ReviewCardProps> = ({ review }) => {
         {/* Meta */}
         <div className="flex items-center justify-start gap-6 text-xs text-muted font-bold uppercase tracking-wider mb-4 mt-1">
           <span className="flex items-center gap-1.5"><MessageSquare size={14} className="text-primary" /> {review.helpfulCount || 0} Helpful</span>
-          <span className="flex items-center gap-1.5"><Calendar size={14} className="text-primary" /> {review.date}</span>
+          <span className="flex items-center gap-1.5"><Calendar size={14} className="text-primary" /> {date}</span>
         </div>
 
         {/* Text */}
@@ -47,13 +50,13 @@ const ReviewCard: React.FC<ReviewCardProps> = ({ review }) => {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mt-auto">
           <div className="flex flex-col">
             <StarRating rating={review.rating} />
-            <Link to={`/user/${review.authorId}`} className="text-xs font-bold text-dark mt-1 hover:text-primary transition-colors cursor-pointer">
-              - By {review.author} 
+            <Link to={`/user/${authorId}`} className="text-xs font-bold text-primary mt-1 underline transition-all cursor-pointer">
+              - By {authorName} 
             </Link> 
             {review.isVerifiedPurchase && <span className="text-emerald-500 text-[10px] font-bold">(Verified Buyer)</span>}
           </div>
           {Gadget && (
-            <Link to={`/gadgets/${Gadget.id}`} className="primary-btn text-xs px-6 py-2 flex items-center justify-center gap-1 whitespace-nowrap">
+            <Link to={`/gadgets/${Gadget.slug || Gadget.id}#review-${review.id}`} className="primary-btn text-xs px-6 py-2 flex items-center justify-center gap-1 whitespace-nowrap">
                Read Full Review <ChevronRight size={14} />
             </Link>
           )}

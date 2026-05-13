@@ -146,7 +146,7 @@ const ComparePage: React.FC = () => {
                      </div>
                      <h4 className="font-black text-dark md:text-lg text-center leading-tight mb-2 h-10 md:h-12 flex items-center text-sm">{gadget.name}</h4>
                      <NairaPrice amount={gadget.price * 1500} className="text-primary font-black md:text-xl text-sm mb-4 md:mb-6" />
-                     <Link to={`/gadgets`} className="w-full py-2.5 md:py-3 bg-zinc-900 border text-white text-[10px] md:text-xs font-bold uppercase tracking-widest hover:bg-primary transition-colors text-center rounded-lg">View Details</Link>
+                     <Link to={`/gadgets/${gadget.slug || gadget.id}`} className="w-full py-2.5 md:py-3 bg-zinc-900 border text-white text-[10px] md:text-xs font-bold uppercase tracking-widest hover:bg-primary transition-colors text-center rounded-lg">View Details</Link>
                   </div>
                 ))}
 

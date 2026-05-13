@@ -5,9 +5,10 @@ export type AuthView = 'login' | 'signup';
 
 interface User {
   id?: string;
-  name: string;
-  email: string;
+  name?: string;
+  email?: string;
   role?: string;
+  avatar?: string;
 }
 
 interface AuthModalContextType {

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Menu, X, User, ChevronDown, Heart } from 'lucide-react';
 import { useAuthModal } from '../../context/AuthModalContext';
+import { getImageUrl } from '../../utils/image';
 
 const Navbar: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -56,8 +57,12 @@ const Navbar: React.FC = () => {
           {/* Auth Section */}
           {user ? (
             <div className="group relative cursor-pointer flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-xs">
-                {(user?.name || 'U').charAt(0)}
+             <div className="w-8 h-8 rounded-full overflow-hidden border border-zinc-100 flex items-center justify-center bg-zinc-50">
+                <img 
+                  src={user.avatar ? getImageUrl(user.avatar) : `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || 'User')}&background=0066ff&color=fff&bold=true`} 
+                  alt={user.name || 'User'} 
+                  className="w-full h-full object-cover"
+                />
               </div>
               <span className="text-sm font-bold text-dark">{(user?.name || 'User').split(' ')[0]}</span>
               <ChevronDown size={14} className="text-zinc-500" />
@@ -121,8 +126,12 @@ const Navbar: React.FC = () => {
           {user ? (
             <div className="flex flex-col gap-4">
               <div className="flex items-center gap-3 p-4 bg-zinc-50 rounded-2xl border border-zinc-100">
-                <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center text-primary font-black text-xl">
-                  {(user?.name || 'U').charAt(0)}
+                <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-white shadow-sm flex items-center justify-center bg-zinc-50">
+                   <img 
+                    src={user.avatar ? getImageUrl(user.avatar) : `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || 'User')}&background=0066ff&color=fff&bold=true`} 
+                    alt={user.name || 'User'} 
+                    className="w-full h-full object-cover"
+                  />
                 </div>
                 <div className="flex flex-col">
                   <span className="text-lg font-black text-dark leading-tight">{user?.name || 'User'}</span>
